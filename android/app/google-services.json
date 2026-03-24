@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "976149572867",
+    "project_id": "nwl-bodyworncamera-2026",
+    "storage_bucket": "nwl-bodyworncamera-2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:976149572867:android:1d5c25020d43ae6823cd36",
+        "android_client_info": {
+          "package_name": "com.nwl.bodyworncamera"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv-Q-PDdIxNI_bpDZAZUyduixAvfXBHjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

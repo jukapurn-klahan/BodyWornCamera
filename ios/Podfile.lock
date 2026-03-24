@@ -1,0 +1,204 @@
+PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Firebase/CoreOnly (12.8.0):
+    - FirebaseCore (~> 12.8.0)
+  - Firebase/Messaging (12.8.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 12.8.0)
+  - firebase_core (4.4.0):
+    - Firebase/CoreOnly (= 12.8.0)
+    - Flutter
+  - firebase_messaging (16.1.1):
+    - Firebase/Messaging (= 12.8.0)
+    - firebase_core
+    - Flutter
+  - FirebaseCore (12.8.0):
+    - FirebaseCoreInternal (~> 12.8.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreInternal (12.8.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.1)"
+  - FirebaseInstallations (12.8.0):
+    - FirebaseCore (~> 12.8.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (12.8.0):
+    - FirebaseCore (~> 12.8.0)
+    - FirebaseInstallations (~> 12.8.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Reachability (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+  - Flutter (1.0.0)
+  - flutter_keyboard_visibility (0.0.1):
+    - Flutter
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - flutter_native_screenshot_plus (0.0.1):
+    - Flutter
+  - flutter_native_splash (2.4.3):
+    - Flutter
+  - flutter_vlc_player (3.0.3):
+    - Flutter
+    - MobileVLCKit (~> 3.6.1b1)
+  - geolocator_apple (1.2.0):
+    - Flutter
+    - FlutterMacOS
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleUtilities/AppDelegateSwizzler (8.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.1.0):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.1.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.1.0)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.0)
+  - GoogleUtilities/Reachability (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/UserDefaults (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - local_auth_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - MobileVLCKit (3.6.1b1)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - PromisesObjC (2.4.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - webview_flutter_wkwebview (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_native_screenshot_plus (from `.symlinks/plugins/flutter_native_screenshot_plus/ios`)
+  - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - flutter_vlc_player (from `.symlinks/plugins/flutter_vlc_player/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
+  - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - Firebase
+    - FirebaseCore
+    - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - GoogleDataTransport
+    - GoogleUtilities
+    - MobileVLCKit
+    - nanopb
+    - PromisesObjC
+
+EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  firebase_core:
+    :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_messaging:
+    :path: ".symlinks/plugins/firebase_messaging/ios"
+  Flutter:
+    :path: Flutter
+  flutter_keyboard_visibility:
+    :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_native_screenshot_plus:
+    :path: ".symlinks/plugins/flutter_native_screenshot_plus/ios"
+  flutter_native_splash:
+    :path: ".symlinks/plugins/flutter_native_splash/ios"
+  flutter_vlc_player:
+    :path: ".symlinks/plugins/flutter_vlc_player/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/darwin"
+  local_auth_darwin:
+    :path: ".symlinks/plugins/local_auth_darwin/darwin"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
+
+SPEC CHECKSUMS:
+  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
+  Firebase: 9a58fdbc9d8655ed7b79a19cf9690bb007d3d46d
+  firebase_core: ee30637e6744af8e0c12a6a1e8a9718506ec2398
+  firebase_messaging: 343de01a8d3e18b60df0c6d37f7174c44ae38e02
+  FirebaseCore: 0dbad74bda10b8fb9ca34ad8f375fb9dd3ebef7c
+  FirebaseCoreInternal: fe5fa466aeb314787093a7dce9f0beeaad5a2a21
+  FirebaseInstallations: 6a14ab3d694ebd9f839c48d330da5547e9ca9dc0
+  FirebaseMessaging: 7f42cfd10ec64181db4e01b305a613791c8e782c
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_keyboard_visibility: 4625131e43015dbbe759d9b20daaf77e0e3f6619
+  flutter_local_notifications: ad39620c743ea4c15127860f4b5641649a988100
+  flutter_native_screenshot_plus: 25ff734877b30f2534368d051b0c9a9e681dc8e5
+  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
+  flutter_vlc_player: 5464f594a9338e080d240bbe7b10ffe30c7bc8bc
+  geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
+  local_auth_darwin: c3ee6cce0a8d56be34c8ccb66ba31f7f180aaebb
+  MobileVLCKit: 2d9c7c373393ae43086aeeff890bf0b1afc15c5c
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  video_player_avfoundation: dd410b52df6d2466a42d28550e33e4146928280a
+  webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
+
+PODFILE CHECKSUM: 288656d4464589360115d6f81dd5d8f559352730
+
+COCOAPODS: 1.16.2
