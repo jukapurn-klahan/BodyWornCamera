@@ -1,6 +1,7 @@
 import 'package:body_camera/app/routes/app_pages.dart';
 import 'package:body_camera/fcm/notification_services.dart';
 import 'package:body_camera/firebase_options.dart';
+import 'package:body_camera/utils/app_info_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -12,6 +13,7 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   NotificationServices.registerBackgroundHandler();
   await NotificationServices.instance.initNotifications();
+  await AppInfoUtils.warmUp();
 
   await initializeDateFormatting('th', null);
 

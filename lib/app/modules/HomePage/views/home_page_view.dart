@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:badges/badges.dart' as badges;
@@ -17,10 +15,15 @@ import '../../../../fcm/notification_services.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../controllers/home_page_controller.dart';
 
+enum CameraFilterType { all, online, offline }
+
 class HomePageView extends GetView<HomePageController> {
   const HomePageView({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -28,7 +31,7 @@ class HomePageView extends GetView<HomePageController> {
       },
       child: Scaffold(
         key: controller.scaffoldKey,
-        backgroundColor: FlutterFlowThemeNew.of(context).primary,
+        backgroundColor: theme.primary,
         body: NestedScrollView(
           floatHeaderSlivers: true,
           headerSliverBuilder: (context, _) => [
@@ -36,884 +39,208 @@ class HomePageView extends GetView<HomePageController> {
               pinned: false,
               floating: true,
               snap: true,
-              backgroundColor: FlutterFlowThemeNew.of(context).primary,
               automaticallyImplyLeading: false,
+              backgroundColor: theme.primary,
+              elevation: 0,
+              toolbarHeight: 92,
+              titleSpacing: 16,
               title: Row(
-                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Align(
-                    alignment: AlignmentDirectional(0.0, 0.0),
-                    child: Container(
-                      width: () {
-                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                          return 50.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                          return 50.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                          return 56.0;
-                        } else {
-                          return 56.0;
-                        }
-                      }(),
-                      height: () {
-                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                          return 50.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                          return 50.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                          return 56.0;
-                        } else {
-                          return 56.0;
-                        }
-                      }(),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFA0D6FF), FlutterFlowThemeNew.of(context).primary],
-                          stops: [0.0, 1.0],
-                          begin: AlignmentDirectional(0.0, -1.0),
-                          end: AlignmentDirectional(0, 1.0),
-                        ),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground),
-                      ),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 80.0,
-                            height: 80.0,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Color(0xFFA0D6FF), FlutterFlowThemeNew.of(context).primary],
-                                stops: [0.0, 1.0],
-                                begin: AlignmentDirectional(0.0, -1.0),
-                                end: AlignmentDirectional(0, 1.0),
-                              ),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground),
-                            ),
-                            child: ClipOval(
-                              child: Image.asset('assets/images/profile.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
-                            ),
-                          ),
-                        ],
-                      ),
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: theme.secondaryBackground, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset('assets/images/profile.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
                     ),
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: AlignmentDirectional(-1.0, 0.0),
-                        child: Text(
-                          'ตำแหน่ง : เจ้าหน้าที',
-                          style: FlutterFlowThemeNew.of(context).bodySmall.override(
-                            fontFamily: FlutterFlowThemeNew.of(context).bodySmallFamily,
-                            color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.w300,
-                            useGoogleFonts: !FlutterFlowThemeNew.of(context).bodySmallIsCustom,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'ตำแหน่ง : เจ้าหน้าที่',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.bodySmall.override(
+                            fontFamily: theme.bodySmallFamily,
+                            color: theme.secondaryBackground.withValues(alpha: 0.85),
+                            letterSpacing: 0,
+                            fontWeight: FontWeight.w400,
+                            useGoogleFonts: !theme.bodySmallIsCustom,
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional(-1.0, 0.0),
-                        child: RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'คุณ ทดสอบระบบ Camera',
-                                style: FlutterFlowThemeNew.of(context).bodyLarge.override(
-                                  fontFamily: FlutterFlowThemeNew.of(context).bodyLargeFamily,
-                                  color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w500,
-                                  useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyLargeIsCustom,
-                                ),
-                              ),
-                            ],
-                            style: FlutterFlowThemeNew.of(context).bodyLarge.override(
-                              fontFamily: FlutterFlowThemeNew.of(context).bodyLargeFamily,
-                              color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.w500,
-                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyLargeIsCustom,
-                            ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'คุณ ทดสอบระบบ Camera',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.bodyLarge.override(
+                            fontFamily: theme.bodyLargeFamily,
+                            color: theme.secondaryBackground,
+                            letterSpacing: 0,
+                            fontWeight: FontWeight.w600,
+                            useGoogleFonts: !theme.bodyLargeIsCustom,
                           ),
                         ),
-                      ),
-                    ].divide(SizedBox(height: 4.0)),
+                      ],
+                    ),
                   ),
-                ].divide(SizedBox(width: 12.0)),
+                ],
               ),
               actions: [
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 24.0, 0.0),
+                  padding: const EdgeInsets.only(right: 16),
                   child: badges.Badge(
                     badgeContent: Text(
                       '2',
-                      style: GoogleFonts.sarabun(
-                        color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 12.0,
-                      ),
+                      style: GoogleFonts.sarabun(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 11),
                     ),
                     showBadge: true,
                     shape: badges.BadgeShape.circle,
-                    badgeColor: FlutterFlowThemeNew.of(context).error,
-                    elevation: 0.0,
-                    padding: EdgeInsets.all(6.0),
-                    position: badges.BadgePosition.topEnd(),
+                    badgeColor: theme.error,
+                    elevation: 0,
+                    padding: const EdgeInsets.all(6),
+                    position: badges.BadgePosition.topEnd(top: -2, end: -2),
                     animationType: badges.BadgeAnimationType.scale,
                     toAnimate: true,
-                    child: Align(
-                      alignment: AlignmentDirectional(-0.63, 0.0),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () async {
-                          // แสดง local notification ทดสอบ
-
-                          // String accessToken = await NotificationServices.getAccessToken();
-                          // log('accessToken : $accessToken');
-                          // await controller.showTestNotification();
-
-                          // ไปหน้ารายการแจ้งเตือนเดิม
-                          Get.toNamed(Routes.NOTI_LIST);
-                          //   context.pushNamed(NotiWidget.routeName);
-                        },
-                        child: Container(
-                          width: 40.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(color: Color(0x93164874), shape: BoxShape.circle),
-                          child: Align(
-                            alignment: AlignmentDirectional(0.0, 0.0),
-                            child: Icon(Icons.notifications_outlined, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 24.0),
-                          ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(999),
+                      onTap: () => Get.toNamed(Routes.NOTI_LIST),
+                      child: Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Icon(Icons.notifications_none_rounded, color: theme.secondaryBackground, size: 24),
                         ),
                       ),
                     ),
                   ),
                 ),
               ],
-              centerTitle: false,
-              elevation: 0.0,
             ),
           ],
-          body: Builder(
-            builder: (context) {
-              return Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF339FF3), FlutterFlowThemeNew.of(context).primaryBackground, FlutterFlowThemeNew.of(context).primaryBackground],
-                    stops: [0.0, 0.3, 1.0],
-                    begin: AlignmentDirectional(0.0, -1.0),
-                    end: AlignmentDirectional(0, 1.0),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    ListView(
-                      padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 124.0),
-                      scrollDirection: Axis.vertical,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'รายการกล้อง',
-                            style: FlutterFlowThemeNew.of(
-                              context,
-                            ).titleMedium.copyWith(color: const Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
-                          ),
-                        ),
-
-                        CameraGridView(),
-                      ].divide(const SizedBox(height: 16.0)),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CameraList extends StatelessWidget {
-  const CameraList({super.key, required this.controller});
-
-  final HomePageController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).secondaryBackground, borderRadius: BorderRadius.circular(24.0)),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [const Color(0xFF3FA3F5), const Color(0xFFEAF4FF), theme.primaryBackground],
+                stops: const [0.0, 0.18, 1.0],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 124),
               children: [
-                Expanded(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     'รายการกล้อง',
-                    style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                      fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                      color: FlutterFlowThemeNew.of(context).primaryText,
-                      letterSpacing: 0.0,
-                      useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).titleSmallFamily),
-                    ),
+                    style: theme.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 26),
                   ),
                 ),
+                const SizedBox(height: 12),
+
+                /// summary
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                //   child: Obx(() {
+                //     final onlineCount = controller.cameras.where((e) => e.isOnline).length;
+                //     final offlineCount = controller.cameras.length - onlineCount;
+
+                //     return Container(
+                //       padding: const EdgeInsets.all(14),
+                //       decoration: BoxDecoration(
+                //         color: Colors.white.withValues(alpha: 0.18),
+                //         borderRadius: BorderRadius.circular(18),
+                //         border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                //       ),
+                //       child: Row(
+                //         children: [
+                //           Expanded(
+                //             child: _SummaryBox(title: 'ออนไลน์', value: '$onlineCount', color: Colors.green, icon: Icons.wifi_rounded),
+                //           ),
+                //           const SizedBox(width: 12),
+                //           Expanded(
+                //             child: _SummaryBox(title: 'ออฟไลน์', value: '$offlineCount', color: Colors.red, icon: Icons.wifi_off_rounded),
+                //           ),
+                //         ],
+                //       ),
+                //     );
+                //   }),
+                // ),
+
+                // const SizedBox(height: 14),
+
+                /// search
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 4.0, 0.0),
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      // await showModalBottomSheet(
-                      //   isScrollControlled: true,
-                      //   backgroundColor: Colors.transparent,
-                      //   enableDrag: true,
-                      //   context: context,
-                      //   builder: (context) {
-                      //     return Padding(
-                      //       padding: MediaQuery.viewInsetsOf(context),
-                      //       child: FillterLabhistoryWidget(filter: controller.filerDepartment),
-                      //     );
-                      //   },
-                      // ).then((value) {
-                      //   if (value is String) {
-                      //     log('dex>> value $value');
-                      //     if (value == 'IPD') {
-                      //       controller.filerDepartment = '%20and%20lab_head.department%20%3D%20%27IPD%27%20';
-                      //       controller.getAllLabHistoryData();
-                      //       controller.update();
-                      //     } else {
-                      //       controller.filerDepartment = '';
-                      //       controller.getAllLabHistoryData();
-                      //       controller.update();
-                      //     }
-                      //   }
-                      // });
-                    },
-                    child: Container(
-                      width: () {
-                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                          return 24.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                          return 24.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                          return 32.0;
-                        } else {
-                          return 32.0;
-                        }
-                      }(),
-                      height: () {
-                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                          return 24.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                          return 24.0;
-                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                          return 32.0;
-                        } else {
-                          return 32.0;
-                        }
-                      }(),
-                      decoration: BoxDecoration(
-                        color: const Color(0x396C6C6C),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFA8A8A8), width: 0.4),
-                      ),
-                      child: Align(
-                        alignment: const AlignmentDirectional(0.0, 0.0),
-                        child: FaIcon(
-                          FontAwesomeIcons.sliders,
-                          color: FlutterFlowThemeNew.of(context).secondaryText,
-                          size: () {
-                            if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                              return 10.0;
-                            } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                              return 10.0;
-                            } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                              return 12.0;
-                            } else {
-                              return 12.0;
-                            }
-                          }(),
-                        ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
+                    ),
+                    child: TextField(
+                      onChanged: controller.onSearchChanged,
+                      decoration: InputDecoration(
+                        hintText: 'ค้นหากล้อง / จุดติดตั้ง',
+                        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                        prefixIcon: Icon(Icons.search_rounded, color: Colors.grey.shade500),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                       ),
                     ),
                   ),
                 ),
-              ].divide(const SizedBox(width: 8.0)),
+
+                const SizedBox(height: 12),
+
+                /// filters
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Obx(() {
+                    return Row(
+                      children: [
+                        _FilterChipButton(
+                          label: 'ทั้งหมด',
+                          selected: controller.selectedFilter.value == CameraFilterType.all,
+                          onTap: () => controller.changeFilter(CameraFilterType.all),
+                        ),
+                        const SizedBox(width: 8),
+                        _FilterChipButton(
+                          label: 'ออนไลน์',
+                          selected: controller.selectedFilter.value == CameraFilterType.online,
+                          onTap: () => controller.changeFilter(CameraFilterType.online),
+                          selectedColor: Colors.green,
+                        ),
+                        const SizedBox(width: 8),
+                        _FilterChipButton(
+                          label: 'ออฟไลน์',
+                          selected: controller.selectedFilter.value == CameraFilterType.offline,
+                          onTap: () => controller.changeFilter(CameraFilterType.offline),
+                          selectedColor: Colors.red,
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+
+                const SizedBox(height: 10),
+                const CameraGridView(),
+              ],
             ),
-
-            // (controller.dataLabHistory.isEmpty)
-            //     ? Center(child: Text('ไม่พบประวัติการสั่ง LAB', style: TextStyle(color: Colors.grey[600])))
-            //     : ListView.separated(
-            //       separatorBuilder:
-            //           (context, index) => SizedBox(
-            //             height: () {
-            //               if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-            //                 return 12.0;
-            //               } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-            //                 return 12.0;
-            //               } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-            //                 return 16.0;
-            //               } else {
-            //                 return 16.0;
-            //               }
-            //             }(),
-            //           ),
-            //       shrinkWrap: true,
-            //       physics: const BouncingScrollPhysics(),
-            //       itemCount: controller.dataLabHistory.length,
-            //       itemBuilder: (context, index) {
-            //         final labHistorryData = controller.dataLabHistory[index];
-            //         final dateTime = labHistorryData.key;
-            //         final valueData = labHistorryData.value;
-
-            //         String dateResult = controller.formatDateTime(dateTime);
-
-            //         String formName = '', dateTimeValue = '';
-            //         if (dateResult.contains('Form :')) {
-            //           formName = dateResult.split('Form : ').last.trim();
-            //           dateTimeValue = dateResult.split('Form : ').first.trim();
-            //         }
-            //         // log('dex>> dateTimeValue $dateTimeValue');
-
-            //         return InkWell(
-            //           onTap: () {
-            //             controller.isExpand[index] = !controller.isExpand[index];
-            //             controller.update();
-
-            //             final groupedData = <MapEntry<String, List<LabOrderListAll>>>[];
-            //             for (int i = 0; i < valueData.length; i++) {
-            //               final item = valueData[i];
-            //               String groupKey;
-
-            //               if (item.lab_items_sub_group_code != null) {
-            //                 groupKey = '${item.form_name} ${item.lab_items_sub_group_code ?? ''}';
-            //               } else {
-            //                 groupKey = '${item.form_name} ${item.lab_items_name ?? ''} $i';
-            //               }
-
-            //               final existingIndex = groupedData.indexWhere((entry) => entry.key == groupKey);
-            //               if (existingIndex != -1) {
-            //                 groupedData[existingIndex] = MapEntry(groupKey, [...groupedData[existingIndex].value, item]);
-            //               } else {
-            //                 groupedData.add(MapEntry(groupKey, [item]));
-            //               }
-            //               controller.resultText = item.result_rtf ?? '';
-            //             }
-            //             controller.groupedLabData[index] = groupedData;
-            //             controller.update();
-            //             log('dex>> resultText ${controller.resultText}');
-            //           },
-            //           child: Container(
-            //             decoration: BoxDecoration(
-            //               color: FlutterFlowThemeNew.of(context).secondaryBackground,
-            //               borderRadius: BorderRadius.circular(24.0),
-            //             ),
-            //             child: Column(
-            //               mainAxisSize: MainAxisSize.max,
-            //               crossAxisAlignment: CrossAxisAlignment.start,
-            //               children: [
-            //                 Padding(
-            //                   padding: EdgeInsets.all(
-            //                     valueOrDefault<double>(() {
-            //                       if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-            //                         return 12.0;
-            //                       } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-            //                         return 12.0;
-            //                       } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-            //                         return 16.0;
-            //                       } else {
-            //                         return 16.0;
-            //                       }
-            //                     }(), 0.0),
-            //                   ),
-            //                   child: Row(
-            //                     mainAxisSize: MainAxisSize.max,
-            //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //                     children: [
-            //                       _buildFormNameMethod(context, formName),
-            //                       Row(
-            //                         mainAxisSize: MainAxisSize.max,
-            //                         children: [
-            //                           RichText(
-            //                             textScaler: MediaQuery.of(context).textScaler,
-            //                             text: TextSpan(
-            //                               children: [
-            //                                 TextSpan(
-            //                                   text: dateTimeValue,
-            //                                   style: FlutterFlowThemeNew.of(context).labelSmall.override(
-            //                                     fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-            //                                     // color: widget!.color,
-            //                                     letterSpacing: 0.0,
-            //                                     useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-            //                                   ),
-            //                                 ),
-            //                               ],
-            //                               style: FlutterFlowThemeNew.of(context).labelSmall.override(
-            //                                 fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-            //                                 letterSpacing: 0.0,
-            //                                 useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-            //                               ),
-            //                             ),
-            //                           ),
-            //                           Container(
-            //                             decoration: BoxDecoration(
-            //                               color: FlutterFlowThemeNew.of(context).primaryBackground,
-            //                               shape: BoxShape.circle,
-            //                             ),
-            //                             child: Icon(
-            //                               (controller.isExpand[index] == true) ? Icons.expand_less : Icons.expand_more,
-            //                               size: 20,
-            //                               color: FlutterFlowThemeNew.of(context).secondaryText,
-            //                             ),
-            //                           ),
-            //                         ].divide(const SizedBox(width: 8.0)),
-            //                       ),
-            //                     ].divide(const SizedBox(width: 16.0)),
-            //                   ),
-            //                 ),
-            //                 if (controller.isExpand[index] == true) ...[
-            //                   Container(
-            //                     width: double.infinity,
-            //                     decoration: BoxDecoration(
-            //                       color: const Color(0x0B2397FF),
-            //                       borderRadius: BorderRadius.circular(24.0),
-            //                       border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground, width: 2.0),
-            //                     ),
-            //                     child: Column(
-            //                       children: [
-            //                         ...?controller.groupedLabData[index]?.map((entry) {
-            //                           return Padding(
-            //                             padding: EdgeInsets.all(
-            //                               valueOrDefault<double>(() {
-            //                                 if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-            //                                   return 8.0;
-            //                                 } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-            //                                   return 8.0;
-            //                                 } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-            //                                   return 12.0;
-            //                                 } else {
-            //                                   return 12.0;
-            //                                 }
-            //                               }(), 0.0),
-            //                             ),
-            //                             child: Column(
-            //                               mainAxisSize: MainAxisSize.max,
-            //                               crossAxisAlignment: CrossAxisAlignment.start,
-            //                               children: [
-            //                                 // แสดง Header
-            //                                 Row(
-            //                                   mainAxisSize: MainAxisSize.max,
-            //                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //                                   children: [
-            //                                     Expanded(
-            //                                       child: Text(
-            //                                         ((entry.value.first.lab_items_sub_group_name ?? '').isNotEmpty)
-            //                                             ? '${entry.value.first.lab_items_sub_group_name ?? '-'} [Profile]'
-            //                                             : '${entry.value.first.lab_items_name}',
-            //                                         overflow: TextOverflow.ellipsis,
-            //                                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-            //                                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-            //                                           color: FlutterFlowThemeNew.of(context).accent1,
-            //                                           letterSpacing: 0.0,
-            //                                           useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-            //                                         ),
-            //                                       ),
-            //                                     ),
-            //                                     if ((entry.value.first.lab_items_sub_group_name ?? '').isEmpty)
-            //                                       Row(
-            //                                         mainAxisSize: MainAxisSize.max,
-            //                                         mainAxisAlignment: MainAxisAlignment.end,
-            //                                         children: [
-            //                                           ((entry.value.first.lab_order_result ?? '').isEmpty)
-            //                                               ? _buildWatingResultMethod(context)
-            //                                               : _buildOrderResultMethod(
-            //                                                 context: context,
-            //                                                 orderResult: entry.value.first.lab_order_result,
-            //                                                 abnormalResult: entry.value.first.abnormal_result,
-            //                                                 color:
-            //                                                     (entry.value.first.abnormal_result == 'Y' ||
-            //                                                             controller.getAbnormalStatus(entry.value.first) == 'ผิดปกติ')
-            //                                                         ? FlutterFlowThemeNew.of(context).error
-            //                                                         : FlutterFlowThemeNew.of(context).success,
-            //                                                 colorsList:
-            //                                                     (entry.value.first.abnormal_result == 'Y' ||
-            //                                                             controller.getAbnormalStatus(entry.value.first) == 'ผิดปกติ')
-            //                                                         ? const [Color(0x19F47A86), Color(0x25BE1E2D)]
-            //                                                         : const [Color(0x1A5FD187), Color(0x273AAA5F)],
-            //                                               ),
-
-            //                                           /* Row(
-            //                                             mainAxisSize: MainAxisSize.max,
-            //                                             mainAxisAlignment: MainAxisAlignment.end,
-            //                                             children: [
-            //                                               InkWell(
-            //                                                 onTap:
-            //                                                     (entry.value.first.lab_order_result == null || entry.value.first.lab_order_result == '')
-            //                                                         ? null
-            //                                                         : () {
-            //                                                           log('dex>> view labItem.lab_items_code ${entry.value.first.lab_items_code}');
-            //                                                           showModalBottomSheet(
-            //                                                             isScrollControlled: true,
-            //                                                             backgroundColor: Colors.transparent,
-            //                                                             isDismissible: false,
-            //                                                             useSafeArea: true,
-            //                                                             context: context,
-            //                                                             builder: (context) {
-            //                                                               return GestureDetector(
-            //                                                                 onTap: () {
-            //                                                                   FocusScope.of(context).unfocus();
-            //                                                                   FocusManager.instance.primaryFocus?.unfocus();
-            //                                                                 },
-            //                                                                 child: Padding(
-            //                                                                   padding: MediaQuery.viewInsetsOf(context),
-            //                                                                   child: HistoryLabXrayWidget(itemCode: entry.value.first.lab_items_code ?? 0, hn: controller.hn ?? ''),
-            //                                                                 ),
-            //                                                               );
-            //                                                             },
-            //                                                           );
-            //                                                         },
-            //                                                 child: Opacity(
-            //                                                   opacity: 0.5,
-            //                                                   child: Container(
-            //                                                     width: 40,
-            //                                                     height: 40,
-            //                                                     decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).primaryBackground, shape: BoxShape.circle),
-            //                                                     child: Align(
-            //                                                       alignment: const AlignmentDirectional(0.0, 0.0),
-            //                                                       child: Icon(
-            //                                                         (entry.value.first.lab_order_result == null || entry.value.first.lab_order_result == '')
-            //                                                             ? Icons.visibility_off
-            //                                                             : Icons.remove_red_eye_sharp,
-            //                                                         color:
-            //                                                             (entry.value.first.lab_order_result == null || entry.value.first.lab_order_result == '')
-            //                                                                 ? FlutterFlowThemeNew.of(context).secondaryText
-            //                                                                 : FlutterFlowThemeNew.of(context).customColor1,
-            //                                                         size: 20.0,
-            //                                                       ),
-            //                                                     ),
-            //                                                   ),
-            //                                                 ),
-            //                                               ),
-            //                                               InkWell(
-            //                                                 onTap:
-            //                                                     (entry.value.first.image_count != null && entry.value.first.image_count! > 0)
-            //                                                         ? () {
-            //                                                           log('dex>> pic labItem.lab_items_code ${entry.value.first.lab_items_code}');
-            //                                                           showModalBottomSheet(
-            //                                                             isScrollControlled: true,
-            //                                                             backgroundColor: Colors.transparent,
-            //                                                             isDismissible: false,
-            //                                                             useSafeArea: true,
-            //                                                             context: context,
-            //                                                             builder: (context) {
-            //                                                               return Padding(
-            //                                                                 padding: MediaQuery.viewInsetsOf(context),
-            //                                                                 child: LabmageWidget(labOrderNumber: entry.value.first.lab_order_number ?? 0),
-            //                                                               );
-            //                                                             },
-            //                                                           );
-            //                                                         }
-            //                                                         : null,
-            //                                                 child: Opacity(
-            //                                                   opacity: 0.5,
-            //                                                   child: Container(
-            //                                                     width: 40,
-            //                                                     height: 40,
-            //                                                     decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).primaryBackground, shape: BoxShape.circle),
-            //                                                     child: Align(
-            //                                                       alignment: const AlignmentDirectional(0.0, 0.0),
-            //                                                       child: Icon(
-            //                                                         (entry.value.first.image_count != null && entry.value.first.image_count! > 0) ? Icons.image : Icons.image_not_supported,
-            //                                                         color:
-            //                                                             (entry.value.first.image_count != null && entry.value.first.image_count! > 0)
-            //                                                                 ? FlutterFlowThemeNew.of(context).customColor1
-            //                                                                 : FlutterFlowThemeNew.of(context).secondaryText,
-            //                                                         size: 20.0,
-            //                                                       ),
-            //                                                     ),
-            //                                                   ),
-            //                                                 ),
-            //                                               ),
-            //                                             ].divide(const SizedBox(width: 4.0)),
-            //                                           ), */
-            //                                           const SizedBox(width: 12.0),
-            //                                           InkWell(
-            //                                             splashColor: Colors.transparent,
-            //                                             focusColor: Colors.transparent,
-            //                                             hoverColor: Colors.transparent,
-            //                                             highlightColor: Colors.transparent,
-            //                                             onTap: () async {
-            //                                               await showModalBottomSheet(
-            //                                                 isScrollControlled: true,
-            //                                                 backgroundColor: Colors.transparent,
-            //                                                 enableDrag: false,
-            //                                                 context: context,
-            //                                                 builder: (context) {
-            //                                                   return Padding(
-            //                                                     padding: MediaQuery.viewInsetsOf(context),
-            //                                                     child: BottomsheetLabViewMoreWidget(
-            //                                                       labItem: entry.value.first,
-            //                                                       controller: controller,
-            //                                                     ),
-            //                                                   );
-            //                                                 },
-            //                                               );
-            //                                             },
-            //                                             child: Container(
-            //                                               width: 24.0,
-            //                                               height: 24.0,
-            //                                               decoration: const BoxDecoration(color: Color(0x59A7C6ED), shape: BoxShape.circle),
-            //                                               child: Align(
-            //                                                 alignment: const AlignmentDirectional(0.0, -0.75),
-            //                                                 child: Text(
-            //                                                   '...',
-            //                                                   style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-            //                                                     fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-            //                                                     letterSpacing: 0.0,
-            //                                                     lineHeight: 0.4,
-            //                                                     useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-            //                                                   ),
-            //                                                 ),
-            //                                               ),
-            //                                             ),
-            //                                           ),
-            //                                         ],
-            //                                       ),
-            //                                   ],
-            //                                 ),
-            //                                 // แสดงรายการย่อย (เฉพาะเมื่อเป็น Profile group)
-            //                                 if ((entry.value.first.lab_items_sub_group_name ?? '').isNotEmpty)
-            //                                   ...entry.value.map((labItem) {
-            //                                     return Padding(
-            //                                       padding: const EdgeInsets.only(top: 4.0, left: 16.0),
-            //                                       child: Row(
-            //                                         mainAxisSize: MainAxisSize.max,
-            //                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //                                         children: [
-            //                                           Expanded(
-            //                                             child: Text(
-            //                                               labItem.lab_items_name ?? '-',
-            //                                               overflow: TextOverflow.ellipsis,
-            //                                               style: FlutterFlowThemeNew.of(context).bodySmall.override(
-            //                                                 fontFamily: FlutterFlowThemeNew.of(context).bodySmallFamily,
-            //                                                 color: FlutterFlowThemeNew.of(context).secondaryText,
-            //                                                 letterSpacing: 0.0,
-            //                                                 useGoogleFonts: !FlutterFlowThemeNew.of(context).bodySmallIsCustom,
-            //                                               ),
-            //                                             ),
-            //                                           ),
-            //                                           Row(
-            //                                             mainAxisSize: MainAxisSize.max,
-            //                                             mainAxisAlignment: MainAxisAlignment.end,
-            //                                             children: [
-            //                                               ((labItem.lab_order_result ?? '').isEmpty)
-            //                                                   ? _buildWatingResultMethod(context)
-            //                                                   : _buildOrderResultMethod(
-            //                                                     context: context,
-            //                                                     orderResult: labItem.lab_order_result,
-            //                                                     abnormalResult: labItem.abnormal_result,
-            //                                                     color:
-            //                                                         (labItem.abnormal_result == 'Y' ||
-            //                                                                 controller.getAbnormalStatus(labItem) == 'ผิดปกติ')
-            //                                                             ? FlutterFlowThemeNew.of(context).error
-            //                                                             : FlutterFlowThemeNew.of(context).success,
-            //                                                     colorsList:
-            //                                                         (labItem.abnormal_result == 'Y' ||
-            //                                                                 controller.getAbnormalStatus(labItem) == 'ผิดปกติ')
-            //                                                             ? const [Color(0x19F47A86), Color(0x25BE1E2D)]
-            //                                                             : const [Color(0x1A5FD187), Color(0x273AAA5F)],
-            //                                                   ),
-
-            //                                               /* Container(
-            //                                                 /* width: () {
-            //                                                               if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-            //                                                                 return 78.0;
-            //                                                               } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-            //                                                                 return 78.0;
-            //                                                               } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-            //                                                                 return 108.0;
-            //                                                               } else {
-            //                                                                 return 108.0;
-            //                                                               }
-            //                                                             }(), */
-            //                                                 decoration: const BoxDecoration(),
-            //                                                 child: Row(
-            //                                                   mainAxisSize: MainAxisSize.max,
-            //                                                   mainAxisAlignment: MainAxisAlignment.end,
-            //                                                   children: [
-            //                                                     InkWell(
-            //                                                       onTap:
-            //                                                           (labItem.lab_order_result == null || labItem.lab_order_result == '')
-            //                                                               ? null
-            //                                                               : () {
-            //                                                                 showModalBottomSheet(
-            //                                                                   isScrollControlled: true,
-            //                                                                   backgroundColor: Colors.transparent,
-            //                                                                   isDismissible: false,
-            //                                                                   useSafeArea: true,
-            //                                                                   context: context,
-            //                                                                   builder: (context) {
-            //                                                                     return GestureDetector(
-            //                                                                       onTap: () {
-            //                                                                         FocusScope.of(context).unfocus();
-            //                                                                         FocusManager.instance.primaryFocus?.unfocus();
-            //                                                                       },
-            //                                                                       child: Padding(
-            //                                                                         padding: MediaQuery.viewInsetsOf(context),
-            //                                                                         child: HistoryLabXrayWidget(itemCode: labItem.lab_items_code ?? 0, hn: controller.hn ?? ''),
-            //                                                                       ),
-            //                                                                     );
-            //                                                                   },
-            //                                                                 );
-            //                                                               },
-            //                                                       child: Opacity(
-            //                                                         opacity: 0.5,
-            //                                                         child: Container(
-            //                                                           width: 40,
-            //                                                           height: 40,
-            //                                                           decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).primaryBackground, shape: BoxShape.circle),
-            //                                                           child: Align(
-            //                                                             alignment: const AlignmentDirectional(0.0, 0.0),
-            //                                                             child: Icon(
-            //                                                               (labItem.lab_order_result == null || labItem.lab_order_result == '')
-            //                                                                   ? Icons.visibility_off
-            //                                                                   : Icons.remove_red_eye_sharp,
-            //                                                               color:
-            //                                                                   (labItem.lab_order_result == null || labItem.lab_order_result == '')
-            //                                                                       ? FlutterFlowThemeNew.of(context).secondaryText
-            //                                                                       : FlutterFlowThemeNew.of(context).customColor1,
-            //                                                               size: 20.0,
-            //                                                             ),
-            //                                                           ),
-            //                                                         ),
-            //                                                       ),
-            //                                                     ),
-            //                                                     InkWell(
-            //                                                       onTap:
-            //                                                           (labItem.image_count != null && labItem.image_count! > 0)
-            //                                                               ? () {
-            //                                                                 log('dex>> pic labItem.lab_items_code ${labItem.lab_items_code}');
-            //                                                                 showModalBottomSheet(
-            //                                                                   isScrollControlled: true,
-            //                                                                   backgroundColor: Colors.transparent,
-            //                                                                   isDismissible: false,
-            //                                                                   useSafeArea: true,
-            //                                                                   context: context,
-            //                                                                   builder: (context) {
-            //                                                                     return Padding(
-            //                                                                       padding: MediaQuery.viewInsetsOf(context),
-            //                                                                       child: LabmageWidget(labOrderNumber: entry.value.first.lab_order_number ?? 0),
-            //                                                                     );
-            //                                                                   },
-            //                                                                 );
-            //                                                               }
-            //                                                               : null,
-            //                                                       child: Opacity(
-            //                                                         opacity: 0.5,
-            //                                                         child: Container(
-            //                                                           width: 40,
-            //                                                           height: 40,
-            //                                                           decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).primaryBackground, shape: BoxShape.circle),
-            //                                                           child: Align(
-            //                                                             alignment: const AlignmentDirectional(0.0, 0.0),
-            //                                                             child: Icon(
-            //                                                               (labItem.image_count != null && labItem.image_count! > 0) ? Icons.image : Icons.image_not_supported,
-            //                                                               color:
-            //                                                                   (labItem.image_count != null && labItem.image_count! > 0)
-            //                                                                       ? FlutterFlowThemeNew.of(context).customColor1
-            //                                                                       : FlutterFlowThemeNew.of(context).secondaryText,
-            //                                                               size: 20.0,
-            //                                                             ),
-            //                                                           ),
-            //                                                         ),
-            //                                                       ),
-            //                                                     ),
-            //                                                   ].divide(const SizedBox(width: 12.0)),
-            //                                                 ),
-            //                                               ), */
-            //                                               const SizedBox(width: 12.0),
-            //                                               InkWell(
-            //                                                 splashColor: Colors.transparent,
-            //                                                 focusColor: Colors.transparent,
-            //                                                 hoverColor: Colors.transparent,
-            //                                                 highlightColor: Colors.transparent,
-            //                                                 onTap: () async {
-            //                                                   await showModalBottomSheet(
-            //                                                     isScrollControlled: true,
-            //                                                     backgroundColor: Colors.transparent,
-            //                                                     enableDrag: false,
-            //                                                     context: context,
-            //                                                     builder: (context) {
-            //                                                       return Padding(
-            //                                                         padding: MediaQuery.viewInsetsOf(context),
-            //                                                         child: BottomsheetLabViewMoreWidget(
-            //                                                           labItem: labItem,
-            //                                                           controller: controller,
-            //                                                         ),
-            //                                                       );
-            //                                                     },
-            //                                                   );
-            //                                                 },
-            //                                                 child: Container(
-            //                                                   width: 24.0,
-            //                                                   height: 24.0,
-            //                                                   decoration: const BoxDecoration(color: Color(0x59A7C6ED), shape: BoxShape.circle),
-            //                                                   child: Align(
-            //                                                     alignment: const AlignmentDirectional(0.0, -0.75),
-            //                                                     child: Text(
-            //                                                       '...',
-            //                                                       style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-            //                                                         fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-            //                                                         letterSpacing: 0.0,
-            //                                                         lineHeight: 0.4,
-            //                                                         useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-            //                                                       ),
-            //                                                     ),
-            //                                                   ),
-            //                                                 ),
-            //                                               ),
-            //                                             ],
-            //                                           ),
-            //                                         ],
-            //                                       ),
-            //                                     );
-            //                                   }),
-            //                               ],
-            //                             ),
-            //                           );
-            //                         }),
-            //                         if (controller.resultText.isNotEmpty)
-            //                           _buildResultTextMethod(context, RtfThaiConverter.rtfToPlainText(controller.resultText)),
-            //                       ],
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ],
-            //             ),
-            //           ),
-            //         );
-            //       },
-            //     ),
-          ].divide(const SizedBox(height: 8.0)),
+          ),
         ),
       ),
     );
@@ -925,82 +252,340 @@ class CameraGridView extends GetView<HomePageController> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final estimatedTileWidth = (screenWidth - 52) / 2;
-    final cardMinHeight = (estimatedTileWidth * 9 / 16) + 84;
-    final cardAspectRatio = (estimatedTileWidth / cardMinHeight).clamp(0.72, 0.95);
-
-    final cameras = List.generate(6, (i) {
-      return {'name': 'Camera ${i + 1}', 'online': i % 4 != 0};
-    });
+    final streetImages = ['assets/images/camera1.png', 'assets/images/camera2.png', 'assets/images/camera3.png', 'assets/images/camera4.png'];
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        shrinkWrap: true, // ✅ สำคัญ
-        physics: const NeverScrollableScrollPhysics(), // ✅ สำคัญ (ให้ ListView scroll ตัวเดียว)
-        padding: const EdgeInsets.all(12),
-        itemCount: cameras.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12),
-        itemBuilder: (context, index) {
-          final cam = cameras[index];
-          final online = cam['online'] as bool;
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Obx(() {
+        final cameras = controller.filteredCameras;
 
-          return Obx(() {
-            final previewBytes = controller.cameraPreviewByIndex[index];
-            return InkWell(
-              onTap: () => controller.openCamera(index),
-              borderRadius: BorderRadius.circular(14),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade300),
-                  color: Colors.white,
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        if (cameras.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(color: const Color(0xFFF3F6FA), shape: BoxShape.circle),
+                  child: Icon(Icons.videocam_off_rounded, size: 36, color: Colors.grey.shade400),
                 ),
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: previewBytes != null
-                            ? Image.memory(previewBytes, fit: BoxFit.cover, gaplessPlayback: true)
-                            : Container(
-                                color: const Color(0xFFF2F6FA),
-                                alignment: Alignment.center,
-                                child: Icon(Icons.videocam_rounded, size: 28, color: online ? Colors.green : Colors.red),
+                const SizedBox(height: 12),
+                Text(
+                  'ไม่พบรายการกล้อง',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.grey.shade700),
+                ),
+                const SizedBox(height: 4),
+                Text('ลองค้นหาด้วยชื่อกล้องหรือจุดติดตั้ง', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+              ],
+            ),
+          );
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          itemCount: cameras.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: 0.82,
+          ),
+          itemBuilder: (context, index) {
+            final cam = cameras[index];
+            final streetImage = streetImages[index % streetImages.length];
+            return Obx(() {
+              final previewBytes = controller.cameraPreviewByIndex[cam.index];
+
+              return InkWell(
+                onTap: () => Get.toNamed(Routes.CAMERA, parameters: {'index': cam.index.toString()}),
+                splashColor: const Color(0xFF1E88E5).withValues(alpha: 0.08),
+                highlightColor: Colors.transparent,
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFFFFF), Color(0xFFF8FBFF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 18, offset: const Offset(0, 8))],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                /// ✅ Online → แสดงภาพถนน
+                                /// ❌ Offline → แสดง placeholder เดิม
+                                cam.isOnline
+                                    ? (previewBytes != null
+                                          ? Image.memory(previewBytes, fit: BoxFit.cover, gaplessPlayback: true)
+                                          : Image.asset(streetImage, fit: BoxFit.cover))
+                                    : Container(
+                                        color: const Color(0xFFF2F5F9),
+                                        child: Center(
+                                          child: Container(
+                                            width: 74,
+                                            height: 74,
+                                            decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.10), shape: BoxShape.circle),
+                                            child: const Icon(Icons.videocam_off_rounded, size: 34, color: Color(0xFFF44336)),
+                                          ),
+                                        ),
+                                      ),
+
+                                /// overlay
+                                if (cam.isOnline)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.18)],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
+                                    ),
+                                  ),
+
+                                /// dot status
+                                Positioned(top: 10, right: 10, child: _ModernPreviewStatusDot(online: cam.isOnline)),
+
+                                /// LIVE badge (เฉพาะ online)
+                                // if (cam.isOnline)
+                                //   Positioned(
+                                //     bottom: 10,
+                                //     left: 10,
+                                //     child: Container(
+                                //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                //       decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(10)),
+                                //       child: const Row(
+                                //         mainAxisSize: MainAxisSize.min,
+                                //         children: [
+                                //           Icon(Icons.circle, size: 8, color: Colors.redAccent),
+                                //           SizedBox(width: 6),
+                                //           Text(
+                                //             'LIVE',
+                                //             style: TextStyle(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.w800),
+                                //           ),
+                                //         ],
+                                //       ),
+                                //     ),
+                                //   ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                cam.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF1E2329), height: 1.1),
                               ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      cam['name'] as String,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                    ),
-                    const SizedBox(height: 2),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(color: const Color(0xFFF4F7FB), shape: BoxShape.circle),
+                              child: Icon(Icons.arrow_forward_ios_rounded, size: 13, color: Colors.grey.shade500),
+                            ),
+                          ],
+                        ),
 
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999),
-                        color: (online ? Colors.green : Colors.red).withValues(alpha: 0.12),
-                      ),
-                      child: Text(
-                        online ? 'ONLINE' : 'OFFLINE',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: online ? Colors.green : Colors.red),
-                      ),
+                        const SizedBox(height: 6),
+
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                cam.location,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey.shade600),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          });
-        },
+              );
+            });
+          },
+        );
+      }),
+    );
+  }
+}
+
+class _ModernPreviewStatusDot extends StatelessWidget {
+  final bool online;
+
+  const _ModernPreviewStatusDot({required this.online});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = online ? const Color(0xFF4CAF50) : const Color(0xFFF44336);
+
+    return Container(
+      width: 14,
+      height: 14,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2.2),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 8, offset: const Offset(0, 2))],
+      ),
+    );
+  }
+}
+
+class _PreviewStatusDot extends StatelessWidget {
+  final bool online;
+
+  const _PreviewStatusDot({required this.online});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: online ? Colors.green : Colors.red,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+    );
+  }
+}
+
+class _SummaryBox extends StatelessWidget {
+  final String title;
+  final String value;
+  final Color color;
+  final IconData icon;
+
+  const _SummaryBox({required this.title, required this.value, required this.color, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.90), borderRadius: BorderRadius.circular(16)),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), shape: BoxShape.circle),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: color),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChipButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color? selectedColor;
+
+  const _FilterChipButton({required this.label, required this.selected, required this.onTap, this.selectedColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selectedColor ?? const Color(0xFF1E88E5);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? color : Colors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: selected ? color : Colors.grey.shade300),
+          boxShadow: selected ? [BoxShadow(color: color.withValues(alpha: 0.18), blurRadius: 10, offset: const Offset(0, 4))] : [],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: selected ? Colors.white : Colors.grey.shade700),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraItem {
+  final int index;
+  final String name;
+  final String location;
+  final bool isOnline;
+
+  CameraItem({required this.index, required this.name, required this.location, required this.isOnline});
+}
+
+class _SummaryChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+
+  const _SummaryChip({required this.label, required this.color, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(999)),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+          ),
+        ],
       ),
     );
   }

@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:collection/collection.dart';
 import 'package:from_css_color/from_css_color.dart';
-import 'package:geolocator/geolocator.dart';
+import 'dart:math' show pow, pi, sin;
 import 'package:intl/intl.dart';
 import 'package:json_path/json_path.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
-
-import '../main.dart';
 
 import 'lat_lng.dart';
 
@@ -17,6 +17,7 @@ export 'keep_alive_wrapper.dart';
 export 'lat_lng.dart';
 export 'place.dart';
 export 'uploaded_file.dart';
+
 export 'flutter_flow_model.dart';
 export 'dart:math' show min, max;
 export 'dart:typed_data' show Uint8List;
@@ -38,9 +39,9 @@ String dateTimeFormat(String format, DateTime? dateTime, {String? locale}) {
 }
 
 Future launchURL(String url) async {
-  var uri = Uri.parse(url).toString();
+  var uri = Uri.parse(url);
   try {
-    await launch(uri);
+    await launchUrl(uri);
   } catch (e) {
     throw 'Could not launch $uri: $e';
   }
@@ -53,20 +54,9 @@ Color colorFromCssString(String color, {Color? defaultColor}) {
   return defaultColor ?? Colors.black;
 }
 
-enum FormatType {
-  decimal,
-  percent,
-  scientific,
-  compact,
-  compactLong,
-  custom,
-}
+enum FormatType { decimal, percent, scientific, compact, compactLong, custom }
 
-enum DecimalType {
-  automatic,
-  periodDecimal,
-  commaDecimal,
-}
+enum DecimalType { automatic, periodDecimal, commaDecimal }
 
 String formatNumber(
   num? value, {
@@ -88,10 +78,18 @@ String formatNumber(
           formattedValue = NumberFormat.decimalPattern().format(value);
           break;
         case DecimalType.periodDecimal:
-          formattedValue = NumberFormat.decimalPattern('en_US').format(value);
+          if (currency != null) {
+            formattedValue = NumberFormat('#,##0.00', 'en_US').format(value);
+          } else {
+            formattedValue = NumberFormat.decimalPattern('en_US').format(value);
+          }
           break;
         case DecimalType.commaDecimal:
-          formattedValue = NumberFormat.decimalPattern('es_PA').format(value);
+          if (currency != null) {
+            formattedValue = NumberFormat('#,##0.00', 'es_PA').format(value);
+          } else {
+            formattedValue = NumberFormat.decimalPattern('es_PA').format(value);
+          }
           break;
       }
       break;
@@ -143,11 +141,28 @@ extension DateTimeComparisonOperators on DateTime {
   bool operator >=(DateTime other) => this > other || isAtSameMomentAs(other);
 }
 
-dynamic getJsonField(
-  dynamic response,
-  String jsonPath, [
-  bool isForList = false,
-]) {
+T? castToType<T>(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+  switch (T) {
+    case double:
+      // Doubles may be stored as ints in some cases.
+      return value.toDouble() as T;
+    case int:
+      // Likewise, ints may be stored as doubles. If this is the case
+      // (i.e. no decimal value), return the value as an int.
+      if (value is num && value.toInt() == value) {
+        return value.toInt() as T;
+      }
+      break;
+    default:
+      break;
+  }
+  return value as T;
+}
+
+dynamic getJsonField(dynamic response, String jsonPath, [bool isForList = false]) {
   final field = JsonPath(jsonPath).read(response);
   if (field.isEmpty) {
     return null;
@@ -156,11 +171,133 @@ dynamic getJsonField(
     return field.map((f) => f.value).toList();
   }
   final value = field.first.value;
-  return isForList && value is! Iterable
-      ? [
-          value
-        ]
-      : value;
+  if (isForList) {
+    return value is! Iterable ? [value] : (value is List ? value : value.toList());
+  }
+  return value;
+}
+
+Theme wrapInMaterialDatePickerTheme(
+  BuildContext context,
+  Widget child, {
+  required Color headerBackgroundColor,
+  required Color headerForegroundColor,
+  required TextStyle headerTextStyle,
+  required Color pickerBackgroundColor,
+  required Color pickerForegroundColor,
+  required Color selectedDateTimeBackgroundColor,
+  required Color selectedDateTimeForegroundColor,
+  required Color actionButtonForegroundColor,
+  required double iconSize,
+}) {
+  final baseTheme = Theme.of(context);
+  final dateTimeMaterialStateForegroundColor = MaterialStateProperty.resolveWith((states) {
+    if (states.contains(MaterialState.disabled)) {
+      return pickerForegroundColor.withOpacity(0.60);
+    }
+    if (states.contains(MaterialState.selected)) {
+      return selectedDateTimeForegroundColor;
+    }
+    if (states.isEmpty) {
+      return pickerForegroundColor;
+    }
+    return null;
+  });
+
+  final dateTimeMaterialStateBackgroundColor = MaterialStateProperty.resolveWith((states) {
+    if (states.contains(MaterialState.selected)) {
+      return selectedDateTimeBackgroundColor;
+    }
+    return null;
+  });
+
+  return Theme(
+    data: baseTheme.copyWith(
+      colorScheme: baseTheme.colorScheme.copyWith(onSurface: pickerForegroundColor),
+      disabledColor: pickerForegroundColor.withOpacity(0.3),
+      textTheme: baseTheme.textTheme.copyWith(headlineSmall: headerTextStyle, headlineMedium: headerTextStyle),
+      iconTheme: baseTheme.iconTheme.copyWith(size: iconSize),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: MaterialStatePropertyAll(actionButtonForegroundColor),
+          overlayColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.hovered)) {
+              return actionButtonForegroundColor.withOpacity(0.04);
+            }
+            if (states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)) {
+              return actionButtonForegroundColor.withOpacity(0.12);
+            }
+            return null;
+          }),
+        ),
+      ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: pickerBackgroundColor,
+        headerBackgroundColor: headerBackgroundColor,
+        headerForegroundColor: headerForegroundColor,
+        weekdayStyle: baseTheme.textTheme.labelMedium!.copyWith(color: pickerForegroundColor),
+        dayBackgroundColor: dateTimeMaterialStateBackgroundColor,
+        todayBackgroundColor: dateTimeMaterialStateBackgroundColor,
+        yearBackgroundColor: dateTimeMaterialStateBackgroundColor,
+        dayForegroundColor: dateTimeMaterialStateForegroundColor,
+        todayForegroundColor: dateTimeMaterialStateForegroundColor,
+        yearForegroundColor: dateTimeMaterialStateForegroundColor,
+      ),
+    ),
+    child: child,
+  );
+}
+
+Theme wrapInMaterialTimePickerTheme(
+  BuildContext context,
+  Widget child, {
+  required Color headerBackgroundColor,
+  required Color headerForegroundColor,
+  required TextStyle headerTextStyle,
+  required Color pickerBackgroundColor,
+  required Color pickerForegroundColor,
+  required Color selectedDateTimeBackgroundColor,
+  required Color selectedDateTimeForegroundColor,
+  required Color actionButtonForegroundColor,
+  required double iconSize,
+}) {
+  final baseTheme = Theme.of(context);
+  return Theme(
+    data: baseTheme.copyWith(
+      iconTheme: baseTheme.iconTheme.copyWith(size: iconSize),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: MaterialStatePropertyAll(actionButtonForegroundColor),
+          overlayColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.hovered)) {
+              return actionButtonForegroundColor.withOpacity(0.04);
+            }
+            if (states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)) {
+              return actionButtonForegroundColor.withOpacity(0.12);
+            }
+            return null;
+          }),
+        ),
+      ),
+      timePickerTheme: baseTheme.timePickerTheme.copyWith(
+        backgroundColor: pickerBackgroundColor,
+        hourMinuteTextColor: pickerForegroundColor,
+        dialHandColor: selectedDateTimeBackgroundColor,
+        dialTextColor: MaterialStateColor.resolveWith(
+          (states) => states.contains(MaterialState.selected) ? selectedDateTimeForegroundColor : pickerForegroundColor,
+        ),
+        dayPeriodBorderSide: BorderSide(color: pickerForegroundColor),
+        dayPeriodTextColor: MaterialStateColor.resolveWith(
+          (states) => states.contains(MaterialState.selected) ? selectedDateTimeForegroundColor : pickerForegroundColor,
+        ),
+        dayPeriodColor: MaterialStateColor.resolveWith(
+          (states) => states.contains(MaterialState.selected) ? selectedDateTimeBackgroundColor : Colors.transparent,
+        ),
+        entryModeIconColor: pickerForegroundColor,
+      ),
+    ),
+    child: child,
+  );
 }
 
 Rect? getWidgetBoundingBox(BuildContext context) {
@@ -179,15 +316,9 @@ bool get isWeb => kIsWeb;
 const kBreakpointSmall = 479.0;
 const kBreakpointMedium = 767.0;
 const kBreakpointLarge = 991.0;
-bool isMobileWidth(BuildContext context) => MediaQuery.of(context).size.width < kBreakpointSmall;
-bool responsiveVisibility({
-  required BuildContext context,
-  bool phone = true,
-  bool tablet = true,
-  bool tabletLandscape = true,
-  bool desktop = true,
-}) {
-  final width = MediaQuery.of(context).size.width;
+bool isMobileWidth(BuildContext context) => MediaQuery.sizeOf(context).width < kBreakpointSmall;
+bool responsiveVisibility({required BuildContext context, bool phone = true, bool tablet = true, bool tabletLandscape = true, bool desktop = true}) {
+  final width = MediaQuery.sizeOf(context).width;
   if (width < kBreakpointSmall) {
     return phone;
   } else if (width < kBreakpointMedium) {
@@ -200,46 +331,11 @@ bool responsiveVisibility({
 }
 
 const kTextValidatorUsernameRegex = r'^[a-zA-Z][a-zA-Z0-9_-]{2,16}$';
-const kTextValidatorEmailRegex = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
-const kTextValidatorWebsiteRegex = r'(https?:\/\/)?(www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)|(https?:\/\/)?(www\.)?(?!ww)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
-
-LatLng? cachedUserLocation;
-Future<LatLng> getCurrentUserLocation({required LatLng defaultLocation, bool cached = false}) async {
-  if (cached && cachedUserLocation != null) {
-    return cachedUserLocation!;
-  }
-  return queryCurrentUserLocation().then((loc) {
-    if (loc != null) {
-      cachedUserLocation = loc;
-    }
-    return loc ?? defaultLocation;
-  }).onError((error, _) {
-    print("Error querying user location: $error");
-    return defaultLocation;
-  });
-}
-
-Future<LatLng?> queryCurrentUserLocation() async {
-  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    return Future.error('Location services are disabled.');
-  }
-
-  var permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      return Future.error('Location permissions are denied');
-    }
-  }
-
-  if (permission == LocationPermission.deniedForever) {
-    return Future.error('Location permissions are permanently denied, we cannot request permissions.');
-  }
-
-  final position = await Geolocator.getCurrentPosition();
-  return position != null && position.latitude != 0 && position.longitude != 0 ? LatLng(position.latitude, position.longitude) : null;
-}
+// https://stackoverflow.com/a/201378
+const kTextValidatorEmailRegex =
+    "^(?:[a-zA-Z0-9!#\$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#\$%&\'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-zA-Z0-9-]*[a-zA-Z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])\$";
+const kTextValidatorWebsiteRegex =
+    r'(https?:\/\/)?(www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)|(https?:\/\/)?(www\.)?(?!ww)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
 
 extension FFTextEditingControllerExt on TextEditingController? {
   String get text => this == null ? '' : this!.text;
@@ -247,19 +343,21 @@ extension FFTextEditingControllerExt on TextEditingController? {
 }
 
 extension IterableExt<T> on Iterable<T> {
+  List<T> sortedList<S extends Comparable>({S Function(T)? keyOf, bool desc = false}) {
+    final sortedAscending = toList()..sort(keyOf == null ? null : ((a, b) => keyOf(a).compareTo(keyOf(b))));
+    if (desc) {
+      return sortedAscending.reversed.toList();
+    }
+    return sortedAscending;
+  }
+
   List<S> mapIndexed<S>(S Function(int, T) func) => toList().asMap().map((index, value) => MapEntry(index, func(index, value))).values.toList();
 }
 
-// void setAppLanguage(BuildContext context, String language) => MyApp.of(context).setLocale(language);
+// void setDarkModeSetting(BuildContext context, ThemeMode themeMode) =>
+//     MyApp.of(context).setThemeMode(themeMode);
 
-// void setDarkModeSetting(BuildContext context, ThemeMode themeMode) => MyApp.of(context).setThemeMode(themeMode);
-
-void showSnackbar(
-  BuildContext context,
-  String message, {
-  bool loading = false,
-  int duration = 4,
-}) {
+void showSnackbar(BuildContext context, String message, {bool loading = false, int duration = 4}) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -268,13 +366,7 @@ void showSnackbar(
           if (loading)
             Padding(
               padding: EdgeInsetsDirectional.only(end: 10.0),
-              child: Container(
-                height: 20,
-                width: 20,
-                child: const CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              ),
+              child: Container(height: 20, width: 20, child: const CircularProgressIndicator(color: Colors.white)),
             ),
           Text(message),
         ],
@@ -285,26 +377,27 @@ void showSnackbar(
 }
 
 extension FFStringExt on String {
-  String maybeHandleOverflow({int? maxChars, String replacement = ''}) => maxChars != null && length > maxChars ? replaceRange(maxChars, null, replacement) : this;
+  String maybeHandleOverflow({int? maxChars, String replacement = ''}) =>
+      maxChars != null && length > maxChars ? replaceRange(maxChars, null, replacement) : this;
 }
 
 extension ListFilterExt<T> on Iterable<T?> {
   List<T> get withoutNulls => where((s) => s != null).map((e) => e!).toList();
 }
 
+extension MapFilterExtensions<T> on Map<String, T?> {
+  Map<String, T> get withoutNulls => Map.fromEntries(entries.where((e) => e.value != null).map((e) => MapEntry(e.key, e.value as T)));
+}
+
+extension MapListContainsExt on List<dynamic> {
+  bool containsMap(dynamic map) => map is Map ? any((e) => e is Map && const DeepCollectionEquality().equals(e, map)) : contains(map);
+}
+
 extension ListDivideExt<T extends Widget> on Iterable<T> {
   Iterable<MapEntry<int, Widget>> get enumerate => toList().asMap().entries;
 
-  List<Widget> divide(Widget t) => isEmpty
-      ? []
-      : (enumerate
-          .map((e) => [
-                e.value,
-                t
-              ])
-          .expand((i) => i)
-          .toList()
-        ..removeLast());
+  List<Widget> divide(Widget t, {bool Function(int)? filterFn}) =>
+      isEmpty ? [] : (enumerate.map((e) => [e.value, if (filterFn == null || filterFn(e.key)) t]).expand((i) => i).toList()..removeLast());
 
   List<Widget> around(Widget t) => addToStart(t).addToEnd(t);
 
@@ -314,3 +407,86 @@ extension ListDivideExt<T extends Widget> on Iterable<T> {
 
   List<Padding> paddingTopEach(double val) => map((w) => Padding(padding: EdgeInsets.only(top: val), child: w)).toList();
 }
+
+extension StatefulWidgetExtensions on State<StatefulWidget> {
+  /// Check if the widget exist before safely setting state.
+  void safeSetState(VoidCallback fn) {
+    if (mounted) {
+      // ignore: invalid_use_of_protected_member
+      setState(fn);
+    }
+  }
+}
+
+// For iOS 16 and below, set the status bar color to match the app's theme.
+// https://github.com/flutter/flutter/issues/41067
+Brightness? _lastBrightness;
+void fixStatusBarOniOS16AndBelow(BuildContext context) {
+  if (!isiOS) {
+    return;
+  }
+  final brightness = Theme.of(context).brightness;
+  if (_lastBrightness != brightness) {
+    _lastBrightness = brightness;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarBrightness: brightness, systemStatusBarContrastEnforced: true));
+  }
+}
+
+extension ColorOpacityExt on Color {
+  Color applyAlpha(double val) => withValues(alpha: val);
+}
+
+String roundTo(double value, int decimalPoints) {
+  final power = pow(10, decimalPoints);
+  return ((value * power).round() / power).toString();
+}
+
+double computeGradientAlignmentX(double evaluatedAngle) {
+  evaluatedAngle %= 360;
+  final rads = evaluatedAngle * pi / 180;
+  double x;
+  if (evaluatedAngle < 45 || evaluatedAngle > 315) {
+    x = sin(2 * rads);
+  } else if (45 <= evaluatedAngle && evaluatedAngle <= 135) {
+    x = 1;
+  } else if (135 <= evaluatedAngle && evaluatedAngle <= 225) {
+    x = sin(-2 * rads);
+  } else {
+    x = -1;
+  }
+  return double.parse(roundTo(x, 2));
+}
+
+double computeGradientAlignmentY(double evaluatedAngle) {
+  evaluatedAngle %= 360;
+  final rads = evaluatedAngle * pi / 180;
+  double y;
+  if (evaluatedAngle < 45 || evaluatedAngle > 315) {
+    y = -1;
+  } else if (45 <= evaluatedAngle && evaluatedAngle <= 135) {
+    y = sin(-2 * rads);
+  } else if (135 <= evaluatedAngle && evaluatedAngle <= 225) {
+    y = 1;
+  } else {
+    y = sin(2 * rads);
+  }
+  return double.parse(roundTo(y, 2));
+}
+
+extension ListUniqueExt<T> on Iterable<T> {
+  List<T> unique(dynamic Function(T) getKey) {
+    var distinctSet = <dynamic>{};
+    var distinctList = <T>[];
+    for (var item in this) {
+      if (distinctSet.add(getKey(item))) {
+        distinctList.add(item);
+      }
+    }
+    return distinctList;
+  }
+}
+
+// String getCurrentRoute(BuildContext context) =>
+//     context.mounted ? MyApp.of(context).getRoute() : '';
+// List<String> getCurrentRouteStack(BuildContext context) =>
+//     context.mounted ? MyApp.of(context).getRouteStack() : [];

@@ -13,6 +13,8 @@ abstract class Routes {
   static const PINCODE = _Paths.PINCODE;
   static const NOTI_LIST = _Paths.NOTI_LIST;
   static const ACTIVITY = _Paths.ACTIVITY;
+  static const ACTIVITY_TASK_DETAILS_WIDGET =
+      _Paths.ACTIVITY_TASK_DETAILS_WIDGET;
 }
 
 abstract class _Paths {
@@ -27,4 +29,5 @@ abstract class _Paths {
   static const PINCODE = '/pincode';
   static const NOTI_LIST = '/noti-list';
   static const ACTIVITY = '/activity';
+  static const ACTIVITY_TASK_DETAILS_WIDGET = '/activity-task-details-widget';
 }

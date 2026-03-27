@@ -6,6 +6,7 @@ import 'package:styled_divider/styled_divider.dart';
 import '../../../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../flutter_flow/flutter_flow_util.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/activity_controller.dart';
 
 class ActivityView extends GetView<ActivityController> {
@@ -14,7 +15,6 @@ class ActivityView extends GetView<ActivityController> {
   Widget build(BuildContext context) {
     final String type = 'gift';
     final icon = _badgeIcon(type);
-    final bool isActive = true;
     return Scaffold(
       key: controller.scaffoldKey,
       backgroundColor: FlutterFlowThemeNew.of(context).primary,
@@ -26,7 +26,11 @@ class ActivityView extends GetView<ActivityController> {
           borderRadius: 30.0,
           borderWidth: 1.0,
           buttonSize: 54.0,
-          icon: Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 24.0),
+          icon: Icon(
+            Icons.keyboard_arrow_left_rounded,
+            color: Colors.white,
+            size: 24.0,
+          ),
           onPressed: () async {},
         ),
         title: Text(
@@ -48,7 +52,13 @@ class ActivityView extends GetView<ActivityController> {
         height: double.infinity,
         decoration: BoxDecoration(
           color: FlutterFlowThemeNew.of(context).primaryBackground,
-          boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x33000000), offset: Offset(0.0, 0.0))],
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 4.0,
+              color: Color(0x33000000),
+              offset: Offset(0.0, 0.0),
+            ),
+          ],
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(0.0),
             bottomRight: Radius.circular(0.0),
@@ -64,7 +74,7 @@ class ActivityView extends GetView<ActivityController> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: TextFormField(
                       controller: controller.textController,
@@ -74,38 +84,64 @@ class ActivityView extends GetView<ActivityController> {
                       decoration: InputDecoration(
                         isDense: true,
                         hintText: 'ค้นหา...',
-                        hintStyle: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                          letterSpacing: 0.0,
-                          useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                        ),
+                        hintStyle: FlutterFlowThemeNew.of(context).bodyMedium
+                            .override(
+                              fontFamily: FlutterFlowThemeNew.of(
+                                context,
+                              ).bodyMediumFamily,
+                              letterSpacing: 0.0,
+                              useGoogleFonts: !FlutterFlowThemeNew.of(
+                                context,
+                              ).bodyMediumIsCustom,
+                            ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0x00000000), width: 1.0),
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 1.0,
+                          ),
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: FlutterFlowThemeNew.of(context).customColor5, width: 1.0),
+                          borderSide: BorderSide(
+                            color: FlutterFlowThemeNew.of(context).customColor5,
+                            width: 1.0,
+                          ),
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: FlutterFlowThemeNew.of(context).error, width: 1.0),
+                          borderSide: BorderSide(
+                            color: FlutterFlowThemeNew.of(context).error,
+                            width: 1.0,
+                          ),
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: FlutterFlowThemeNew.of(context).error, width: 1.0),
+                          borderSide: BorderSide(
+                            color: FlutterFlowThemeNew.of(context).error,
+                            width: 1.0,
+                          ),
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         filled: true,
-                        fillColor: FlutterFlowThemeNew.of(context).secondaryBackground,
+                        fillColor: FlutterFlowThemeNew.of(
+                          context,
+                        ).secondaryBackground,
                         prefixIcon: Icon(Icons.search_rounded, size: 20.0),
                       ),
-                      style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                        fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                        letterSpacing: 0.0,
-                        useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                      ),
+                      style: FlutterFlowThemeNew.of(context).titleSmall
+                          .override(
+                            fontFamily: FlutterFlowThemeNew.of(
+                              context,
+                            ).titleSmallFamily,
+                            letterSpacing: 0.0,
+                            useGoogleFonts: !FlutterFlowThemeNew.of(
+                              context,
+                            ).titleSmallIsCustom,
+                          ),
                       cursorColor: FlutterFlowThemeNew.of(context).primary,
-                      validator: controller.textControllerValidator.asValidator(context),
+                      validator: controller.textControllerValidator.asValidator(
+                        context,
+                      ),
                     ),
                   ),
                 ].divide(SizedBox(height: 12.0)),
@@ -121,24 +157,33 @@ class ActivityView extends GetView<ActivityController> {
                   scrollDirection: Axis.vertical,
                   children: [
                     InkWell(
-                      onTap: () {
-                        //  Get.toNamed(Routes.PRIVILEGE_MANAGEMENT_ADD);
+                      onTap: () async {
+                        await Get.toNamed(Routes.ACTIVITY_TASK_DETAILS_WIDGET);
                       },
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                          color: FlutterFlowThemeNew.of(
+                            context,
+                          ).secondaryBackground,
                           borderRadius: BorderRadius.circular(24.0),
-                          border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground),
+                          border: Border.all(
+                            color: FlutterFlowThemeNew.of(
+                              context,
+                            ).secondaryBackground,
+                          ),
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(
                             valueOrDefault<double>(() {
-                              if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+                              if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointSmall) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointMedium) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointLarge) {
                                 return 16.0;
                               } else {
                                 return 16.0;
@@ -159,24 +204,48 @@ class ActivityView extends GetView<ActivityController> {
                                     children: [
                                       Expanded(
                                         child: RichText(
-                                          textScaler: MediaQuery.of(context).textScaler,
+                                          textScaler: MediaQuery.of(
+                                            context,
+                                          ).textScaler,
                                           text: TextSpan(
                                             children: [
                                               TextSpan(
-                                                text: 'SC-001 | ออกตรวจพื้นที่ NWL 1',
-                                                style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                  fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                  color: FlutterFlowThemeNew.of(context).customColor1,
-                                                  letterSpacing: 0.0,
-                                                  useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                ),
+                                                text:
+                                                    'SC-001 | ออกตรวจพื้นที่ NWL 1',
+                                                style:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).titleSmall.override(
+                                                      fontFamily:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallFamily,
+                                                      color:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).customColor1,
+                                                      letterSpacing: 0.0,
+                                                      useGoogleFonts:
+                                                          !FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallIsCustom,
+                                                    ),
                                               ),
                                             ],
-                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                            ),
+                                            style:
+                                                FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMedium.override(
+                                                  fontFamily:
+                                                      FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumFamily,
+                                                  letterSpacing: 0.0,
+                                                  useGoogleFonts:
+                                                      !FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumIsCustom,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -189,8 +258,12 @@ class ActivityView extends GetView<ActivityController> {
                                         bg: type == 'discount'
                                             ? const Color(0xFFFFEDD5) // ส้มอ่อน
                                             : type == 'point'
-                                            ? const Color(0xFFFEF9C3) // เหลืองอ่อน
-                                            : const Color(0xFFDCFCE7), // เขียวอ่อน
+                                            ? const Color(
+                                                0xFFFEF9C3,
+                                              ) // เหลืองอ่อน
+                                            : const Color(
+                                                0xFFDCFCE7,
+                                              ), // เขียวอ่อน
                                         fg: type == 'discount'
                                             ? const Color(0xFFF97316)
                                             : type == 'point'
@@ -200,23 +273,40 @@ class ActivityView extends GetView<ActivityController> {
                                     ].divide(SizedBox(width: 8.0)),
                                   ),
                                   RichText(
-                                    textScaler: MediaQuery.of(context).textScaler,
+                                    textScaler: MediaQuery.of(
+                                      context,
+                                    ).textScaler,
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
                                           text: 'รายอะเอียดคำขอ.......',
-                                          style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                            fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                          ),
+                                          style: FlutterFlowThemeNew.of(context)
+                                              .labelSmall
+                                              .override(
+                                                fontFamily:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallFamily,
+                                                letterSpacing: 0.0,
+                                                useGoogleFonts:
+                                                    !FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallIsCustom,
+                                              ),
                                         ),
                                       ],
-                                      style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                        fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                        letterSpacing: 0.0,
-                                        useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                      ),
+                                      style: FlutterFlowThemeNew.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: FlutterFlowThemeNew.of(
+                                              context,
+                                            ).bodyMediumFamily,
+                                            letterSpacing: 0.0,
+                                            useGoogleFonts:
+                                                !FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMediumIsCustom,
+                                          ),
                                     ),
                                   ),
                                 ].divide(SizedBox(height: 4.0)),
@@ -224,7 +314,9 @@ class ActivityView extends GetView<ActivityController> {
                               StyledDivider(
                                 height: 1.0,
                                 thickness: 1.0,
-                                color: FlutterFlowThemeNew.of(context).alternate,
+                                color: FlutterFlowThemeNew.of(
+                                  context,
+                                ).alternate,
                                 lineStyle: DividerLineStyle.dashed,
                               ),
                               Column(
@@ -241,7 +333,13 @@ class ActivityView extends GetView<ActivityController> {
                                         ),
                                       ),
                                       // divider
-                                      Container(width: 1, height: 44, color: FlutterFlowThemeNew.of(context).primary),
+                                      Container(
+                                        width: 1,
+                                        height: 44,
+                                        color: FlutterFlowThemeNew.of(
+                                          context,
+                                        ).primary,
+                                      ),
                                       Expanded(
                                         child: _InfoBlock(
                                           title: 'วันที่สิ้นสุด',
@@ -267,18 +365,27 @@ class ActivityView extends GetView<ActivityController> {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                          color: FlutterFlowThemeNew.of(
+                            context,
+                          ).secondaryBackground,
                           borderRadius: BorderRadius.circular(24.0),
-                          border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground),
+                          border: Border.all(
+                            color: FlutterFlowThemeNew.of(
+                              context,
+                            ).secondaryBackground,
+                          ),
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(
                             valueOrDefault<double>(() {
-                              if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+                              if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointSmall) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointMedium) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointLarge) {
                                 return 16.0;
                               } else {
                                 return 16.0;
@@ -299,24 +406,48 @@ class ActivityView extends GetView<ActivityController> {
                                     children: [
                                       Expanded(
                                         child: RichText(
-                                          textScaler: MediaQuery.of(context).textScaler,
+                                          textScaler: MediaQuery.of(
+                                            context,
+                                          ).textScaler,
                                           text: TextSpan(
                                             children: [
                                               TextSpan(
-                                                text: 'SC-002 | ออกตรวจพื้นที่ NWL 2',
-                                                style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                  fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                  color: FlutterFlowThemeNew.of(context).customColor1,
-                                                  letterSpacing: 0.0,
-                                                  useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                ),
+                                                text:
+                                                    'SC-002 | ออกตรวจพื้นที่ NWL 2',
+                                                style:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).titleSmall.override(
+                                                      fontFamily:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallFamily,
+                                                      color:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).customColor1,
+                                                      letterSpacing: 0.0,
+                                                      useGoogleFonts:
+                                                          !FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallIsCustom,
+                                                    ),
                                               ),
                                             ],
-                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                            ),
+                                            style:
+                                                FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMedium.override(
+                                                  fontFamily:
+                                                      FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumFamily,
+                                                  letterSpacing: 0.0,
+                                                  useGoogleFonts:
+                                                      !FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumIsCustom,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -333,23 +464,40 @@ class ActivityView extends GetView<ActivityController> {
                                     ].divide(SizedBox(width: 8.0)),
                                   ),
                                   RichText(
-                                    textScaler: MediaQuery.of(context).textScaler,
+                                    textScaler: MediaQuery.of(
+                                      context,
+                                    ).textScaler,
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
                                           text: 'รายอะเอียดคำขอ....... ',
-                                          style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                            fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                          ),
+                                          style: FlutterFlowThemeNew.of(context)
+                                              .labelSmall
+                                              .override(
+                                                fontFamily:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallFamily,
+                                                letterSpacing: 0.0,
+                                                useGoogleFonts:
+                                                    !FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallIsCustom,
+                                              ),
                                         ),
                                       ],
-                                      style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                        fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                        letterSpacing: 0.0,
-                                        useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                      ),
+                                      style: FlutterFlowThemeNew.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: FlutterFlowThemeNew.of(
+                                              context,
+                                            ).bodyMediumFamily,
+                                            letterSpacing: 0.0,
+                                            useGoogleFonts:
+                                                !FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMediumIsCustom,
+                                          ),
                                     ),
                                   ),
                                 ].divide(SizedBox(height: 4.0)),
@@ -357,7 +505,9 @@ class ActivityView extends GetView<ActivityController> {
                               StyledDivider(
                                 height: 1.0,
                                 thickness: 1.0,
-                                color: FlutterFlowThemeNew.of(context).alternate,
+                                color: FlutterFlowThemeNew.of(
+                                  context,
+                                ).alternate,
                                 lineStyle: DividerLineStyle.dashed,
                               ),
                               Column(
@@ -374,7 +524,13 @@ class ActivityView extends GetView<ActivityController> {
                                         ),
                                       ),
                                       // divider
-                                      Container(width: 1, height: 44, color: FlutterFlowThemeNew.of(context).primary),
+                                      Container(
+                                        width: 1,
+                                        height: 44,
+                                        color: FlutterFlowThemeNew.of(
+                                          context,
+                                        ).primary,
+                                      ),
                                       Expanded(
                                         child: _InfoBlock(
                                           title: 'วันที่สิ้นสุด',
@@ -400,18 +556,27 @@ class ActivityView extends GetView<ActivityController> {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                          color: FlutterFlowThemeNew.of(
+                            context,
+                          ).secondaryBackground,
                           borderRadius: BorderRadius.circular(24.0),
-                          border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground),
+                          border: Border.all(
+                            color: FlutterFlowThemeNew.of(
+                              context,
+                            ).secondaryBackground,
+                          ),
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(
                             valueOrDefault<double>(() {
-                              if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+                              if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointSmall) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointMedium) {
                                 return 12.0;
-                              } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+                              } else if (MediaQuery.sizeOf(context).width <
+                                  kBreakpointLarge) {
                                 return 16.0;
                               } else {
                                 return 16.0;
@@ -432,24 +597,48 @@ class ActivityView extends GetView<ActivityController> {
                                     children: [
                                       Expanded(
                                         child: RichText(
-                                          textScaler: MediaQuery.of(context).textScaler,
+                                          textScaler: MediaQuery.of(
+                                            context,
+                                          ).textScaler,
                                           text: TextSpan(
                                             children: [
                                               TextSpan(
-                                                text: 'SC-003 | ออกตรวจพื้นที่ NWL 3',
-                                                style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                  fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                  color: FlutterFlowThemeNew.of(context).customColor1,
-                                                  letterSpacing: 0.0,
-                                                  useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                ),
+                                                text:
+                                                    'SC-003 | ออกตรวจพื้นที่ NWL 3',
+                                                style:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).titleSmall.override(
+                                                      fontFamily:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallFamily,
+                                                      color:
+                                                          FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).customColor1,
+                                                      letterSpacing: 0.0,
+                                                      useGoogleFonts:
+                                                          !FlutterFlowThemeNew.of(
+                                                            context,
+                                                          ).titleSmallIsCustom,
+                                                    ),
                                               ),
                                             ],
-                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                            ),
+                                            style:
+                                                FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMedium.override(
+                                                  fontFamily:
+                                                      FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumFamily,
+                                                  letterSpacing: 0.0,
+                                                  useGoogleFonts:
+                                                      !FlutterFlowThemeNew.of(
+                                                        context,
+                                                      ).bodyMediumIsCustom,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -462,8 +651,12 @@ class ActivityView extends GetView<ActivityController> {
                                         bg: type == 'discount'
                                             ? const Color(0xFFFFEDD5) // ส้มอ่อน
                                             : type == 'point'
-                                            ? const Color(0xFFFEF9C3) // เหลืองอ่อน
-                                            : const Color(0xFFDCFCE7), // เขียวอ่อน
+                                            ? const Color(
+                                                0xFFFEF9C3,
+                                              ) // เหลืองอ่อน
+                                            : const Color(
+                                                0xFFDCFCE7,
+                                              ), // เขียวอ่อน
                                         fg: type == 'discount'
                                             ? const Color(0xFFF97316)
                                             : type == 'point'
@@ -473,23 +666,40 @@ class ActivityView extends GetView<ActivityController> {
                                     ].divide(SizedBox(width: 8.0)),
                                   ),
                                   RichText(
-                                    textScaler: MediaQuery.of(context).textScaler,
+                                    textScaler: MediaQuery.of(
+                                      context,
+                                    ).textScaler,
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
                                           text: 'รายอะเอียดคำขอ.......',
-                                          style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                            fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                          ),
+                                          style: FlutterFlowThemeNew.of(context)
+                                              .labelSmall
+                                              .override(
+                                                fontFamily:
+                                                    FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallFamily,
+                                                letterSpacing: 0.0,
+                                                useGoogleFonts:
+                                                    !FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).labelSmallIsCustom,
+                                              ),
                                         ),
                                       ],
-                                      style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                        fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                        letterSpacing: 0.0,
-                                        useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                      ),
+                                      style: FlutterFlowThemeNew.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: FlutterFlowThemeNew.of(
+                                              context,
+                                            ).bodyMediumFamily,
+                                            letterSpacing: 0.0,
+                                            useGoogleFonts:
+                                                !FlutterFlowThemeNew.of(
+                                                  context,
+                                                ).bodyMediumIsCustom,
+                                          ),
                                     ),
                                   ),
                                 ].divide(SizedBox(height: 4.0)),
@@ -497,7 +707,9 @@ class ActivityView extends GetView<ActivityController> {
                               StyledDivider(
                                 height: 1.0,
                                 thickness: 1.0,
-                                color: FlutterFlowThemeNew.of(context).alternate,
+                                color: FlutterFlowThemeNew.of(
+                                  context,
+                                ).alternate,
                                 lineStyle: DividerLineStyle.dashed,
                               ),
                               Column(
@@ -514,7 +726,13 @@ class ActivityView extends GetView<ActivityController> {
                                         ),
                                       ),
                                       // divider
-                                      Container(width: 1, height: 44, color: FlutterFlowThemeNew.of(context).primary),
+                                      Container(
+                                        width: 1,
+                                        height: 44,
+                                        color: FlutterFlowThemeNew.of(
+                                          context,
+                                        ).primary,
+                                      ),
                                       Expanded(
                                         child: _InfoBlock(
                                           title: 'วันที่สิ้นสุด',
@@ -563,13 +781,21 @@ class _TypeBadge extends StatelessWidget {
   final Color bg;
   final Color fg;
 
-  const _TypeBadge({required this.icon, required this.text, required this.bg, required this.fg});
+  const _TypeBadge({
+    required this.icon,
+    required this.text,
+    required this.bg,
+    required this.fg,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -577,7 +803,11 @@ class _TypeBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             text,
-            style: TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 12),
+            style: TextStyle(
+              color: fg,
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
@@ -586,7 +816,13 @@ class _TypeBadge extends StatelessWidget {
 }
 
 class _InfoBlock extends StatelessWidget {
-  const _InfoBlock({required this.title, required this.value, required this.titleColor, required this.valueColor, this.center = false});
+  const _InfoBlock({
+    required this.title,
+    required this.value,
+    required this.titleColor,
+    required this.valueColor,
+    this.center = false,
+  });
 
   final String title;
   final String value;
@@ -597,7 +833,9 @@ class _InfoBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: center ? CrossAxisAlignment.center : CrossAxisAlignment.center,
+      crossAxisAlignment: center
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

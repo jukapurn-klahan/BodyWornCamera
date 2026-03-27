@@ -5,37 +5,55 @@ import 'package:body_camera/fcm/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../views/home_page_view.dart';
+
 class HomePageController extends GetxController {
-  //TODO: Implement HomePageController
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final count = 0.obs;
-  final cameraPreviewByIndex = <int, Uint8List>{}.obs;
 
-  void increment() => count.value++;
+  final searchText = ''.obs;
+  final selectedFilter = CameraFilterType.all.obs;
 
-  Future<void> openCamera(int cameraIndex) async {
-    final result = await Get.toNamed(
-      Routes.CAMERA,
-      arguments: {'cameraIndex': cameraIndex},
-    );
+  final cameras = <CameraItem>[
+    CameraItem(index: 0, name: 'Camera 1', location: 'จุดติดตั้ง 1', isOnline: false),
+    CameraItem(index: 1, name: 'Camera 2', location: 'จุดติดตั้ง 2', isOnline: true),
+    CameraItem(index: 2, name: 'Camera 3', location: 'จุดติดตั้ง 3', isOnline: true),
+    CameraItem(index: 3, name: 'Camera 4', location: 'จุดติดตั้ง 4', isOnline: true),
+    CameraItem(index: 4, name: 'Camera 5', location: 'จุดติดตั้ง 5', isOnline: false),
+    CameraItem(index: 5, name: 'Camera 6', location: 'จุดติดตั้ง 6', isOnline: true),
+  ].obs;
 
-    if (result is! Map) {
-      return;
-    }
+  /// สมมุติว่าคุณมีของเดิมอยู่แล้ว
+  final RxList<Uint8List?> cameraPreviewByIndex =
+      List<Uint8List?>.filled(20, null).obs;
 
-    final resultCameraIndex = result['cameraIndex'];
-    final previewBytes = result['previewBytes'];
-    if (resultCameraIndex is int &&
-        previewBytes is Uint8List &&
-        previewBytes.isNotEmpty) {
-      cameraPreviewByIndex[resultCameraIndex] = previewBytes;
-    }
+  void changeFilter(CameraFilterType type) {
+    selectedFilter.value = type;
   }
 
-  Future<void> showTestNotification() async {
-    await NotificationServices.instance.showTestNotification(
-      title: 'แจ้งเตือนการตรวจจับ',
-      body: '',
-    );
+  void onSearchChanged(String value) {
+    searchText.value = value.trim().toLowerCase();
+  }
+
+  List<CameraItem> get filteredCameras {
+    Iterable<CameraItem> items = cameras;
+
+    if (selectedFilter.value == CameraFilterType.online) {
+      items = items.where((e) => e.isOnline);
+    } else if (selectedFilter.value == CameraFilterType.offline) {
+      items = items.where((e) => !e.isOnline);
+    }
+
+    if (searchText.value.isNotEmpty) {
+      items = items.where((e) {
+        return e.name.toLowerCase().contains(searchText.value) ||
+            e.location.toLowerCase().contains(searchText.value);
+      });
+    }
+
+    return items.toList();
+  }
+
+  void openCamera(int index) {
+    // เขียน logic เดิมของคุณ
   }
 }

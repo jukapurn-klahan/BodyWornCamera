@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/ActivityTaskDetailsWidget/bindings/activity_task_details_widget_binding.dart';
+import '../modules/ActivityTaskDetailsWidget/views/activity_task_details_widget_view.dart';
 import '../modules/BottomNavigators/bindings/bottom_navigators_binding.dart';
 import '../modules/BottomNavigators/views/bottom_navigators_view.dart';
 import '../modules/Camera/bindings/camera_binding.dart';
@@ -76,6 +78,11 @@ class AppPages {
       name: _Paths.ACTIVITY,
       page: () => const ActivityView(),
       binding: ActivityBinding(),
+    ),
+    GetPage(
+      name: _Paths.ACTIVITY_TASK_DETAILS_WIDGET,
+      page: () => const ActivityTaskDetailsWidgetView(),
+      binding: ActivityTaskDetailsWidgetBinding(),
     ),
   ];
 }
