@@ -35,7 +35,7 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
           },
         ),
         title: Text(
-          'แจ้งเตือน',
+          'ประวัติย้อนหลัง',
           textAlign: TextAlign.center,
           style: FlutterFlowThemeNew.of(context).titleSmall.override(
             fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
@@ -147,10 +147,7 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
                                                     },
                                                   ).then((value) async {
                                                     if (value != null) {
-                                                      // controller.filterNewCaseByDate(DateTime.parse(value[0]));
-                                                      // controller.ffilterCaseCompletedBydDate(DateTime.parse(value[0]));
-
-                                                       controller.textControllerDate.value.text = ChangeDateUtils.formatThaiDate(value[0]);
+                                                      controller.textControllerDate.value.text = ChangeDateUtils.formatThaiDate(value[0]);
                                                     }
                                                   });
                                             },
@@ -367,83 +364,200 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
                                   itemCount: 15,
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
-                                      child: badges.Badge(
-                                        showBadge: false,
-                                        shape: badges.BadgeShape.circle,
-                                        badgeColor: FlutterFlowThemeNew.of(context).primary,
-                                        elevation: 4.0,
-                                        padding: EdgeInsetsDirectional.fromSTEB(6.0, 6.0, 6.0, 6.0),
-                                        position: badges.BadgePosition.topEnd(end: -5, top: -3),
-                                        animationType: badges.BadgeAnimationType.scale,
-                                        toAnimate: true,
-                                        child: Container(
-                                          width: MediaQuery.of(context).size.width * 1.0,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [BoxShadow(blurRadius: 3.0, color: Color(0x33000000), offset: Offset(0.0, 1.0))],
-                                            color: Colors.white,
-
-                                            borderRadius: BorderRadius.circular(10.0),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
+                                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 16.0),
+                                      child: Container(
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                                          borderRadius: BorderRadius.circular(24.0),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: AlignmentDirectional(1.0, -1.0),
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8.0),
                                                 child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(8.0),
-                                                  child: Image.asset('assets/images/car.png', width: 50.0, height: 50.0, fit: BoxFit.cover),
+                                                  borderRadius: BorderRadius.only(
+                                                    bottomLeft: Radius.circular(0.0),
+                                                    bottomRight: Radius.circular(0.0),
+                                                    topLeft: Radius.circular(0.0),
+                                                    topRight: Radius.circular(0.0),
+                                                  ),
+                                                  child: Image.asset('assets/images/car.png', width: 80.0, height: 80.0, fit: BoxFit.cover),
                                                 ),
                                               ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 0.0, 16.0),
+                                            ),
+                                            Column(
+                                              mainAxisSize: MainAxisSize.max,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x19000000), offset: Offset(1.0, -1.0))],
+                                                      gradient: LinearGradient(
+                                                        colors: [Color(0xFF59C0EF), FlutterFlowThemeNew.of(context).info],
+                                                        stops: [0.0, 1.0],
+                                                        begin: AlignmentDirectional(1.0, -1.0),
+                                                        end: AlignmentDirectional(-1.0, 1.0),
+                                                      ),
+                                                      borderRadius: BorderRadius.only(
+                                                        bottomLeft: Radius.circular(0.0),
+                                                        bottomRight: Radius.circular(100.0),
+                                                        topLeft: Radius.circular(0.0),
+                                                        topRight: Radius.circular(100.0),
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding: EdgeInsetsDirectional.fromSTEB(12.0, 6.0, 12.0, 6.0),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Align(
+                                                            alignment: AlignmentDirectional(0.0, 0.0),
+                                                            child: Icon(
+                                                              Icons.calendar_month_sharp,
+                                                              color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                                                              size: 18.0,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            'รายการบันทึก',
+                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                                              color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                                                              letterSpacing: 0.1,
+                                                              shadows: [Shadow(color: Color(0x34737373), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
+                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
+                                                            ),
+                                                          ),
+                                                        ].divide(SizedBox(width: 8.0)),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 16.0),
                                                   child: Column(
                                                     mainAxisSize: MainAxisSize.max,
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Row(
-                                                        mainAxisSize: MainAxisSize.max,
+                                                        mainAxisSize: MainAxisSize.min,
                                                         mainAxisAlignment: MainAxisAlignment.start,
                                                         children: [
-                                                          Expanded(
-                                                            child: Padding(
-                                                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                              child: Text(
-                                                                'รายการบันทึก',
-                                                                overflow: TextOverflow.ellipsis,
-                                                                maxLines: 1,
-                                                                style: FlutterFlowThemeNew.of(context).bodyLarge.override(
-                                                                  fontFamily: 'Sarabun',
-                                                                  lineHeight: 2.0,
-                                                                  fontWeight: FontWeight.w500,
-                                                                ),
-                                                              ),
+                                                          Text(
+                                                            '18 พฤษภาคม 2568 - 08:00 น.',
+                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                                              color: Colors.blue,
+                                                              letterSpacing: 0.0,
+                                                              fontWeight: FontWeight.w500,
+                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
                                                             ),
                                                           ),
-                                                        ],
+                                                        ].divide(SizedBox(width: 8.0)),
                                                       ),
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                        child: Text('3k', style: FlutterFlowThemeNew.of(context).bodySmall),
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.end,
-                                                          children: [Text('08/01/2569 14:54', style: FlutterFlowThemeNew.of(context).bodySmall)],
+                                                      Text(
+                                                        'รายละเอียด : บันทึกการจับภาพวิดิโอขณะปฏิบัติหน้าที่',
+                                                        style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                                          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                                          color: FlutterFlowThemeNew.of(context).primaryText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight: FontWeight.w500,
+                                                          useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
                                                         ),
                                                       ),
-                                                    ],
+                                                    ].divide(SizedBox(height: 8.0)),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
+                                              ].divide(SizedBox(height: 12.0)),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     );
+
+                                    // Padding(
+                                    //   padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
+                                    //   child: badges.Badge(
+                                    //     showBadge: false,
+                                    //     shape: badges.BadgeShape.circle,
+                                    //     badgeColor: FlutterFlowThemeNew.of(context).primary,
+                                    //     elevation: 4.0,
+                                    //     padding: EdgeInsetsDirectional.fromSTEB(6.0, 6.0, 6.0, 6.0),
+                                    //     position: badges.BadgePosition.topEnd(end: -5, top: -3),
+                                    //     animationType: badges.BadgeAnimationType.scale,
+                                    //     toAnimate: true,
+                                    //     child: Container(
+                                    //       width: MediaQuery.of(context).size.width * 1.0,
+                                    //       decoration: BoxDecoration(
+                                    //         boxShadow: [BoxShadow(blurRadius: 3.0, color: Color(0x33000000), offset: Offset(0.0, 1.0))],
+                                    //         color: Colors.white,
+
+                                    //         borderRadius: BorderRadius.circular(10.0),
+                                    //       ),
+                                    //       child: Row(
+                                    //         mainAxisSize: MainAxisSize.max,
+                                    //         children: [
+                                    //           Padding(
+                                    //             padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
+                                    //             child: ClipRRect(
+                                    //               borderRadius: BorderRadius.circular(8.0),
+                                    //               child: Image.asset('assets/images/car.png', width: 50.0, height: 50.0, fit: BoxFit.cover),
+                                    //             ),
+                                    //           ),
+                                    //           Expanded(
+                                    //             child: Padding(
+                                    //               padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 0.0, 16.0),
+                                    //               child: Column(
+                                    //                 mainAxisSize: MainAxisSize.max,
+                                    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    //                 crossAxisAlignment: CrossAxisAlignment.start,
+                                    //                 children: [
+                                    //                   Row(
+                                    //                     mainAxisSize: MainAxisSize.max,
+                                    //                     mainAxisAlignment: MainAxisAlignment.start,
+                                    //                     children: [
+                                    //                       Expanded(
+                                    //                         child: Padding(
+                                    //                           padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                                    //                           child: Text(
+                                    //                             'รายการบันทึก',
+                                    //                             overflow: TextOverflow.ellipsis,
+                                    //                             maxLines: 1,
+                                    //                             style: FlutterFlowThemeNew.of(context).bodyLarge.override(
+                                    //                               fontFamily: 'Sarabun',
+                                    //                               lineHeight: 2.0,
+                                    //                               fontWeight: FontWeight.w500,
+                                    //                             ),
+                                    //                           ),
+                                    //                         ),
+                                    //                       ),
+                                    //                     ],
+                                    //                   ),
+                                    //                   Padding(
+                                    //                     padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                                    //                     child: Text('3k', style: FlutterFlowThemeNew.of(context).bodySmall),
+                                    //                   ),
+                                    //                   Padding(
+                                    //                     padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                                    //                     child: Row(
+                                    //                       mainAxisAlignment: MainAxisAlignment.end,
+                                    //                       children: [Text('08/01/2569 14:54', style: FlutterFlowThemeNew.of(context).bodySmall)],
+                                    //                     ),
+                                    //                   ),
+                                    //                 ],
+                                    //               ),
+                                    //             ),
+                                    //           ),
+                                    //         ],
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // );
                                   },
                                 ),
                               ),
@@ -453,80 +567,46 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
                                   itemCount: 15,
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
-                                      child: badges.Badge(
-                                        showBadge: false,
-                                        shape: badges.BadgeShape.circle,
-                                        badgeColor: FlutterFlowThemeNew.of(context).primary,
-                                        elevation: 4.0,
-                                        padding: EdgeInsetsDirectional.fromSTEB(6.0, 6.0, 6.0, 6.0),
-                                        position: badges.BadgePosition.topEnd(end: -5, top: -3),
-                                        animationType: badges.BadgeAnimationType.scale,
-                                        toAnimate: true,
-                                        child: Container(
-                                          width: MediaQuery.of(context).size.width * 1.0,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [BoxShadow(blurRadius: 3.0, color: Color(0x33000000), offset: Offset(0.0, 1.0))],
-                                            color: Colors.white,
-
-                                            borderRadius: BorderRadius.circular(10.0),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(8.0),
-                                                  child: Image.asset('assets/images/car.png', width: 50.0, height: 50.0, fit: BoxFit.cover),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 0.0, 16.0),
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.max,
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Padding(
-                                                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                              child: Text(
-                                                                'รายการบันทึก',
-                                                                overflow: TextOverflow.ellipsis,
-                                                                maxLines: 1,
-                                                                style: FlutterFlowThemeNew.of(context).bodyLarge.override(
-                                                                  fontFamily: 'Sarabun',
-                                                                  lineHeight: 2.0,
-                                                                  fontWeight: FontWeight.w500,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                        child: Text('3k', style: FlutterFlowThemeNew.of(context).bodySmall),
-                                                      ),
-                                                      Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.end,
-                                                          children: [Text('08/01/2569 14:54', style: FlutterFlowThemeNew.of(context).bodySmall)],
-                                                        ),
-                                                      ),
-                                                    ],
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(14),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(18),
+                                          boxShadow: const [BoxShadow(blurRadius: 10, color: Color(0x12000000), offset: Offset(0, 4))],
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(12),
+                                              child: Image.asset('assets/images/car.png', width: 56, height: 56, fit: BoxFit.cover),
+                                            ),
+                                            const SizedBox(width: 14),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'รายการบันทึก',
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).bodyLarge.override(fontFamily: 'Sarabun', fontWeight: FontWeight.w700, fontSize: 20),
                                                   ),
-                                                ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    '3,024 รายการ • 08/01/2569 14:54 น.',
+                                                    style: FlutterFlowThemeNew.of(
+                                                      context,
+                                                    ).bodySmall.override(fontFamily: 'Sarabun', color: const Color(0xFF6B7280), fontSize: 13),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Icon(Icons.chevron_right_rounded, size: 24, color: Color(0xFF9CA3AF)),
+                                          ],
                                         ),
                                       ),
                                     );

@@ -9,12 +9,7 @@ import '../../flutter_flow/flutter_flow_theme.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
 
 class BTDateWidget extends StatefulWidget {
-  const BTDateWidget({
-    Key? key,
-    this.lastDate,
-    this.firstDate,
-    this.maxPastMonths,
-  }) : super(key: key);
+  const BTDateWidget({Key? key, this.lastDate, this.firstDate, this.maxPastMonths}) : super(key: key);
   final bool? lastDate;
   final bool? firstDate;
   final int? maxPastMonths;
@@ -72,9 +67,7 @@ class _BTDateWidgetState extends State<BTDateWidget> {
 
     if (widget.maxPastMonths != null && widget.maxPastMonths! > 0) {
       final limitedFirstDate = subtractMonths(now, widget.maxPastMonths!);
-      return limitedFirstDate.isAfter(baseFirstDate)
-          ? limitedFirstDate
-          : baseFirstDate;
+      return limitedFirstDate.isAfter(baseFirstDate) ? limitedFirstDate : baseFirstDate;
     }
 
     return baseFirstDate;
@@ -128,20 +121,12 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                             width: 120,
                             child: Text(
                               'ยกเลิก',
-                              style: FlutterFlowTheme.of(context).bodyLarge
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(
-                                      context,
-                                    ).bodyLargeFamily,
-                                    color: FlutterFlowTheme.of(context).error,
-                                    fontWeight: FontWeight.w500,
-                                    useGoogleFonts: GoogleFonts.asMap()
-                                        .containsKey(
-                                          FlutterFlowTheme.of(
-                                            context,
-                                          ).bodyLargeFamily,
-                                        ),
-                                  ),
+                              style: FlutterFlowTheme.of(context).bodyLarge.override(
+                                fontFamily: FlutterFlowTheme.of(context).bodyLargeFamily,
+                                color: FlutterFlowTheme.of(context).error,
+                                fontWeight: FontWeight.w500,
+                                useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowTheme.of(context).bodyLargeFamily),
+                              ),
                             ),
                           ),
                         ),
@@ -150,15 +135,7 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                              width: 100.0,
-                              height: 1.0,
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(
-                                  context,
-                                ).secondaryBackground,
-                              ),
-                            ),
+                            Container(width: 100.0, height: 1.0, decoration: BoxDecoration(color: FlutterFlowTheme.of(context).secondaryBackground)),
                           ],
                         ),
                       ),
@@ -167,9 +144,7 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                           width: 80.0,
                           height: 8.0,
                           decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(
-                              context,
-                            ).primaryBackground,
+                            color: FlutterFlowTheme.of(context).primaryBackground,
                             borderRadius: BorderRadius.circular(100.0),
                           ),
                         ),
@@ -178,15 +153,7 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                              width: 100.0,
-                              height: 1.0,
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(
-                                  context,
-                                ).secondaryBackground,
-                              ),
-                            ),
+                            Container(width: 100.0, height: 1.0, decoration: BoxDecoration(color: FlutterFlowTheme.of(context).secondaryBackground)),
                           ],
                         ),
                       ),
@@ -197,14 +164,9 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            final dt = DateFormat(
-                              "yyyy-MM-dd",
-                            ).format(getDateTime);
+                            final dt = DateFormat("yyyy-MM-dd").format(getDateTime);
 
-                            final dt2 = DateFormat(
-                              'วันที่ d MMMM พ.ศ.${getDateTime.year + 543}',
-                              'th',
-                            ).format(getDateTime);
+                            final dt2 = DateFormat('วันที่ d MMMM พ.ศ.${getDateTime.year + 543}', 'th').format(getDateTime);
 
                             Navigator.pop(context, [dt, dt2]);
                           },
@@ -213,20 +175,12 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                             width: 120,
                             child: Text(
                               'ตกลง',
-                              style: FlutterFlowTheme.of(context).bodyLarge
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(
-                                      context,
-                                    ).bodyLargeFamily,
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    fontWeight: FontWeight.w500,
-                                    useGoogleFonts: GoogleFonts.asMap()
-                                        .containsKey(
-                                          FlutterFlowTheme.of(
-                                            context,
-                                          ).bodyLargeFamily,
-                                        ),
-                                  ),
+                              style: FlutterFlowTheme.of(context).bodyLarge.override(
+                                fontFamily: FlutterFlowTheme.of(context).bodyLargeFamily,
+                                color: FlutterFlowTheme.of(context).primary,
+                                fontWeight: FontWeight.w500,
+                                useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowTheme.of(context).bodyLargeFamily),
+                              ),
                             ),
                           ),
                         ),
@@ -243,18 +197,13 @@ class _BTDateWidgetState extends State<BTDateWidget> {
                       pickerTheme: DateTimePickerTheme(
                         pickerHeight: double.infinity,
                         backgroundColor: Colors.transparent,
-                        itemTextStyle: FlutterFlowTheme.of(context).bodyLarge
-                            .override(
-                              fontFamily: FlutterFlowTheme.of(
-                                context,
-                              ).bodyLargeFamily,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 24,
-                              useGoogleFonts: GoogleFonts.asMap().containsKey(
-                                FlutterFlowTheme.of(context).bodyMediumFamily,
-                              ),
-                            ),
+                        itemTextStyle: FlutterFlowTheme.of(context).bodyLarge.override(
+                          fontFamily: FlutterFlowTheme.of(context).bodyLargeFamily,
+                          color: FlutterFlowTheme.of(context).primaryText,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 24,
+                          useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowTheme.of(context).bodyMediumFamily),
+                        ),
                         dividerColor: Colors.transparent,
                       ),
                       onChange: (dateTime, selectedIndex) {

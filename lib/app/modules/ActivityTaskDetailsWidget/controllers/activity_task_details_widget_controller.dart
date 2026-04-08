@@ -63,7 +63,7 @@ class ActivityTaskDetailsWidgetController extends GetxController {
       map2.Marker(
         height: 40,
         width: 40,
-        builder: (context) => Align(alignment: const AlignmentDirectional(0.0, 0.0), child: Image.asset('assets/images/pinred.png')),
+        builder: (context) => Align(alignment: const AlignmentDirectional(0.0, 0.0), child: Image.asset('assets/images/pin_red.png')),
         point: latLng,
       ),
     );

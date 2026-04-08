@@ -1065,9 +1065,57 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
 }
 
 class ActivityTaskFullScreenMapView extends StatelessWidget {
-  const ActivityTaskFullScreenMapView({required this.activityController, super.key});
+  ActivityTaskFullScreenMapView({required this.activityController, super.key});
 
   final ActivityTaskDetailsWidgetController activityController;
+  final map2.MapController fullScreenMapController = map2.MapController();
+
+  double _mapActionButtonSize(BuildContext context) {
+    if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+      return 40.0;
+    } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+      return 40.0;
+    } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+      return 56.0;
+    } else {
+      return 56.0;
+    }
+  }
+
+  double _mapActionIconSize(BuildContext context) {
+    if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+      return 16.0;
+    } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+      return 16.0;
+    } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+      return 20.0;
+    } else {
+      return 20.0;
+    }
+  }
+
+  Widget _buildMapActionButton({required BuildContext context, required IconData icon, required VoidCallback onPressed}) {
+    final theme = FlutterFlowThemeNew.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: const [
+          BoxShadow(blurRadius: 16.0, color: Color(0x24000000), offset: Offset(0.0, 6.0)),
+          BoxShadow(blurRadius: 4.0, color: Color(0x14000000), offset: Offset(0.0, 2.0)),
+        ],
+        borderRadius: BorderRadius.circular(100.0),
+      ),
+      child: FlutterFlowIconButton(
+        borderColor: Colors.transparent,
+        borderRadius: 100.0,
+        borderWidth: 1.0,
+        buttonSize: _mapActionButtonSize(context),
+        fillColor: theme.secondaryBackground,
+        icon: Icon(icon, color: theme.info, size: _mapActionIconSize(context)),
+        onPressed: onPressed,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1086,6 +1134,7 @@ class ActivityTaskFullScreenMapView extends StatelessWidget {
             Positioned.fill(
               child: Obx(
                 () => map2.FlutterMap(
+                  mapController: fullScreenMapController,
                   options: map2.MapOptions(
                     enableScrollWheel: true,
                     minZoom: 10,
@@ -1100,10 +1149,52 @@ class ActivityTaskFullScreenMapView extends StatelessWidget {
                       subdomains: const ['a', 'b', 'c'],
                       userAgentPackageName: activityController.tileUserAgentPackageName,
                       maxZoom: 19,
+
                       minZoom: 10,
                     ),
                     map2.MarkerLayer(markers: activityController.markersMap.toList()),
                   ],
+                ),
+              ),
+            ),
+
+            Align(
+              alignment: const AlignmentDirectional(1.0, 1.0),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 8.0, 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _buildMapActionButton(
+                        context: context,
+                        icon: Icons.add_rounded,
+                        onPressed: () {
+                          final nextZoom = (fullScreenMapController.zoom + 1.0).clamp(10.0, 19.0).toDouble();
+                          fullScreenMapController.move(fullScreenMapController.center, nextZoom);
+                        },
+                      ),
+                      const SizedBox(height: 8.0),
+                      _buildMapActionButton(
+                        context: context,
+                        icon: Icons.remove_rounded,
+                        onPressed: () {
+                          final nextZoom = (fullScreenMapController.zoom - 1.0).clamp(10.0, 19.0).toDouble();
+                          fullScreenMapController.move(fullScreenMapController.center, nextZoom);
+                        },
+                      ),
+                      const SizedBox(height: 8.0),
+                      _buildMapActionButton(
+                        context: context,
+                        icon: Icons.my_location_rounded,
+                        onPressed: () {
+                          fullScreenMapController.move(activityController.latLng, fullScreenMapController.zoom);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

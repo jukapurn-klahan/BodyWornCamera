@@ -73,6 +73,10 @@ dependencies:
   flutter_map_marker_popup: ^5.0.0
   latlong2: ^0.9.1
   package_info_plus: ^9.0.0
+  http: 1.6.0
+  path_provider: ^2.1.5
+  dropdown_search2:
+    path: lib/extensions/dropdown_search2-1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +91,8 @@ dev_dependencies:
   flutter_native_splash: ^2.4.6
 
 dependency_overrides:
+  firebase_core:
+    path: third_party/firebase_core
   flutter_vlc_player_platform_interface:
     path: third_party/flutter_vlc_player_platform_interface
 
@@ -126,3 +132,4 @@ flutter:
   assets:
     - assets/images/
     - assets/jsons/
+    - assets/lottie_animations/

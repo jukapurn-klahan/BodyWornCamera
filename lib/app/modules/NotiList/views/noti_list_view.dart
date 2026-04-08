@@ -1,1169 +1,349 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../flutter_flow/flutter_flow_button_tabbar.dart';
 import '../../../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
-import '../../../../flutter_flow/flutter_flow_util.dart';
 import '../controllers/noti_list_controller.dart';
 
 class NotiListView extends GetView<NotiListController> {
   const NotiListView({super.key});
+
+  static const List<_NotificationItem> _allNotifications = [
+    _NotificationItem(
+      dateLabel: '15 มกราคม 2568',
+      category: _NotificationCategory.task,
+      title: 'ตรวจพื้นที่เสี่ยงภัย บริเวณตลาดสด',
+      subtitle: 'เขตเทศบาล 2',
+      time: '14:30 น.',
+      unread: false,
+      badgeColor: Color(0xFFFF8A00),
+      badgeIcon: Icons.assignment_rounded,
+      taskCode: 'SC-001',
+      taskLocation: 'ตลาดสดเทศบาลเมือง',
+      taskDescription: 'ลงพื้นที่ตรวจสอบความปลอดภัย หลังได้รับรายงานน้ำท่วมขังและไฟฟ้าขัดข้องบางจุด',
+      taskPriorityLabel: 'สำคัญมาก',
+      taskPriorityBackgroundColor: Color(0xFFFFE6E6),
+      taskPriorityForegroundColor: Color(0xFFD92D20),
+    ),
+    _NotificationItem(
+      dateLabel: '15 มกราคม 2568',
+      category: _NotificationCategory.detectCamera,
+      title: 'ตรวจพบบุคคลในพื้นที่เฝ้าระวังช่วงกลางคืน',
+      subtitle: 'กล้อง Parking 02 • บันทึกภาพ 3 เฟรม',
+      time: '00:48 น.',
+      unread: false,
+      avatarAssetPath: 'assets/images/camera2.png',
+      badgeColor: Color(0xFF329BFF),
+      badgeIcon: Icons.videocam_rounded,
+    ),
+    _NotificationItem(
+      dateLabel: '15 มกราคม 2568',
+      category: _NotificationCategory.task,
+      title: 'ตรวจเยี่ยมกลุ่มเปราะบางในชุมชน',
+      subtitle: 'เขตเทศบาล 2',
+      time: '15:10 น.',
+      unread: false,
+      badgeColor: Color(0xFFFF8A00),
+      badgeIcon: Icons.task_alt_rounded,
+      taskCode: 'SC-002',
+      taskLocation: 'ชุมชนเทศบาล 2',
+      taskDescription: 'ประเมินสภาพความเป็นอยู่และติดตามการช่วยเหลือผู้สูงอายุและผู้ป่วยติดบ้านในพื้นที่',
+      taskPriorityLabel: 'เร่งด่วน',
+      taskPriorityBackgroundColor: Color(0xFFFFF3D8),
+      taskPriorityForegroundColor: Color(0xFFB56A00),
+    ),
+    _NotificationItem(
+      dateLabel: '09 กุมภาพันธ์ 2569',
+      category: _NotificationCategory.detectCamera,
+      title: 'พบการเคลื่อนไหวผิดปกติบริเวณทางเข้าอาคาร A',
+      subtitle: 'กล้อง Entrance A • ความมั่นใจ 92%',
+      time: '13:02 น.',
+      unread: true,
+      avatarAssetPath: 'assets/images/camera1.png',
+      badgeColor: Color(0xFF329BFF),
+      badgeIcon: Icons.videocam_rounded,
+    ),
+    _NotificationItem(
+      dateLabel: '10 กุมภาพันธ์ 2569',
+      category: _NotificationCategory.detectCamera,
+      title: 'ตรวจพบบุคคลในพื้นที่เฝ้าระวังช่วงกลางคืน',
+      subtitle: 'กล้อง Parking 02 • บันทึกภาพ 3 เฟรม',
+      time: '00:48 น.',
+      unread: true,
+      avatarAssetPath: 'assets/images/camera2.png',
+      badgeColor: Color(0xFF329BFF),
+      badgeIcon: Icons.videocam_rounded,
+    ),
+  ];
+
+  List<_NotificationSectionData> _sectionsForTab(int tabIndex) {
+    final items = switch (tabIndex) {
+      1 => _allNotifications.where((item) => item.category == _NotificationCategory.task).toList(),
+      2 => _allNotifications.where((item) => item.category == _NotificationCategory.detectCamera).toList(),
+      _ => _allNotifications,
+    };
+
+    final sections = <String, List<_NotificationItem>>{};
+    for (final item in items) {
+      sections.putIfAbsent(item.dateLabel, () => <_NotificationItem>[]).add(item);
+    }
+
+    return sections.entries.map((entry) => _NotificationSectionData(dateLabel: entry.key, items: entry.value)).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+    final tabController = controller.tabBarController;
+
+    if (tabController == null) {
+      return const SizedBox.shrink();
+    }
+
     return Scaffold(
       key: controller.scaffoldKey,
-      backgroundColor: FlutterFlowThemeNew.of(context).primary,
+      backgroundColor: theme.primary,
       appBar: AppBar(
-        backgroundColor: FlutterFlowThemeNew.of(context).primary,
+        backgroundColor: theme.primary,
         automaticallyImplyLeading: false,
         leading: FlutterFlowIconButton(
           borderColor: Colors.transparent,
           borderRadius: 30.0,
           borderWidth: 1.0,
           buttonSize: 54.0,
-          icon: Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 24.0),
+          icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 28.0),
           onPressed: () async {
-             Get.back();
+            Get.back();
           },
         ),
         title: Text(
           'แจ้งเตือน',
           textAlign: TextAlign.center,
-          style: FlutterFlowThemeNew.of(context).titleSmall.override(
-            fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-            color: FlutterFlowThemeNew.of(context).secondaryBackground,
+          style: theme.headlineSmall.override(
+            fontFamily: theme.headlineSmallFamily,
+            color: theme.secondaryBackground,
+            fontSize: 22.0,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0.0,
-            useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
+            useGoogleFonts: !theme.headlineSmallIsCustom,
           ),
         ),
-        actions: [],
+        actions: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 12.0, 8.0),
+            child: Image.asset('assets/images/noti.png', width: 48.0, height: 48.0, fit: BoxFit.contain),
+          ),
+        ],
         centerTitle: true,
         elevation: 0.0,
       ),
-     // body: const HistoryScreen(),
-
-        body:   Container(
+      body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: FlutterFlowThemeNew.of(context).secondaryBackground,
-          boxShadow: [BoxShadow(blurRadius: 8.0, color: Color(0x33000000), offset: Offset(0.0, 0.0))],
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(0.0),
-            bottomRight: Radius.circular(0.0),
-            topLeft: Radius.circular(24.0),
-            topRight: Radius.circular(24.0),
-          ),
+          color: theme.primaryBackground,
+          boxShadow: const [BoxShadow(blurRadius: 12.0, color: Color(0x1A000000), offset: Offset(0.0, -2.0))],
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
+        child: SafeArea(
+          top: false,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560.0),
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment(0.0, 0),
-                    child: FlutterFlowButtonTabBar(
-                      useToggleButtonStyle: true,
-                      labelStyle: FlutterFlowThemeNew.of(context).labelMedium.override(
-                        fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
-                        letterSpacing: 0.0,
-                        useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
-                      ),
-                      unselectedLabelStyle: FlutterFlowThemeNew.of(context).labelMedium.override(
-                        fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
-                        letterSpacing: 0.0,
-                        useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
-                      ),
-                      labelColor: FlutterFlowThemeNew.of(context).secondaryBackground,
-                      unselectedLabelColor: FlutterFlowThemeNew.of(context).secondaryText,
-                      backgroundColor: FlutterFlowThemeNew.of(context).primary,
-                      unselectedBackgroundColor: FlutterFlowThemeNew.of(context).alternate,
-                      unselectedBorderColor: FlutterFlowThemeNew.of(context).secondaryBackground,
-                      borderWidth: 1.0,
-                      borderRadius: 26.0,
-                      elevation: 0.0,
-                      buttonMargin: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
-                      padding: EdgeInsets.all(4.0),
-                      tabs: [
-                        Tab(text: 'ทั้งหมด'),
-                        Tab(text: 'รับงาน'),
-                        Tab(text: 'ตรวจจับ'),
-                      ],
-                      controller: controller.tabBarController,
-                      onTap: (i) async {
-                        [() async {}, () async {}, () async {}][i]();
-                      },
-                    ),
-                  ),
                   Expanded(
-                    child: TabBarView(
-                      controller: controller.tabBarController,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                          child: MasonryGridView.builder(
-                            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                            itemCount: 2,
-                            padding: EdgeInsets.fromLTRB(0, 12.0, 0, 24.0),
-                            itemBuilder: (context, index) {
-                              return [
-                                () => InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    //  context.pushNamed(DetailesPatientNewtaskWidget.routeName);
-                                  },
-                                  child: Container(
-                                    width: () {
-                                      if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                        return 400.0;
-                                      } else {
-                                        return 400.0;
-                                      }
-                                    }(),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                      boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x17000000), offset: Offset(0.0, 0.0))],
-                                      borderRadius: BorderRadius.circular(24.0),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children:
-                                                    [
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            '1.งาน',
-                                                            style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ].divide(
-                                                      SizedBox(
-                                                        width: () {
-                                                          if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                            return 16.0;
-                                                          } else {
-                                                            return 16.0;
-                                                          }
-                                                        }(),
-                                                      ),
-                                                    ),
-                                              ),
-
-                                              Container(
-                                                width: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                height: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                decoration: BoxDecoration(
-                                                  color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.keyboard_arrow_right_rounded, color: Color(0xFF9DA7A7), size: 20.0),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Color(0xFFFCF3EB), Color(0xFFFFE9D5)],
-                                              stops: [0.1, 1.0],
-                                              begin: AlignmentDirectional(0.0, -1.0),
-                                              end: AlignmentDirectional(0, 1.0),
-                                            ),
-                                            borderRadius: BorderRadius.circular(24.0),
-                                            border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground, width: 2.0),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'วันที่',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '12 ก.พ. 2568 ',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'เวลา',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '13:00 น.',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                  ].divide(SizedBox(width: 12.0)),
-                                                ),
-                                              ].divide(SizedBox(height: 12.0)),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                () => InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    //  context.pushNamed(DetailesPatientNewtaskWidget.routeName);
-                                  },
-                                  child: Container(
-                                    width: () {
-                                      if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                        return 400.0;
-                                      } else {
-                                        return 400.0;
-                                      }
-                                    }(),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                      boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x17000000), offset: Offset(0.0, 0.0))],
-                                      borderRadius: BorderRadius.circular(24.0),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children:
-                                                    [
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            '2.Detect Camera ',
-                                                            style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ].divide(
-                                                      SizedBox(
-                                                        width: () {
-                                                          if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                            return 16.0;
-                                                          } else {
-                                                            return 16.0;
-                                                          }
-                                                        }(),
-                                                      ),
-                                                    ),
-                                              ),
-                                              Container(
-                                                width: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                height: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                decoration: BoxDecoration(
-                                                  color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.keyboard_arrow_right_rounded, color: Color(0xFF9DA7A7), size: 20.0),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Color(0xFFEAF4FF), Color(0xFFD6E9FF)],
-                                              stops: [0.1, 1.0],
-                                              begin: AlignmentDirectional(0.0, -1.0),
-                                              end: AlignmentDirectional(0, 1.0),
-                                            ),
-                                            borderRadius: BorderRadius.circular(24.0),
-                                            border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground, width: 2.0),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'วันที่',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '12 ก.พ. 2568 ',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'เวลา',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '13:00 น.',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                  ].divide(SizedBox(width: 12.0)),
-                                                ),
-                                              ].divide(SizedBox(height: 12.0)),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ][index]();
-                            },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(color: theme.secondaryBackground, borderRadius: BorderRadius.circular(26.0)),
+                      child: Column(
+                        children: [
+                          _NotificationTabs(controller: tabController),
+                          Expanded(
+                            child: TabBarView(
+                              controller: tabController,
+                              children: List.generate(
+                                NotiListController.tabLabels.length,
+                                (index) => _NotificationTabContent(sections: _sectionsForTab(index)),
+                              ),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                          child: MasonryGridView.builder(
-                            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                            itemCount: 1,
-                            padding: EdgeInsets.fromLTRB(0, 12.0, 0, 24.0),
-                            itemBuilder: (context, index) {
-                              return [
-                                () => InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    //  context.pushNamed(DetailesPatientNewtaskWidget.routeName);
-                                  },
-                                  child: Container(
-                                    width: () {
-                                      if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                        return 400.0;
-                                      } else {
-                                        return 400.0;
-                                      }
-                                    }(),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                      boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x17000000), offset: Offset(0.0, 0.0))],
-                                      borderRadius: BorderRadius.circular(24.0),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children:
-                                                    [
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            '1.งาน',
-                                                            style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ].divide(
-                                                      SizedBox(
-                                                        width: () {
-                                                          if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                            return 16.0;
-                                                          } else {
-                                                            return 16.0;
-                                                          }
-                                                        }(),
-                                                      ),
-                                                    ),
-                                              ),
-
-                                              // Container(
-                                              //   width: () {
-                                              //     if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                              //       return 28.0;
-                                              //     } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                              //       return 28.0;
-                                              //     } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                              //       return 32.0;
-                                              //     } else {
-                                              //       return 32.0;
-                                              //     }
-                                              //   }(),
-                                              //   height: () {
-                                              //     if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                              //       return 28.0;
-                                              //     } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                              //       return 28.0;
-                                              //     } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                              //       return 32.0;
-                                              //     } else {
-                                              //       return 32.0;
-                                              //     }
-                                              //   }(),
-                                              //   decoration: BoxDecoration(
-                                              //     color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                              //     shape: BoxShape.circle,
-                                              //   ),
-                                              //   child: Icon(Icons.keyboard_arrow_right_rounded, color: Color(0xFF9DA7A7), size: 20.0),
-                                              // ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Color(0xFFFCF3EB), Color(0xFFFFE9D5)],
-                                              stops: [0.1, 1.0],
-                                              begin: AlignmentDirectional(0.0, -1.0),
-                                              end: AlignmentDirectional(0, 1.0),
-                                            ),
-                                            borderRadius: BorderRadius.circular(24.0),
-                                            border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground, width: 2.0),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'วันที่',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '12 ก.พ. 2568 ',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'เวลา',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color(0xFFFF7600),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '13:00 น.',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                  ].divide(SizedBox(width: 12.0)),
-                                                ),
-                                              ].divide(SizedBox(height: 12.0)),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ][index]();
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                          child: MasonryGridView.builder(
-                            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                            itemCount: 1,
-                            padding: EdgeInsets.fromLTRB(0, 12.0, 0, 24.0),
-                            itemBuilder: (context, index) {
-                              return [
-                                () => InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    //  context.pushNamed(DetailesPatientNewtaskWidget.routeName);
-                                  },
-                                  child: Container(
-                                    width: () {
-                                      if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                        return 355.0;
-                                      } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                        return 400.0;
-                                      } else {
-                                        return 400.0;
-                                      }
-                                    }(),
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                      boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x17000000), offset: Offset(0.0, 0.0))],
-                                      borderRadius: BorderRadius.circular(24.0),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children:
-                                                    [
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            '2.Detect Camera ',
-                                                            style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ].divide(
-                                                      SizedBox(
-                                                        width: () {
-                                                          if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                            return 8.0;
-                                                          } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                            return 16.0;
-                                                          } else {
-                                                            return 16.0;
-                                                          }
-                                                        }(),
-                                                      ),
-                                                    ),
-                                              ),
-                                              Container(
-                                                width: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                height: () {
-                                                  if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                    return 28.0;
-                                                  } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                    return 32.0;
-                                                  } else {
-                                                    return 32.0;
-                                                  }
-                                                }(),
-                                                decoration: BoxDecoration(
-                                                  color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(Icons.keyboard_arrow_right_rounded, color: Color(0xFF9DA7A7), size: 20.0),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Color(0xFFEAF4FF), Color(0xFFD6E9FF)],
-                                              stops: [0.1, 1.0],
-                                              begin: AlignmentDirectional(0.0, -1.0),
-                                              end: AlignmentDirectional(0, 1.0),
-                                            ),
-                                            borderRadius: BorderRadius.circular(24.0),
-                                            border: Border.all(color: FlutterFlowThemeNew.of(context).secondaryBackground, width: 2.0),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'วันที่',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '12 ก.พ. 2568 ',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'เวลา',
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: Color.fromARGB(255, 0, 55, 205),
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '13:00 น.',
-                                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                                              letterSpacing: 0.0,
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                                            ),
-                                                          ),
-                                                        ].divide(SizedBox(height: 2.0)),
-                                                      ),
-                                                    ),
-                                                  ].divide(SizedBox(width: 12.0)),
-                                                ),
-                                              ].divide(SizedBox(height: 12.0)),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ][index]();
-                            },
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+class _NotificationTabs extends StatelessWidget {
+  const _NotificationTabs({required this.controller});
 
-  @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
-}
-
-class _HistoryScreenState extends State<HistoryScreen> {
-  int year = 2026;
-  int tabIndex = 2; // 0=งานสำเร็จ, 1=ยกเลิกงาน, 2=ปฏิเสธงาน
+  final TabController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
-        child: _TopAppBar(title: 'ประวัติการทำรายการ', onBack: () => Navigator.of(context).maybePop(), onClock: () {}),
+    return Align(
+      alignment: const Alignment(0.0, 0),
+      child: FlutterFlowButtonTabBar(
+        useToggleButtonStyle: true,
+        labelStyle: FlutterFlowThemeNew.of(context).labelMedium.override(
+          fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
+          letterSpacing: 0.0,
+          useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).labelMediumFamily),
+        ),
+        unselectedLabelStyle: FlutterFlowThemeNew.of(context).labelMedium.override(
+          fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
+          letterSpacing: 0.0,
+          useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).labelMediumFamily),
+        ),
+        labelColor: FlutterFlowThemeNew.of(context).secondaryBackground,
+        unselectedLabelColor: FlutterFlowThemeNew.of(context).secondaryText,
+        backgroundColor: FlutterFlowThemeNew.of(context).primary,
+        unselectedBackgroundColor: const Color(0xFFEAEFFB),
+        unselectedBorderColor: FlutterFlowThemeNew.of(context).secondaryBackground,
+        borderWidth: 1.0,
+        borderRadius: 26.0,
+        elevation: 0.0,
+        buttonMargin: const EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+        padding: const EdgeInsets.all(4.0),
+        tabs: NotiListController.tabLabels.map((label) => Tab(text: label)).toList(growable: false),
+        controller: controller,
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        child: Column(
+    );
+  }
+}
+
+class _NotificationTabContent extends StatelessWidget {
+  const _NotificationTabContent({required this.sections});
+
+  final List<_NotificationSectionData> sections;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
+    if (sections.isEmpty) {
+      return Center(
+        child: Text(
+          'ไม่มีรายการแจ้งเตือน',
+          style: theme.bodyMedium.override(
+            fontFamily: theme.bodyMediumFamily,
+            color: theme.secondaryText,
+            letterSpacing: 0.0,
+            useGoogleFonts: !theme.bodyMediumIsCustom,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 28.0),
+      physics: const BouncingScrollPhysics(),
+      itemCount: sections.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 18.0),
+      itemBuilder: (context, index) {
+        final section = sections[index];
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SegmentTabs(index: tabIndex, onChanged: (i) => setState(() => tabIndex = i), labels: const ['งานสำเร็จ', 'ยกเลิกงาน', 'ปฏิเสธงาน']),
-            const SizedBox(height: 16),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _YearDropdown(value: year, years: const [2024, 2025, 2026, 2027], onChanged: (v) => setState(() => year = v)),
-                const Spacer(),
-                const _CountPillRed(count: 2, label: 'รายการ'),
-              ],
-            ),
-
-            const SizedBox(height: 14),
             Text(
-              'กุมภาพันธ์',
-              style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+              section.dateLabel,
+              style: theme.headlineSmall.override(
+                fontFamily: theme.headlineSmallFamily,
+                fontSize: 24.0,
+                fontWeight: FontWeight.w600,
                 letterSpacing: 0.0,
-                fontWeight: FontWeight.w500,
-                useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
+                useGoogleFonts: !theme.headlineSmallIsCustom,
               ),
             ),
-            const SizedBox(height: 10),
-
-            _WhiteCardGroup(
-              items: const [
-                _RowItem(name: 'นางสาวศิริกาญจนา มหานทีกร', detail: 'อายุ 48 ปี 6 ด. 13 ว.', time: '12:30 น.', avatarSeed: 1),
-                _RowItem(name: 'นางรัตนา ศรีสุข', detail: 'อายุ 48 ปี 6 ด. 13 ว.', time: '12:30 น.', avatarSeed: 2),
-              ],
-            ),
+            const SizedBox(height: 12.0),
+            _NotificationCard(items: section.items),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
-/* --------------------------- Top AppBar --------------------------- */
+class _NotificationCard extends StatelessWidget {
+  const _NotificationCard({required this.items});
 
-class _TopAppBar extends StatelessWidget {
-  const _TopAppBar({required this.title, required this.onBack, required this.onClock});
-
-  final String title;
-  final VoidCallback onBack;
-  final VoidCallback onClock;
+  final List<_NotificationItem> items;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFF2EA6F3),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: SizedBox(
-            height: 64,
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                ),
-                const Spacer(),
-                Text(
-                  title,
-                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800),
-                ),
-                const Spacer(),
-                _CircleIconButton(icon: Icons.access_time_rounded, onTap: onClock),
-              ],
-            ),
-          ),
-        ),
-      ),
+    final blocks = <Widget>[];
+    final bufferedItems = <_NotificationItem>[];
+
+    void flushBufferedItems() {
+      if (bufferedItems.isEmpty) {
+        return;
+      }
+
+      blocks.add(_GroupedNotificationCard(items: List<_NotificationItem>.of(bufferedItems)));
+      bufferedItems.clear();
+    }
+
+    for (final item in items) {
+      if (item.category == _NotificationCategory.task) {
+        flushBufferedItems();
+        blocks.add(_TaskNotificationCard(item: item));
+      } else {
+        bufferedItems.add(item);
+      }
+    }
+
+    flushBufferedItems();
+
+    if (blocks.length == 1) {
+      return blocks.first;
+    }
+
+    return Column(
+      children: List.generate(blocks.length, (index) {
+        final isLast = index == blocks.length - 1;
+        return Padding(
+          padding: EdgeInsets.only(bottom: isLast ? 0.0 : 16.0),
+          child: blocks[index],
+        );
+      }),
     );
   }
 }
 
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon, required this.onTap});
+class _GroupedNotificationCard extends StatelessWidget {
+  const _GroupedNotificationCard({required this.items});
 
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkResponse(
-      onTap: onTap,
-      radius: 28,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.25), shape: BoxShape.circle),
-        child: Icon(icon, color: Colors.white, size: 26),
-      ),
-    );
-  }
-}
-
-/* --------------------------- Segmented Tabs --------------------------- */
-
-class _SegmentTabs extends StatelessWidget {
-  const _SegmentTabs({required this.index, required this.onChanged, required this.labels});
-
-  final int index;
-  final ValueChanged<int> onChanged;
-  final List<String> labels;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 54,
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(color: const Color(0xFFE9EDF3), borderRadius: BorderRadius.circular(22)),
-      child: Row(
-        children: List.generate(labels.length, (i) {
-          final selected = i == index;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(i),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                curve: Curves.easeOut,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected ? const Color(0xFF2EA6F3) : const Color(0xFFE9EDF3),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  labels[i],
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: selected ? Colors.white : const Color(0xFF6B7280)),
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-/* --------------------------- Year + Count --------------------------- */
-
-class _YearDropdown extends StatelessWidget {
-  const _YearDropdown({required this.value, required this.years, required this.onChanged});
-
-  final int value;
-  final List<int> years;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Text(
-        //   '$value',
-        //   style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: Color(0xFF1F3A5F), height: 1.0),
-        // ),
-        const SizedBox(width: 6),
-        DropdownButtonHideUnderline(
-          child: DropdownButton<int>(
-            value: value,
-            icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 26),
-            items: years.map((y) => DropdownMenuItem<int>(value: y, child: Text('$y'))).toList(),
-            onChanged: (v) {
-              if (v != null) onChanged(v);
-            },
-            style: FlutterFlowThemeNew.of(context).headlineSmall.override(
-              fontFamily: FlutterFlowThemeNew.of(context).headlineSmallFamily,
-              color: FlutterFlowThemeNew.of(context).customColor5,
-              letterSpacing: 0.0,
-              useGoogleFonts: !FlutterFlowThemeNew.of(context).headlineSmallIsCustom,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CountPillRed extends StatelessWidget {
-  const _CountPillRed({required this.count, required this.label});
-
-  final int count;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(999),
-        boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 6), color: Color(0x1A000000))],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: Color(0xFFFF3B30), shape: BoxShape.circle),
-            child: Text(
-              '$count',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/* --------------------------- List Card --------------------------- */
-
-class _WhiteCardGroup extends StatelessWidget {
-  const _WhiteCardGroup({required this.items});
-
-  final List<_RowItem> items;
+  final List<_NotificationItem> items;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(26),
-        boxShadow: const [BoxShadow(blurRadius: 18, offset: Offset(0, 10), color: Color(0x1A000000))],
+        borderRadius: BorderRadius.circular(28.0),
+        boxShadow: const [BoxShadow(blurRadius: 18.0, color: Color(0x14000000), offset: Offset(0.0, 6.0))],
       ),
       child: Column(
-        children: List.generate(items.length, (i) {
-          final isLast = i == items.length - 1;
+        children: List.generate(items.length, (index) {
+          final isLast = index == items.length - 1;
           return Column(
             children: [
-              _HistoryRow(item: items[i]),
+              _NotificationRow(item: items[index]),
               if (!isLast)
                 const Padding(
-                  padding: EdgeInsets.only(left: 92),
-                  child: Divider(height: 1, thickness: 1, color: Color(0xFFE5E7EB)),
+                  padding: EdgeInsetsDirectional.fromSTEB(22.0, 0.0, 22.0, 0.0),
+                  child: Divider(height: 1.0, thickness: 1.0, color: Color(0xFFE4EBF4)),
                 ),
             ],
           );
@@ -1173,116 +353,491 @@ class _WhiteCardGroup extends StatelessWidget {
   }
 }
 
-class _HistoryRow extends StatelessWidget {
-  const _HistoryRow({required this.item});
+class _NotificationRow extends StatelessWidget {
+  const _NotificationRow({required this.item});
 
-  final _RowItem item;
+  final _NotificationItem item;
 
   @override
   Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+    final isDetectCamera = item.category == _NotificationCategory.detectCamera;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+      padding: const EdgeInsets.fromLTRB(22.0, 18.0, 22.0, 18.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _AvatarWithRedX(seed: item.avatarSeed),
-          const SizedBox(width: 14),
+          _NotificationThumbnail(item: item),
+          const SizedBox(width: 14.0),
           Expanded(
-            child: Column(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: _NotificationCategoryChip(category: item.category),
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      _NotificationStatusMeta(item: item),
+                    ],
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    item.title,
+                    maxLines: isDetectCamera ? 3 : 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.titleLarge.override(
+                      fontFamily: theme.titleLargeFamily,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.0,
+                      useGoogleFonts: !theme.titleLargeIsCustom,
+                    ),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    item.subtitle,
+                    maxLines: isDetectCamera ? 2 : 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.bodyMedium.override(
+                      fontFamily: theme.bodyMediumFamily,
+                      color: theme.secondaryText,
+                      letterSpacing: 0.0,
+                      useGoogleFonts: !theme.bodyMediumIsCustom,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaskNotificationCard extends StatelessWidget {
+  const _TaskNotificationCard({required this.item});
+
+  final _NotificationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+    final stripBaseColor = item.taskPriorityBackgroundColor ?? const Color(0xFFFDE9E9);
+    final priorityColor = item.taskPriorityForegroundColor ?? const Color(0xFFD92D20);
+    final location = item.taskLocation ?? item.subtitle;
+    final description = item.taskDescription;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28.0),
+        boxShadow: const [BoxShadow(blurRadius: 18.0, color: Color(0x14000000), offset: Offset(0.0, 6.0))],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18.0, 16.0, 16.0, 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: FlutterFlowThemeNew.of(context).titleSmall.override(
-                    fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
-                    color: FlutterFlowThemeNew.of(context).customColor1,
-                    letterSpacing: 0.0,
-                    useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: _TaskCodePill(code: item.taskCode ?? '-'),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  item.detail,
-                  style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                    fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                    letterSpacing: 0.0,
-                    useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                  ),
-                ),
+                if (item.taskPriorityLabel != null) ...[
+                  const SizedBox(width: 12.0),
+                  _TaskPriorityPill(label: item.taskPriorityLabel!, color: priorityColor),
+                ],
               ],
             ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            item.time,
-            style: FlutterFlowThemeNew.of(context).bodySmall.override(
-              fontFamily: FlutterFlowThemeNew.of(context).bodySmallFamily,
-              letterSpacing: 1.0,
-              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodySmallIsCustom,
+            const SizedBox(height: 18.0),
+            Text(
+              item.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.titleLarge.override(
+                fontFamily: theme.titleLargeFamily,
+                color: const Color(0xFF101828),
+                fontSize: 20.0,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.0,
+                useGoogleFonts: !theme.titleLargeIsCustom,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 14.0),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _TaskMetaInfo(icon: Icons.access_time_rounded, iconColor: const Color(0xFF1F76D2), text: item.time),
+                          if (location.isNotEmpty) ...[
+                            const SizedBox(width: 14.0),
+                            Container(width: 1.0, height: 20.0, color: const Color(0xFFD5D9E4)),
+                            const SizedBox(width: 14.0),
+                            Expanded(
+                              child: _TaskMetaInfo(
+                                icon: Icons.location_on_rounded,
+                                iconColor: const Color(0xFFF25555),
+                                text: location,
+                                expandText: true,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+
+                      // if (description != null && description.isNotEmpty) ...[
+                      //   const SizedBox(height: 14.0),
+                      //   Text(
+                      //     description,
+                      //     maxLines: 2,
+                      //     overflow: TextOverflow.ellipsis,
+                      //     style: theme.bodyLarge.override(
+                      //       fontFamily: theme.bodyLargeFamily,
+                      //       color: const Color(0xFF6B7280),
+                      //       fontSize: 15.0,
+                      //       fontWeight: FontWeight.w500,
+                      //       letterSpacing: 0.0,
+                      //       useGoogleFonts: !theme.bodyLargeIsCustom,
+                      //     ),
+                      //   ),
+                      // ],
+                    ],
+                  ),
+                ),
+                // const SizedBox(width: 10.0),
+                // const Padding(
+                //   padding: EdgeInsets.only(top: 6.0),
+                //   child: Icon(Icons.chevron_right_rounded, color: Color(0xFF2A6FD6), size: 38.0),
+                // ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _AvatarWithRedX extends StatelessWidget {
-  const _AvatarWithRedX({required this.seed});
+class _NotificationStatusMeta extends StatelessWidget {
+  const _NotificationStatusMeta({required this.item});
 
-  final int seed;
+  final _NotificationItem item;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 60,
-      height: 60,
-      child: Stack(
-        clipBehavior: Clip.none,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (item.unread) ...[const _UnreadDot(), const SizedBox(width: 6.0)],
+        _NotificationTimeLabel(time: item.time),
+      ],
+    );
+  }
+}
+
+class _NotificationTimeLabel extends StatelessWidget {
+  const _NotificationTimeLabel({required this.time});
+
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
+    return Text(
+      time,
+      style: theme.bodyMedium.override(
+        fontFamily: theme.bodyMediumFamily,
+        color: theme.secondaryText,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.0,
+        useGoogleFonts: !theme.bodyMediumIsCustom,
+      ),
+    );
+  }
+}
+
+class _UnreadDot extends StatelessWidget {
+  const _UnreadDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 9.0,
+      height: 9.0,
+      decoration: const BoxDecoration(color: Color(0xFF2A6FD6), shape: BoxShape.circle),
+    );
+  }
+}
+
+class _TaskCodePill extends StatelessWidget {
+  const _TaskCodePill({required this.code});
+
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xFFF4FAFF), Color(0xFFDCEBFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(999.0),
+        border: Border.all(color: const Color(0xFFB9D6FF)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFE6F2FF)),
-            child: Center(
-              child: Text(
-                _letter(seed),
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2EA6F3)),
-              ),
-            ),
-          ),
-          Positioned(
-            left: -2,
-            bottom: -2,
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF3B30),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2.5),
-              ),
-              child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
-            ),
+          const Icon(Icons.sell_outlined, size: 18.0, color: Color(0xFF1D5EC8)),
+          const SizedBox(width: 8.0),
+          Text(
+            code,
+            style: const TextStyle(color: Color(0xFF184FA9), fontSize: 16.0, fontWeight: FontWeight.w800, letterSpacing: 0.3),
           ),
         ],
       ),
     );
   }
+}
 
-  static String _letter(int s) {
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-    return letters[(s - 1) % letters.length];
+class _TaskPriorityPill extends StatelessWidget {
+  const _TaskPriorityPill({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14.0, 9.0, 16.0, 9.0),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(999.0)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20.0),
+          const SizedBox(width: 6.0),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-class _RowItem {
-  final String name;
-  final String detail;
-  final String time;
-  final int avatarSeed;
+class _TaskMetaInfo extends StatelessWidget {
+  const _TaskMetaInfo({required this.icon, required this.iconColor, required this.text, this.expandText = false});
 
-  const _RowItem({required this.name, required this.detail, required this.time, required this.avatarSeed});
+  final IconData icon;
+  final Color iconColor;
+  final String text;
+  final bool expandText;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: iconColor, size: 22.0),
+        const SizedBox(width: 8.0),
+        if (expandText)
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.bodyLarge.override(
+                fontFamily: theme.bodyLargeFamily,
+                color: const Color(0xFF4B5563),
+                fontSize: 15.0,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.0,
+                useGoogleFonts: !theme.bodyLargeIsCustom,
+              ),
+            ),
+          )
+        else
+          Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.bodyLarge.override(
+              fontFamily: theme.bodyLargeFamily,
+              color: const Color(0xFF4B5563),
+              fontSize: 15.0,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.0,
+              useGoogleFonts: !theme.bodyLargeIsCustom,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _NotificationCategoryChip extends StatelessWidget {
+  const _NotificationCategoryChip({required this.category});
+
+  final _NotificationCategory category;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      decoration: BoxDecoration(color: category.chipBackgroundColor, borderRadius: BorderRadius.circular(999.0)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(category.chipIcon, size: 14.0, color: category.chipForegroundColor),
+          const SizedBox(width: 6.0),
+          Text(
+            category.label,
+            style: TextStyle(color: category.chipForegroundColor, fontSize: 12.0, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotificationThumbnail extends StatelessWidget {
+  const _NotificationThumbnail({required this.item});
+
+  final _NotificationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18.0),
+      child: SizedBox(
+        width: 96.0,
+        height: 88.0,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(item.avatarAssetPath!, fit: BoxFit.cover),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [Color(0x08000000), Color(0x7A000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+            ),
+            Positioned(
+              left: 8.0,
+              top: 8.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                decoration: BoxDecoration(color: const Color(0xCC0E2035), borderRadius: BorderRadius.circular(999.0)),
+                child: const Text(
+                  'CAM',
+                  style: TextStyle(color: Colors.white, fontSize: 11.0, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 8.0,
+              bottom: 8.0,
+              child: Container(
+                width: 26.0,
+                height: 26.0,
+                decoration: BoxDecoration(
+                  color: item.badgeColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2.0),
+                ),
+                child: Icon(item.badgeIcon, color: Colors.white, size: 14.0),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _NotificationCategory { task, detectCamera }
+
+extension _NotificationCategoryTheme on _NotificationCategory {
+  String get label => switch (this) {
+    _NotificationCategory.task => 'กิจกรรม/ภารกิจ',
+    _NotificationCategory.detectCamera => 'Detect Camera',
+  };
+
+  IconData get chipIcon => switch (this) {
+    _NotificationCategory.task => Icons.assignment_rounded,
+    _NotificationCategory.detectCamera => Icons.videocam_rounded,
+  };
+
+  Color get chipBackgroundColor => switch (this) {
+    _NotificationCategory.task => const Color(0xFFFFF0DF),
+    _NotificationCategory.detectCamera => const Color(0xFFE8F4FF),
+  };
+
+  Color get chipForegroundColor => switch (this) {
+    _NotificationCategory.task => const Color(0xFFD97706),
+    _NotificationCategory.detectCamera => const Color(0xFF1265C5),
+  };
+}
+
+class _NotificationItem {
+  const _NotificationItem({
+    required this.dateLabel,
+    required this.category,
+    required this.title,
+    required this.subtitle,
+    required this.time,
+    required this.unread,
+    required this.badgeColor,
+    required this.badgeIcon,
+    this.avatarAssetPath,
+    this.taskCode,
+    this.taskLocation,
+    this.taskDescription,
+    this.taskPriorityLabel,
+    this.taskPriorityBackgroundColor,
+    this.taskPriorityForegroundColor,
+  });
+
+  final String dateLabel;
+  final _NotificationCategory category;
+  final String title;
+  final String subtitle;
+  final String time;
+  final bool unread;
+  final Color badgeColor;
+  final IconData badgeIcon;
+  final String? avatarAssetPath;
+  final String? taskCode;
+  final String? taskLocation;
+  final String? taskDescription;
+  final String? taskPriorityLabel;
+  final Color? taskPriorityBackgroundColor;
+  final Color? taskPriorityForegroundColor;
+}
+
+class _NotificationSectionData {
+  const _NotificationSectionData({required this.dateLabel, required this.items});
+
+  final String dateLabel;
+  final List<_NotificationItem> items;
 }

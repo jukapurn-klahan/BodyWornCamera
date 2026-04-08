@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../HistoryCamera/views/history_camera_view.dart';
 import '../../Setting/views/setting_view.dart';
 import '../../activity/views/activity_view.dart';
@@ -33,7 +34,7 @@ class BottomNavigatorsView extends GetView<BottomNavigatorsController> {
           height: 88 + bottom, // give a little extra room to avoid overflow from icon+label stack
           child: Container(
             decoration: BoxDecoration(
-              color: Color(0xFF164874),
+              color: FlutterFlowThemeNew.of(context).customColor5,
               borderRadius: const BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
               boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, -2))],
             ),

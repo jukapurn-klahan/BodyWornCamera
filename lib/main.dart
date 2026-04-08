@@ -2,6 +2,7 @@ import 'package:body_camera/app/routes/app_pages.dart';
 import 'package:body_camera/fcm/notification_services.dart';
 import 'package:body_camera/firebase_options.dart';
 import 'package:body_camera/utils/app_info_utils.dart';
+import 'package:body_camera/utils/storage_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -16,12 +17,17 @@ Future<void> main() async {
   await AppInfoUtils.warmUp();
 
   await initializeDateFormatting('th', null);
+  final hasPinCode = await StorageUtils.hasPinCode();
+  final hasAuthenticatedSession = await StorageUtils.hasAuthenticatedSession();
+  final initialRoute = hasPinCode && hasAuthenticatedSession
+      ? Routes.PINCODE
+      : AppPages.INITIAL;
 
   runApp(
     GetMaterialApp(
       title: 'Body Camera',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppPages.INITIAL,
+      initialRoute: initialRoute,
       getPages: AppPages.routes,
     ),
   );

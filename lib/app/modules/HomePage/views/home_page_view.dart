@@ -64,7 +64,7 @@ class HomePageView extends GetView<HomePageController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'ตำแหน่ง : เจ้าหน้าที่',
+                          'ตำแหน่ง : เจ้าหน้าที่ตรวจการณ์ภาคสนาม',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.bodySmall.override(
@@ -150,38 +150,7 @@ class HomePageView extends GetView<HomePageController> {
                 ),
                 const SizedBox(height: 12),
 
-                /// summary
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                //   child: Obx(() {
-                //     final onlineCount = controller.cameras.where((e) => e.isOnline).length;
-                //     final offlineCount = controller.cameras.length - onlineCount;
-
-                //     return Container(
-                //       padding: const EdgeInsets.all(14),
-                //       decoration: BoxDecoration(
-                //         color: Colors.white.withValues(alpha: 0.18),
-                //         borderRadius: BorderRadius.circular(18),
-                //         border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-                //       ),
-                //       child: Row(
-                //         children: [
-                //           Expanded(
-                //             child: _SummaryBox(title: 'ออนไลน์', value: '$onlineCount', color: Colors.green, icon: Icons.wifi_rounded),
-                //           ),
-                //           const SizedBox(width: 12),
-                //           Expanded(
-                //             child: _SummaryBox(title: 'ออฟไลน์', value: '$offlineCount', color: Colors.red, icon: Icons.wifi_off_rounded),
-                //           ),
-                //         ],
-                //       ),
-                //     );
-                //   }),
-                // ),
-
-                // const SizedBox(height: 14),
-
-                /// search
+          
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Container(

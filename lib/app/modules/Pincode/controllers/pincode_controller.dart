@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:local_auth/local_auth.dart';
 
+import 'package:body_camera/utils/storage_utils.dart';
 import '../../../../flutter_flow/flutter_flow_animations_pin.dart';
 
 import 'package:get/get.dart';
@@ -15,13 +16,18 @@ class PinCodeController extends GetxController {
   final LocalAuthentication _localAuth = LocalAuthentication();
   Worker? _biometricAvailabilityWorker;
   bool _hasAutoTriggeredBiometric = false;
+  bool _hasExplicitAllowBiometricArgument = false;
+  String? _savedPinCode;
   Rx<String> createPin = ''.obs;
   Rx<bool> pinMatch = true.obs;
   Rx<int> wrongInputCount = 0.obs;
-  Rx<bool> isCorrect = false.obs;
   RxBool isBiometricAvailable = false.obs;
   RxBool isFaceIdAvailable = false.obs;
   RxBool isAuthenticatingBiometric = false.obs;
+  RxBool isPinStateReady = false.obs;
+  RxBool hasSavedPinCode = false.obs;
+  RxBool allowBiometricOnEntry = true.obs;
+  RxBool requireCurrentPinBeforeReset = false.obs;
 
   Rx<TextEditingController> pinCodeController = TextEditingController().obs;
   Rx<FocusNode> pinCodeFocusNode = FocusNode().obs;
@@ -37,6 +43,19 @@ class PinCodeController extends GetxController {
   void setOpenProfile(bool value) {
     isOpenProfile.value = value;
   }
+
+  void setRequireCurrentPinBeforeReset(bool value) {
+    requireCurrentPinBeforeReset.value = value;
+    if (value) {
+      isNewPassword.value = false;
+      createPin.value = '';
+      pinMatch.value = true;
+      wrongInputCount.value = 0;
+    }
+  }
+
+  bool get isConfirmingCurrentPinBeforeReset =>
+      requireCurrentPinBeforeReset.value && !isNewPassword.value;
 
   @override
   void onInit() {
@@ -101,105 +120,198 @@ class PinCodeController extends GetxController {
         ],
       ),
     });
-    _biometricAvailabilityWorker = ever<bool>(
-      isBiometricAvailable,
-      (_) => _tryAutoAuthenticateBiometric(),
-    );
-    _loadBiometricAvailability();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    _tryAutoAuthenticateBiometric();
+    _initializePinFlow();
   }
 
   @override
   void onClose() {
     _biometricAvailabilityWorker?.dispose();
+    pinCodeController.value.dispose();
+    pinCodeFocusNode.value.dispose();
     super.onClose();
   }
 
   Future<void> savePinCode(String pin) async {
-    //  await CvFunction().prefwrite('user_pin_code', EHPApi.encryptWithAES("This 32 char key have 256 bits..", pin).base64, String);
-    //await _personalInformationGetxController.setUserLogin();
+    await StorageUtils.setPinCode(pin);
+    _savedPinCode = pin;
+    hasSavedPinCode.value = true;
   }
 
-  checkCreatePin(String pinCode) async {
-    //CreatePin
-    if (createPin.isEmpty) {
-      createPin.value = pinCode;
-      pinCodeController.value.text = '';
-    } else {
-      // pinMatch.value = (createPin.value != pinCode) ? false : true;
-      // if (pinMatch.value) {
-      //   pinCode = createPin.value;
-      //   savePinCode(pinCode);
-      //   await CvFunction().showSuccessDialog();
-      //   if (_personalInformationGetxController.isChangePass.value) {
-      //     _personalInformationGetxController.isChangePass.value = false;
-      //     Get.back();
-      //   } else {
-      //     CvFunction().showLoadingPinDialog();
+  String get titleText {
+    if (!isPinStateReady.value) {
+      return 'กำลังเตรียม PIN';
+    }
+    if (isConfirmingCurrentPinBeforeReset) {
+      return 'ยืนยันรหัส PIN เดิม';
+    }
+    if (isNewPassword.value) {
+      return createPin.value.isEmpty
+          ? 'กรุณากำหนด PIN ของคุณ'
+          : 'ยืนยัน PIN ของคุณอีกครั้ง';
+    }
+    return 'ใส่รหัส PIN เพื่อดำเนินการต่อ';
+  }
 
-      //     // await _personalInformationGetxController.getPersonalChronicData();
-      //     await CvFunction().hideLoadingDialog();
-      //     await Get.offAllNamed(Routes.HOME);
-      //   }
-      // } else {
-      //   pinCodeController.value.clear();
-      // }
+  String get helperText {
+    if (!isPinStateReady.value) {
+      return 'กรุณารอสักครู่';
+    }
+    if (!pinMatch.value) {
+      if (isConfirmingCurrentPinBeforeReset) {
+        return 'รหัส PIN เดิมไม่ถูกต้อง กรุณาลองใหม่';
+      }
+      return isNewPassword.value
+          ? 'รหัส PIN ไม่ตรงกัน กรุณากำหนดใหม่อีกครั้ง'
+          : 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่';
+    }
+    if (isConfirmingCurrentPinBeforeReset) {
+      return 'กรอกรหัส PIN ปัจจุบันก่อนตั้งรหัสใหม่';
+    }
+    if (isNewPassword.value) {
+      return createPin.value.isEmpty
+          ? 'รหัสนี้จะถูกเก็บไว้ในเครื่องสำหรับการเข้าใช้งานครั้งถัดไป'
+          : 'กรอกรหัส PIN เดิมอีกครั้งเพื่อยืนยัน';
+    }
+    return '';
+  }
+
+  bool get showErrorState => !pinMatch.value;
+  bool get canUseBiometricAuth =>
+      isPinStateReady.value &&
+      hasSavedPinCode.value &&
+      allowBiometricOnEntry.value &&
+      !isNewPassword.value &&
+      isBiometricAvailable.value;
+
+  Future<void> _initializePinFlow() async {
+    _applyArguments();
+    if (!_hasExplicitAllowBiometricArgument) {
+      allowBiometricOnEntry.value = await StorageUtils.isBiometricEnabled();
+    }
+    _savedPinCode = await StorageUtils.getPinCode();
+    hasSavedPinCode.value = _savedPinCode != null && _savedPinCode!.isNotEmpty;
+
+    if (!hasSavedPinCode.value) {
+      requireCurrentPinBeforeReset.value = false;
+      isNewPassword.value = true;
     }
 
-    // setState(() {});
+    await _loadBiometricAvailability();
+    _biometricAvailabilityWorker = ever<bool>(
+      isBiometricAvailable,
+      (_) => _tryAutoAuthenticateBiometric(),
+    );
+    isPinStateReady.value = true;
+    _tryAutoAuthenticateBiometric();
   }
 
-  checkPin(String pinCode) async {
-    // pinpref = EHPApi.encryptWithAES("This 32 char key have 256 bits..", pinCode ?? '').base64;
-    // final pinMD5 = await CvFunction().prefread('user_pin_code', String);
+  void _applyArguments() {
+    final data = Get.arguments;
+    if (data is Map) {
+      final isNewPasswordArg = data['isNewPassword'];
+      final isOpenProfileArg = data['isOpenProfile'];
+      final allowBiometricArg = data['allowBiometric'];
+      final requireCurrentPinBeforeResetArg =
+          data['requireCurrentPinBeforeReset'];
 
-    // log('Pin login ${pinMD5}');
-    // log('Pin login Enter ${pinpref}');
+      if (isNewPasswordArg is bool) {
+        setNewPassword(isNewPasswordArg);
+      }
+      if (isOpenProfileArg is bool) {
+        setOpenProfile(isOpenProfileArg);
+      }
+      if (requireCurrentPinBeforeResetArg is bool) {
+        setRequireCurrentPinBeforeReset(requireCurrentPinBeforeResetArg);
+      }
+      if (data.containsKey('allowBiometric')) {
+        _hasExplicitAllowBiometricArgument = true;
+      }
+      if (allowBiometricArg is bool) {
+        allowBiometricOnEntry.value = allowBiometricArg;
+      }
+    }
+  }
 
-    // if (pinpref == pinMD5) {
-    //   // log('Pin login Enter ${pinpref}');
-    //   // NormalController().showSuccessDialog().then((value) => NormalController().hideLoadingDialog());
+  Future<void> checkCreatePin(String pinCode) async {
+    if (createPin.isEmpty) {
+      createPin.value = pinCode;
+      pinMatch.value = true;
+      pinCodeController.value.text = '';
+      return;
+    }
 
-    //   await CvFunction().showSuccessDialog();
-    //   Get.back(result: pinMD5);
-    // } else if (pinCodeController.value.text.length == 6) {
-    //   if (pinpref != pinMD5) {
-    //     if (isOpenProfile.value) {
-    //       if (wrongInputCount > 4) {
-    //         // await CvFunction()
-    //         //     .showErrorMessageDialog('ท่านใส่รหัส PIN ผิดเกิน 5 ครั้ง หากลืมรหัสผ่านกรุณากด ลืมรหัส PIN')
-    //         //     .then((value) {
-    //         //       Get.offAndToNamed(Routes.HOME);
-    //         //     });
-    //       }
-    //     } else {
-    //       if (wrongInputCount > 4) {
-    //         await CvFunction()
-    //             .showErrorMessageDialog('ท่านใส่รหัส PIN ผิดเกิน 5 ครั้ง ระบบได้ทำการ Reset Account ในอุปกรณ์นี้แล้ว กรุณาลงทะเบียนใช้งานใหม่')
-    //             .then((value) {
-    //               CvFunction().preferase();
-    //               // Restart.restartApp();
-    //               Get.back();
-    //               // Navigator.of(context).pop();
-    //             });
-    //       } else {
-    //         // await showPopupError('รหัสผ่านไม่ถูกต้อง');
-    //       }
-    //     }
+    if (createPin.value != pinCode) {
+      createPin.value = '';
+      pinMatch.value = false;
+      pinCodeController.value.clear();
+      Get.snackbar(
+        'ยืนยัน PIN ไม่สำเร็จ',
+        'รหัส PIN ไม่ตรงกัน กรุณากำหนดใหม่อีกครั้ง',
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
 
-    //     wrongInputCount.value++;
-    //     pinCodeController.value.clear();
-    //   }
+    await savePinCode(pinCode);
+    createPin.value = '';
+    pinMatch.value = true;
+    pinCodeController.value.clear();
+    isNewPassword.value = false;
+    await _completePinFlow();
+  }
 
-    //   // setState(() {});
-    // } else {
-    //   print('Pin login failed');
-    // }
+  Future<void> checkPin(String pinCode) async {
+    final cachedPinCode = _savedPinCode ?? await StorageUtils.getPinCode();
+    if (cachedPinCode == null || cachedPinCode.isEmpty) {
+      hasSavedPinCode.value = false;
+      isNewPassword.value = true;
+      createPin.value = '';
+      pinMatch.value = true;
+      pinCodeController.value.clear();
+      return;
+    }
+
+    if (cachedPinCode == pinCode) {
+      wrongInputCount.value = 0;
+      pinMatch.value = true;
+      pinCodeController.value.clear();
+      if (isConfirmingCurrentPinBeforeReset) {
+        _startCreateNewPinFlow();
+        return;
+      }
+      await _completePinFlow();
+      return;
+    }
+
+    wrongInputCount.value++;
+    pinMatch.value = false;
+    pinCodeController.value.clear();
+    Get.snackbar(
+      'PIN ไม่ถูกต้อง',
+      'กรุณาลองใหม่อีกครั้ง',
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _startCreateNewPinFlow() {
+    requireCurrentPinBeforeReset.value = false;
+    isNewPassword.value = true;
+    createPin.value = '';
+    pinMatch.value = true;
+    wrongInputCount.value = 0;
+    pinCodeController.value.clear();
+  }
+
+  Future<void> _completePinFlow() async {
+    if (isOpenProfile.value) {
+      Get.back(result: true);
+      return;
+    }
+    Get.offAllNamed(Routes.BOTTOM_NAVIGATORS);
   }
 
   Future<void> _loadBiometricAvailability() async {
@@ -232,7 +344,7 @@ class PinCodeController extends GetxController {
     if (_hasAutoTriggeredBiometric) {
       return;
     }
-    if (isNewPassword.value || !isBiometricAvailable.value) {
+    if (!canUseBiometricAuth) {
       return;
     }
     _hasAutoTriggeredBiometric = true;
@@ -246,18 +358,13 @@ class PinCodeController extends GetxController {
     if (isAuthenticatingBiometric.value) {
       return;
     }
+    if (!canUseBiometricAuth) {
+      return;
+    }
     final authLabel = isFaceIdAvailable.value ? 'Face ID' : 'Fingerprint';
     final authReason = isFaceIdAvailable.value
         ? 'ยืนยันตัวตนด้วย Face ID เพื่อเข้าสู่ระบบ'
         : 'ยืนยันตัวตนด้วยลายนิ้วมือเพื่อเข้าสู่ระบบ';
-    if (!isBiometricAvailable.value) {
-      Get.snackbar(
-        authLabel,
-        'อุปกรณ์นี้ยังไม่รองรับการยืนยันตัวตนแบบไบโอเมตริก',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
     try {
       isAuthenticatingBiometric.value = true;
       final didAuthenticate = await _localAuth.authenticate(
@@ -269,7 +376,7 @@ class PinCodeController extends GetxController {
         ),
       );
       if (didAuthenticate) {
-        Get.toNamed(Routes.BOTTOM_NAVIGATORS);
+        await _completePinFlow();
       }
     } on PlatformException catch (error) {
       final message = error.message ?? 'ไม่สามารถยืนยันตัวตนได้';
@@ -280,25 +387,24 @@ class PinCodeController extends GetxController {
   }
 
   void enterPIN(int index) {
-    // log('isNewPass ${isNewPassword}');
-    // log('PIN ${index}');
-    Get.toNamed(Routes.BOTTOM_NAVIGATORS);
-    // if (isNewPassword.value) {
-    //   isCorrect.value = true;
-    //   if (pinCodeController.value.text.length != 6) {
-    //     pinCodeController.value.text += '${index}';
-    //     // print('dex: 00 ${pinCodeController.value.text}');
-    //     if (pinCodeController.value.text.length == 1) pinMatch.value = true;
-    //     if (pinCodeController.value.text.length == 6) checkCreatePin(pinCodeController.value.text);
-    //   }
-    // } else {
-    //   if (pinCodeController.value.text.length != 6) {
-    //     pinCodeController.value.text += '${index}';
-    //     if (pinCodeController.value.text.length == 6) checkPin(pinCodeController.value.text);
-    //   } else {
-    //     checkPin(pinCodeController.value.text);
-    //   }
-    // }
+    if (!isPinStateReady.value || pinCodeController.value.text.length >= 6) {
+      return;
+    }
+
+    if (!pinMatch.value && pinCodeController.value.text.isEmpty) {
+      pinMatch.value = true;
+    }
+
+    pinCodeController.value.text += '$index';
+
+    if (pinCodeController.value.text.length == 6) {
+      final pinCode = pinCodeController.value.text;
+      if (isNewPassword.value) {
+        checkCreatePin(pinCode);
+      } else {
+        checkPin(pinCode);
+      }
+    }
   }
 
   void deletePIN() {
@@ -307,16 +413,7 @@ class PinCodeController extends GetxController {
         0,
         pinCodeController.value.text.length - 1,
       );
-      // print('Button pressed ${pinCodeController.text}');
       pinMatch.value = true;
-      isCorrect.value = true;
     }
   }
-
-  // Future<void> forgotPIN() async {
-  //   PinView.pinCode = '';
-  //   await CvFunction().preferase();
-
-  //   Get.offAllNamed(AppPages.INITIAL);
-  // }
 }
