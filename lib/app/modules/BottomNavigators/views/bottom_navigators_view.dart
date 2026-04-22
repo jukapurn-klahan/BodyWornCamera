@@ -12,146 +12,123 @@ import '../controllers/bottom_navigators_controller.dart';
 class BottomNavigatorsView extends GetView<BottomNavigatorsController> {
   const BottomNavigatorsView({super.key});
   @override
+  @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
-    return Container(
-      width: double.infinity,
-      height: 100.0,
-      decoration: BoxDecoration(
-        color: Color(0xFF0073DD),
-        boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x1A000000), offset: Offset(0.0, 0.0))],
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(0.0),
-          bottomRight: Radius.circular(0.0),
-          topLeft: Radius.circular(24.0),
-          topRight: Radius.circular(24.0),
-        ),
-      ),
-      child: Scaffold(
-        key: controller.scaffoldKey,
-        bottomNavigationBar: SizedBox(
-          height: 88 + bottom, // give a little extra room to avoid overflow from icon+label stack
-          child: Container(
-            decoration: BoxDecoration(
-              color: FlutterFlowThemeNew.of(context).customColor5,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, -2))],
-            ),
+    return Scaffold(
+      key: controller.scaffoldKey,
+
+      backgroundColor: const Color(0xFFF4F7FB),
+
+      body: Column(
+        children: [
+          Expanded(
             child: Obx(
-              () => BottomNavigationBar(
-                currentIndex: controller.navBottomSelectedIndex.value,
-                onTap: controller.navigationBottomTapped,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white,
-                selectedFontSize: 12,
-                unselectedFontSize: 12,
-                selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-                items: [
-                  BottomNavigationBarItem(
-                    icon: buildSelectedIconWrapper(index: 0, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.camera_enhance),
-                    label: 'หน้าหลัก',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildSelectedIconWrapper(index: 1, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.history_sharp),
-                    label: 'ประวัติ',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildSelectedIconWrapper(index: 2, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.local_activity),
-                    label: 'กิจกรรม',
-                  ),
+              () => PageView(
+                controller: controller.pageContontroller.value,
 
-                  BottomNavigationBarItem(
-                    icon: buildSelectedIconWrapper(index: 3, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.settings_sharp),
-                    label: 'ตั้งค่า',
-                  ),
-                ],
+                onPageChanged: (index) {
+                  controller.navBottomSelectedIndex.value = index;
+                },
+
+                children: const [HomePageView(), HistoryCameraView(), ActivityView(), SettingView()],
               ),
             ),
           ),
-        ),
+        ],
+      ),
 
-        // bottomNavigationBar: SafeArea(
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Color(0xFF7A0019),
-        //       borderRadius: const BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
-        //       boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, -2))],
-        //     ),
-        //     child: Obx(
-        //       () => BottomNavigationBar(
-        //         currentIndex: controller.navBottomSelectedIndex.value,
-        //         onTap: controller.navigationBottomTapped,
-        //         backgroundColor: Colors.transparent,
-        //         elevation: 0,
-        //         type: BottomNavigationBarType.fixed,
-        //         showSelectedLabels: true,
-        //         showUnselectedLabels: true,
-        //         selectedItemColor: Colors.white,
-        //         unselectedItemColor: Colors.white,
-        //         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        //         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-        //         items: [
-        //           BottomNavigationBarItem(
-        //             icon: buildSelectedIconWrapper(index: 0, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.camera_enhance),
-        //             label: 'หน้าหลัก',
-        //           ),
-        //           BottomNavigationBarItem(
-        //             icon: buildSelectedIconWrapper(index: 1, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.history_sharp),
-        //             label: 'ประวัติ',
-        //           ),
+      bottomNavigationBar: Obx(
+        () => Container(
+          padding: EdgeInsets.fromLTRB(16, 12, 16, bottomInset > 0 ? bottomInset : 12),
 
-        //           BottomNavigationBarItem(
-        //             icon: buildSelectedIconWrapper(index: 2, currentIndex: controller.navBottomSelectedIndex.value, icon: Icons.settings_sharp),
-        //             label: 'ตั้งค่า',
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Obx(
-                      () => PageView(
-                        controller: controller.pageContontroller.value,
-                        onPageChanged:
-                            (index) => //ScanView()
-                                controller.navBottomSelectedIndex.value = index,
-                        children: [HomePageView(), HistoryCameraView(), ActivityView(), SettingView()],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          decoration: BoxDecoration(
+            color: FlutterFlowThemeNew.of(context).customColor5,
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 24, offset: const Offset(0, -6))],
+          ),
+
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+
+            children: [
+              _buildNavItem(index: 0, icon: Icons.home_rounded, label: 'หน้าหลัก'),
+
+              _buildNavItem(index: 1, icon: Icons.history_rounded, label: 'ประวัติ'),
+
+              _buildNavItem(index: 2, icon: Icons.local_activity_rounded, label: 'กิจกรรม'),
+
+              _buildNavItem(index: 3, icon: Icons.settings_rounded, label: 'ตั้งค่า'),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget buildSelectedIconWrapper({required int index, required int currentIndex, required IconData icon}) {
-    final isSelected = index == currentIndex;
+  Widget _buildNavItem({required int index, required IconData icon, required String label}) {
+    final isSelected = controller.navBottomSelectedIndex.value == index;
 
-    return isSelected
-        ? Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            child: Icon(icon, color: Color(0xFF164874), size: 26),
-          )
-        : Icon(icon, color: Colors.white, size: 24);
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+
+        onTap: () => controller.navigationBottomTapped(index),
+
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+
+                curve: Curves.easeOut,
+
+                width: isSelected ? 56 : 46,
+
+                height: isSelected ? 56 : 46,
+
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+
+                  color: isSelected ? Colors.white : Colors.white.withOpacity(0.10),
+
+                  border: isSelected
+                      ? Border.all(color: const Color(0xFFFFC107), width: 2)
+                      : Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+
+                  boxShadow: isSelected ? [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 16, offset: const Offset(0, 6))] : [],
+                ),
+
+                child: Icon(icon, size: isSelected ? 27 : 22, color: isSelected ? const Color(0xFF0F223A) : Colors.white70),
+              ),
+
+              const SizedBox(height: 7),
+
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+
+                style: TextStyle(
+                  fontSize: isSelected ? 11.5 : 11,
+
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+
+                  color: isSelected ? Colors.white : Colors.white70,
+
+                  letterSpacing: 0.1,
+                ),
+
+                child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

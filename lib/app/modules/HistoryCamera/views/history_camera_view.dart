@@ -24,16 +24,7 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
       appBar: AppBar(
         backgroundColor: FlutterFlowThemeNew.of(context).primary,
         automaticallyImplyLeading: false,
-        leading: FlutterFlowIconButton(
-          borderColor: Colors.transparent,
-          borderRadius: 30.0,
-          borderWidth: 1.0,
-          buttonSize: 54.0,
-          icon: Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 24.0),
-          onPressed: () async {
-            Get.back();
-          },
-        ),
+
         title: Text(
           'ประวัติย้อนหลัง',
           textAlign: TextAlign.center,
@@ -424,7 +415,7 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            'รายการบันทึก',
+                                                            'Camera 1',
                                                             style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                                                               fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                                                               color: FlutterFlowThemeNew.of(context).secondaryBackground,
@@ -587,7 +578,7 @@ class HistoryCameraView extends GetView<HistoryCameraController> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'รายการบันทึก',
+                                                    'Camera 1',
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: FlutterFlowThemeNew.of(

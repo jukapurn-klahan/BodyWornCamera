@@ -208,7 +208,6 @@ class LoginView extends GetView<LoginController> {
                               }),
                               const SizedBox(height: 8),
 
-                              /// BUTTON
                               Obx(() {
                                 final isEnabled = controller.canSubmitLogin.value && !controller.isSubmittingLogin.value;
 

@@ -6,6 +6,8 @@ import '../modules/BottomNavigators/bindings/bottom_navigators_binding.dart';
 import '../modules/BottomNavigators/views/bottom_navigators_view.dart';
 import '../modules/Camera/bindings/camera_binding.dart';
 import '../modules/Camera/views/camera_view.dart';
+import '../modules/Editpassword/bindings/editpassword_binding.dart';
+import '../modules/Editpassword/views/editpassword_view.dart';
 import '../modules/HistoryCamera/bindings/history_camera_binding.dart';
 import '../modules/HistoryCamera/views/history_camera_view.dart';
 import '../modules/HomePage/bindings/home_page_binding.dart';
@@ -83,6 +85,11 @@ class AppPages {
       name: _Paths.ACTIVITY_TASK_DETAILS_WIDGET,
       page: () => const ActivityTaskDetailsWidgetView(),
       binding: ActivityTaskDetailsWidgetBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDITPASSWORD,
+      page: () => const EditpasswordView(),
+      binding: EditpasswordBinding(),
     ),
   ];
 }

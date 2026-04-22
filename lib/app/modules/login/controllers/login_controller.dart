@@ -1,6 +1,8 @@
 import 'package:body_camera/flutter_flow/flutter_flow_animations.dart';
 import 'package:body_camera/app/routes/app_pages.dart';
 import 'package:body_camera/app/services/user_api_service.dart';
+import 'package:body_camera/utils/config.dart';
+import 'package:body_camera/utils/cv_function.dart';
 import 'package:body_camera/utils/storage_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -159,15 +161,21 @@ class LoginController extends GetxController {
 
     try {
       isSubmittingLogin.value = true;
-      final user = await _userApiService.login(
+      final deviceId = await _resolveDeviceId();
+      final loginResponse = await _userApiService.login(
         username: username,
-        passwordHash: password,
+        password: password,
+        deviceId: deviceId,
       );
-      if (user != null) {
-        debugPrint('Login success: ${user.toJson()}');
-      } else {
-        debugPrint('Login success with empty response body');
-      }
+      final shouldForceNewPin = await _shouldForceNewPinSetup(
+        loginResponse.userInfo.username,
+      );
+      debugPrint(
+        'Login success: ${loginResponse.userInfo.username} (${loginResponse.userInfo.userId})',
+      );
+      debugPrint(
+        'Decoded accessToken timing: iat=${loginResponse.iat}, exp=${loginResponse.exp}',
+      );
       if (rememberPassword.value) {
         await StorageUtils.saveRememberedLogin(
           username: username,
@@ -176,8 +184,26 @@ class LoginController extends GetxController {
       } else {
         await StorageUtils.clearRememberedLogin();
       }
-      await StorageUtils.setAuthenticatedSession(true);
-      Get.offAllNamed(Routes.PINCODE, arguments: {'allowBiometric': false});
+      await GetData.saveAuthenticatedSession(
+        accessTokenValue: loginResponse.accessToken,
+        refreshTokenValue: loginResponse.refreshToken,
+        user: loginResponse.userInfo,
+      );
+      if (shouldForceNewPin) {
+        await StorageUtils.clearPinCode();
+      } else {
+        await StorageUtils.setPinCodeOwnerUsername(
+          loginResponse.userInfo.username,
+        );
+      }
+      await _loadRoleMasterData();
+      Get.offAllNamed(
+        Routes.PINCODE,
+        arguments: {
+          'allowBiometric': false,
+          if (shouldForceNewPin) 'isNewPassword': true,
+        },
+      );
     } on UserApiException catch (error) {
       Get.snackbar(
         'เข้าสู่ระบบไม่สำเร็จ',
@@ -199,19 +225,65 @@ class LoginController extends GetxController {
     }
   }
 
+  Future<String> _resolveDeviceId() async {
+    try {
+      return await cv_func.getDeviceId();
+    } catch (error) {
+      debugPrint('Failed to resolve device id: $error');
+      return '';
+    }
+  }
+
+  Future<void> _loadRoleMasterData() async {
+    try {
+      final roles = await _userApiService.getRoles();
+
+      await StorageUtils.saveRoleMasterData(roles);
+      debugPrint('Loaded role master data: ${roles.length} items');
+    } catch (error) {
+      debugPrint('Failed to load role master data: $error');
+    }
+  }
+
   Future<void> _loadRememberedLogin() async {
     final shouldRemember = await StorageUtils.isRememberLoginEnabled();
-    if (!shouldRemember) {
-      return;
-    }
-
     final rememberedUsername = await StorageUtils.getRememberedUsername() ?? '';
     final rememberedPassword = await StorageUtils.getRememberedPassword() ?? '';
+    final preservedUsername = await GetData.getUsernameValue();
+    final resolvedUsername = rememberedUsername.isNotEmpty
+        ? rememberedUsername
+        : preservedUsername;
 
-    rememberPassword.value = true;
-    usernameController.text = rememberedUsername;
-    passwordController.text = rememberedPassword;
+    if (resolvedUsername.isNotEmpty) {
+      usernameController.text = resolvedUsername;
+    }
+    if (shouldRemember) {
+      rememberPassword.value = true;
+      passwordController.text = rememberedPassword;
+    }
     _updateCanSubmitLogin();
+  }
+
+  Future<bool> _shouldForceNewPinSetup(String nextUsername) async {
+    final normalizedNextUsername = nextUsername.trim();
+    if (normalizedNextUsername.isEmpty) {
+      return false;
+    }
+
+    final hasPinCode = await StorageUtils.hasPinCode();
+    if (!hasPinCode) {
+      return false;
+    }
+
+    final pinCodeOwnerUsername =
+        await StorageUtils.getPinCodeOwnerUsername() ??
+        (await GetData.getUsernameValue()).trim();
+
+    if (pinCodeOwnerUsername.isEmpty) {
+      return false;
+    }
+
+    return pinCodeOwnerUsername != normalizedNextUsername;
   }
 
   @override

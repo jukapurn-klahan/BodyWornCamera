@@ -13,6 +13,11 @@ import 'package:get/get.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:http/http.dart' as http;
 
+const bool _enableApplePushNotifications = bool.fromEnvironment(
+  'ENABLE_APPLE_PUSH_NOTIFICATIONS',
+  defaultValue: false,
+);
+
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
@@ -53,7 +58,24 @@ class NotificationServices {
   bool _isInitialized = false;
 
   static void registerBackgroundHandler() {
+    if (!supportsRemoteMessaging) {
+      return;
+    }
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
+  static bool get supportsRemoteMessaging {
+    if (kIsWeb) {
+      return false;
+    }
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return true;
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      return _enableApplePushNotifications;
+    }
+    return false;
   }
 
   static Future<String> getAccessToken() async {
@@ -104,8 +126,17 @@ class NotificationServices {
     _isInitialized = true;
 
     try {
-      await _requestFcmPermission();
       await _initLocalNotifications();
+      if (!supportsRemoteMessaging) {
+        log(
+          'Remote notifications are disabled on this platform/build. '
+          'On Apple platforms, enable them only when using a provisioning '
+          'profile that supports Push Notifications.',
+          name: 'NotificationServices',
+        );
+        return;
+      }
+      await _requestFcmPermission();
       await _setForegroundPresentationOptions();
       _registerForegroundMessageHandler();
       _registerNotificationOpenHandler();
@@ -165,6 +196,9 @@ class NotificationServices {
     }
 
     try {
+      if (!supportsRemoteMessaging) {
+        return;
+      }
       await _firebaseMessaging.deleteToken();
     } catch (error, stackTrace) {
       log(
@@ -278,6 +312,10 @@ class NotificationServices {
   }
 
   Future<String?> getCurrentFcmToken() async {
+    if (!supportsRemoteMessaging) {
+      return null;
+    }
+
     try {
       if (_isApplePlatform) {
         final apnsToken = await _waitForApnsToken();

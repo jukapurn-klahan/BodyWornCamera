@@ -11,12 +11,10 @@ class ButtonSheetLogoutWidgetDartWidget extends StatefulWidget {
   final Future<void> Function()? onConfirm;
 
   @override
-  State<ButtonSheetLogoutWidgetDartWidget> createState() =>
-      _ButtonSheetLogoutWidgetDartWidgetState();
+  State<ButtonSheetLogoutWidgetDartWidget> createState() => _ButtonSheetLogoutWidgetDartWidgetState();
 }
 
-class _ButtonSheetLogoutWidgetDartWidgetState
-    extends State<ButtonSheetLogoutWidgetDartWidget> {
+class _ButtonSheetLogoutWidgetDartWidgetState extends State<ButtonSheetLogoutWidgetDartWidget> {
   late ButtonSheetLogoutWidgetDartModel _model;
   bool _isProcessingConfirm = false;
 
@@ -65,13 +63,7 @@ class _ButtonSheetLogoutWidgetDartWidgetState
             topLeft: Radius.circular(16.0),
             topRight: Radius.circular(16.0),
           ),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 24.0,
-              color: Color(0x1A143B78),
-              offset: Offset(0.0, -6.0),
-            ),
-          ],
+          boxShadow: const [BoxShadow(blurRadius: 24.0, color: Color(0x1A143B78), offset: Offset(0.0, -6.0))],
         ),
         child: Align(
           alignment: const AlignmentDirectional(0.00, 1.00),
@@ -90,10 +82,7 @@ class _ButtonSheetLogoutWidgetDartWidgetState
                       Container(
                         width: 80.0,
                         height: 8.0,
-                        decoration: BoxDecoration(
-                          color: handleColor,
-                          borderRadius: BorderRadius.circular(100.0),
-                        ),
+                        decoration: BoxDecoration(color: handleColor, borderRadius: BorderRadius.circular(100.0)),
                       ),
                     ],
                   ),
@@ -110,29 +99,17 @@ class _ButtonSheetLogoutWidgetDartWidgetState
                         //แน่ใจว่าต้องการออกจากระบบหรือไม่
                         Column(
                           mainAxisSize: MainAxisSize.max,
-                          children:
-                              [
-                                    Text(
-                                      'คุณต้องการออกจากระบบหรือไม่?',
-                                      style: FlutterFlowThemeNew.of(context)
-                                          .bodyLarge
-                                          .override(
-                                            fontFamily: FlutterFlowThemeNew.of(
-                                              context,
-                                            ).bodyLargeFamily,
-                                            color: titleColor,
-                                            fontWeight: FontWeight.w600,
-                                            useGoogleFonts: GoogleFonts.asMap()
-                                                .containsKey(
-                                                  FlutterFlowThemeNew.of(
-                                                    context,
-                                                  ).bodyLargeFamily,
-                                                ),
-                                          ),
-                                    ),
-                                  ]
-                                  .divide(const SizedBox(height: 16.0))
-                                  .around(const SizedBox(height: 16.0)),
+                          children: [
+                            Text(
+                              'คุณต้องการออกจากระบบหรือไม่?',
+                              style: FlutterFlowThemeNew.of(context).bodyLarge.override(
+                                fontFamily: FlutterFlowThemeNew.of(context).bodyLargeFamily,
+                                color: titleColor,
+                                fontWeight: FontWeight.w600,
+                                useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).bodyLargeFamily),
+                              ),
+                            ),
+                          ].divide(const SizedBox(height: 16.0)).around(const SizedBox(height: 16.0)),
                         ),
                         const SizedBox(height: 8.0),
                         //ตกลง
@@ -151,42 +128,24 @@ class _ButtonSheetLogoutWidgetDartWidgetState
                             borderRadius: BorderRadius.circular(16.0),
                             child: Column(
                               children: [
-                                Divider(
-                                  height: 1.0,
-                                  thickness: 1.0,
-                                  color: dividerColor,
-                                ),
+                                Divider(height: 1.0, thickness: 1.0, color: dividerColor),
                                 const SizedBox(height: 8.0),
                                 Container(
                                   width: double.infinity,
                                   height: 56.0,
-                                  decoration: BoxDecoration(
-                                    color: confirmBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
+
                                   child: Row(
                                     mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         'ตกลง',
-                                        style: FlutterFlowThemeNew.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowThemeNew.of(
-                                                    context,
-                                                  ).bodyMediumFamily,
-                                              color: confirmTextColor,
-                                              fontWeight: FontWeight.w700,
-                                              useGoogleFonts:
-                                                  GoogleFonts.asMap()
-                                                      .containsKey(
-                                                        FlutterFlowThemeNew.of(
-                                                          context,
-                                                        ).bodyMediumFamily,
-                                                      ),
-                                            ),
+                                        style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                          color: confirmTextColor,
+                                          fontWeight: FontWeight.w700,
+                                          useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).bodyMediumFamily),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -206,42 +165,24 @@ class _ButtonSheetLogoutWidgetDartWidgetState
                             borderRadius: BorderRadius.circular(16.0),
                             child: Column(
                               children: [
-                                Divider(
-                                  height: 1.0,
-                                  thickness: 1.0,
-                                  color: dividerColor,
-                                ),
+                                Divider(height: 1.0, thickness: 1.0, color: dividerColor),
                                 const SizedBox(height: 8.0),
                                 Container(
                                   width: 200.0,
                                   height: 56.0,
-                                  decoration: BoxDecoration(
-                                    color: cancelBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
+
                                   child: Row(
                                     mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         'ยกเลิก',
-                                        style: FlutterFlowThemeNew.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowThemeNew.of(
-                                                    context,
-                                                  ).bodyMediumFamily,
-                                              color: cancelTextColor,
-                                              fontWeight: FontWeight.w700,
-                                              useGoogleFonts:
-                                                  GoogleFonts.asMap()
-                                                      .containsKey(
-                                                        FlutterFlowThemeNew.of(
-                                                          context,
-                                                        ).bodyMediumFamily,
-                                                      ),
-                                            ),
+                                        style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                          color: cancelTextColor,
+                                          fontWeight: FontWeight.w700,
+                                          useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).bodyMediumFamily),
+                                        ),
                                       ),
                                     ],
                                   ),

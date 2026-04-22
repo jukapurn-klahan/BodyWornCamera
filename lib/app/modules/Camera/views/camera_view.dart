@@ -3,12 +3,13 @@ import 'dart:math' as math;
 
 import 'package:badges/badges.dart' as badges;
 import 'package:body_camera/flutter_flow/flutter_flow_icon_button.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../widgets/calendar_widget/b_t_date_widget.dart';
@@ -21,12 +22,14 @@ class CameraView extends GetView<CameraController> {
     if (!controller.isPlayerReady.value) {
       return;
     }
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) =>
-            _CameraVlcFullScreen(streamUrl: controller.cameraStreamUrl),
-      ),
-    );
+
+    final navigator = Navigator.of(context);
+    await controller.pausePreview();
+    try {
+      await navigator.push(MaterialPageRoute(builder: (_) => _CameraChewieFullScreen(streamUrl: controller.cameraStreamUrl)));
+    } finally {
+      await controller.resumePreview();
+    }
   }
 
   @override
@@ -50,11 +53,7 @@ class CameraView extends GetView<CameraController> {
             borderRadius: 30.0,
             borderWidth: 1.0,
             buttonSize: 54.0,
-            icon: Icon(
-              Icons.keyboard_arrow_left_rounded,
-              color: Colors.white,
-              size: 24.0,
-            ),
+            icon: Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 24.0),
             onPressed: () async {
               await controller.closeWithPreview();
             },
@@ -65,9 +64,7 @@ class CameraView extends GetView<CameraController> {
               fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
               color: FlutterFlowThemeNew.of(context).secondaryBackground,
               letterSpacing: 0.0,
-              useGoogleFonts: !FlutterFlowThemeNew.of(
-                context,
-              ).titleSmallIsCustom,
+              useGoogleFonts: !FlutterFlowThemeNew.of(context).titleSmallIsCustom,
             ),
           ),
           actions: [],
@@ -79,13 +76,7 @@ class CameraView extends GetView<CameraController> {
           height: double.infinity,
           decoration: BoxDecoration(
             color: FlutterFlowThemeNew.of(context).primaryBackground,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 4.0,
-                color: Color(0x33000000),
-                offset: Offset(0.0, 0.0),
-              ),
-            ],
+            boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x33000000), offset: Offset(0.0, 0.0))],
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(0.0),
               bottomRight: Radius.circular(0.0),
@@ -95,21 +86,16 @@ class CameraView extends GetView<CameraController> {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final previewHeight = math.min(
-                constraints.maxWidth * 9 / 16,
-                constraints.maxHeight * 0.35,
-              );
+              final previewHeight = math.min(constraints.maxWidth * 9 / 16, constraints.maxHeight * 0.35);
               return Column(
                 children: [
                   SizedBox(
                     height: previewHeight,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24.0),
-                        topRight: Radius.circular(24.0),
-                      ),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
                       child: Obx(() {
-                        final player = controller.vlc;
+                        final player = controller.chewieController;
+                        final videoPlayerController = controller.videoPlayerController;
                         final isOffline = controller.isOffline.value;
 
                         if (isOffline) {
@@ -118,28 +104,16 @@ class CameraView extends GetView<CameraController> {
                             alignment: Alignment.center,
                             child: const Text(
                               'OFFLINE',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.0,
-                              ),
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 1.0),
                             ),
                           );
                         }
 
-                        if (!controller.isPlayerReady.value || player == null) {
+                        if (!controller.isPlayerReady.value || player == null || videoPlayerController == null) {
                           return Container(
                             color: Colors.black,
                             alignment: Alignment.center,
-                            child: const SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.8,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child: const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.8, color: Colors.white)),
                           );
                         }
 
@@ -149,32 +123,20 @@ class CameraView extends GetView<CameraController> {
                             Container(
                               key: controller.webViewCaptureKey,
                               color: Colors.black,
-                              child: VlcPlayer(
-                                controller: player,
-                                aspectRatio: 16 / 9,
-                                placeholder: const SizedBox.shrink(),
-                              ),
+                              child: Chewie(controller: player),
                             ),
-                            Positioned.fill(
-                              child: _VlcLoadingOverlay(controller: player),
-                            ),
+                            Positioned.fill(child: _VideoLoadingOverlay(controller: videoPlayerController)),
                             Positioned(
                               right: 10,
                               bottom: 10,
                               child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                                 child: IconButton(
                                   tooltip: 'เต็มจอ',
 
                                   //   onPressed: () =>    AppDialogs.showLoading(),
                                   onPressed: () => _openFullscreen(context),
-                                  icon: const Icon(
-                                    Icons.fullscreen,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
+                                  icon: const Icon(Icons.fullscreen, color: Colors.white, size: 30),
                                 ),
                               ),
                             ),
@@ -199,16 +161,10 @@ class CameraView extends GetView<CameraController> {
                       children: [
                         Obx(
                           () => _IconAction(
-                            icon: controller.isCapturingSnapshot.value
-                                ? Icons.hourglass_top_rounded
-                                : Icons.camera_alt,
-                            onTap: controller.isCapturingSnapshot.value
-                                ? null
-                                : () {},
+                            icon: controller.isCapturingSnapshot.value ? Icons.hourglass_top_rounded : Icons.camera_alt,
+                            onTap: controller.isCapturingSnapshot.value ? null : () {},
                             //    onTap: controller.isCapturingSnapshot.value ? null : controller.captureSnapshot,
-                            color: controller.isCapturingSnapshot.value
-                                ? Colors.grey
-                                : Colors.black87,
+                            color: controller.isCapturingSnapshot.value ? Colors.grey : Colors.black87,
                           ),
                         ),
                         const _IconAction(icon: Icons.videocam),
@@ -256,15 +212,9 @@ class CameraView extends GetView<CameraController> {
                             width: 100.0,
                             height: 48.0,
                             decoration: BoxDecoration(
-                              color: FlutterFlowThemeNew.of(
-                                context,
-                              ).secondaryBackground,
+                              color: FlutterFlowThemeNew.of(context).secondaryBackground,
                               borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                color: FlutterFlowThemeNew.of(
-                                  context,
-                                ).alternate,
-                              ),
+                              border: Border.all(color: FlutterFlowThemeNew.of(context).alternate),
                             ),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -278,13 +228,8 @@ class CameraView extends GetView<CameraController> {
                                   context: context,
                                   builder: (context) {
                                     return Padding(
-                                      padding: MediaQuery.of(
-                                        context,
-                                      ).viewInsets,
-                                      child: const BTDateWidget(
-                                        firstDate: false,
-                                        maxPastMonths: 3,
-                                      ),
+                                      padding: MediaQuery.of(context).viewInsets,
+                                      child: const BTDateWidget(firstDate: false, maxPastMonths: 3),
                                     );
                                   },
                                 );
@@ -294,18 +239,9 @@ class CameraView extends GetView<CameraController> {
                                 children: [
                                   Expanded(
                                     child: Align(
-                                      alignment: const AlignmentDirectional(
-                                        -1.0,
-                                        0.0,
-                                      ),
+                                      alignment: const AlignmentDirectional(-1.0, 0.0),
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsetsDirectional.fromSTEB(
-                                              12.0,
-                                              4.0,
-                                              0.0,
-                                              4.0,
-                                            ),
+                                        padding: const EdgeInsetsDirectional.fromSTEB(12.0, 4.0, 0.0, 4.0),
                                         child: TextFormField(
                                           //       controller: controller.textControllerDate.value,
                                           autofocus: false,
@@ -313,72 +249,30 @@ class CameraView extends GetView<CameraController> {
                                           obscureText: false,
                                           decoration: InputDecoration(
                                             isDense: true,
-                                            hintStyle:
-                                                FlutterFlowThemeNew.of(
-                                                  context,
-                                                ).labelLarge.override(
-                                                  fontFamily:
-                                                      FlutterFlowThemeNew.of(
-                                                        context,
-                                                      ).labelLargeFamily,
-                                                  letterSpacing: 0.0,
-                                                  useGoogleFonts:
-                                                      GoogleFonts.asMap()
-                                                          .containsKey(
-                                                            FlutterFlowThemeNew.of(
-                                                              context,
-                                                            ).labelLargeFamily,
-                                                          ),
-                                                ),
+                                            hintStyle: FlutterFlowThemeNew.of(context).labelLarge.override(
+                                              fontFamily: FlutterFlowThemeNew.of(context).labelLargeFamily,
+                                              letterSpacing: 0.0,
+                                              useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).labelLargeFamily),
+                                            ),
                                             enabledBorder: InputBorder.none,
                                             focusedBorder: InputBorder.none,
                                             errorBorder: InputBorder.none,
-                                            focusedErrorBorder:
-                                                InputBorder.none,
-                                            contentPadding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                  16.0,
-                                                  0.0,
-                                                  16.0,
-                                                  0.0,
-                                                ),
+                                            focusedErrorBorder: InputBorder.none,
+                                            contentPadding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                                           ),
-                                          style: FlutterFlowThemeNew.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily:
-                                                    FlutterFlowThemeNew.of(
-                                                      context,
-                                                    ).bodyMediumFamily,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
-                                                useGoogleFonts:
-                                                    GoogleFonts.asMap()
-                                                        .containsKey(
-                                                          FlutterFlowThemeNew.of(
-                                                            context,
-                                                          ).bodyMediumFamily,
-                                                        ),
-                                              ),
+                                          style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                            fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w500,
+                                            useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).bodyMediumFamily),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                          0.0,
-                                          0.0,
-                                          12.0,
-                                          0.0,
-                                        ),
-                                    child: Icon(
-                                      Icons.calendar_month_rounded,
-                                      color: FlutterFlowThemeNew.of(
-                                        context,
-                                      ).primary,
-                                      size: 20.0,
-                                    ),
+                                    padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                                    child: Icon(Icons.calendar_month_rounded, color: FlutterFlowThemeNew.of(context).primary, size: 20.0),
                                   ),
                                 ],
                               ),
@@ -393,38 +287,20 @@ class CameraView extends GetView<CameraController> {
                     alignment: Alignment(-1.0, 0),
                     child: TabBar(
                       labelColor: Color(0xFF164874),
-                      unselectedLabelColor: FlutterFlowThemeNew.of(
-                        context,
-                      ).secondaryText,
-                      labelStyle: FlutterFlowThemeNew.of(context).titleSmall
-                          .override(
-                            fontFamily: FlutterFlowThemeNew.of(
-                              context,
-                            ).titleSmallFamily,
-                            letterSpacing: 0.0,
-                            useGoogleFonts: GoogleFonts.asMap().containsKey(
-                              FlutterFlowThemeNew.of(context).titleSmallFamily,
-                            ),
-                          ),
-                      unselectedLabelStyle: FlutterFlowThemeNew.of(context)
-                          .labelLarge
-                          .override(
-                            fontFamily: FlutterFlowThemeNew.of(
-                              context,
-                            ).labelLargeFamily,
-                            letterSpacing: 0.0,
-                            useGoogleFonts: GoogleFonts.asMap().containsKey(
-                              FlutterFlowThemeNew.of(context).labelLargeFamily,
-                            ),
-                          ),
+                      unselectedLabelColor: FlutterFlowThemeNew.of(context).secondaryText,
+                      labelStyle: FlutterFlowThemeNew.of(context).titleSmall.override(
+                        fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
+                        letterSpacing: 0.0,
+                        useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).titleSmallFamily),
+                      ),
+                      unselectedLabelStyle: FlutterFlowThemeNew.of(context).labelLarge.override(
+                        fontFamily: FlutterFlowThemeNew.of(context).labelLargeFamily,
+                        letterSpacing: 0.0,
+                        useGoogleFonts: GoogleFonts.asMap().containsKey(FlutterFlowThemeNew.of(context).labelLargeFamily),
+                      ),
                       indicatorColor: Color(0xFF164874),
                       indicatorWeight: 2.0,
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                        16.0,
-                        0.0,
-                        16.0,
-                        0.0,
-                      ),
+                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                       tabs: [
                         Tab(text: 'รูปภาพ'),
                         Tab(text: 'วิดิโอ'),
@@ -443,42 +319,20 @@ class CameraView extends GetView<CameraController> {
                           itemCount: 15,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0,
-                                8.0,
-                                16.0,
-                                8.0,
-                              ),
+                              padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
                               child: badges.Badge(
                                 showBadge: false,
                                 shape: badges.BadgeShape.circle,
-                                badgeColor: FlutterFlowThemeNew.of(
-                                  context,
-                                ).primary,
+                                badgeColor: FlutterFlowThemeNew.of(context).primary,
                                 elevation: 4.0,
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                  6.0,
-                                  6.0,
-                                  6.0,
-                                  6.0,
-                                ),
-                                position: badges.BadgePosition.topEnd(
-                                  end: -5,
-                                  top: -3,
-                                ),
+                                padding: EdgeInsetsDirectional.fromSTEB(6.0, 6.0, 6.0, 6.0),
+                                position: badges.BadgePosition.topEnd(end: -5, top: -3),
                                 animationType: badges.BadgeAnimationType.scale,
                                 toAnimate: true,
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 1.0,
+                                  width: MediaQuery.of(context).size.width * 1.0,
                                   decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 3.0,
-                                        color: Color(0x33000000),
-                                        offset: Offset(0.0, 1.0),
-                                      ),
-                                    ],
+                                    boxShadow: [BoxShadow(blurRadius: 3.0, color: Color(0x33000000), offset: Offset(0.0, 1.0))],
                                     color: Colors.white,
 
                                     borderRadius: BorderRadius.circular(10.0),
@@ -487,112 +341,48 @@ class CameraView extends GetView<CameraController> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                          16.0,
-                                          0.0,
-                                          0.0,
-                                          0.0,
-                                        ),
+                                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8.0,
-                                          ),
-                                          child: Image.asset(
-                                            'assets/images/car.png',
-                                            width: 50.0,
-                                            height: 50.0,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8.0),
+                                          child: Image.asset('assets/images/car.png', width: 50.0, height: 50.0, fit: BoxFit.cover),
                                         ),
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                16.0,
-                                                8.0,
-                                                0.0,
-                                                16.0,
-                                              ),
+                                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 0.0, 16.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
                                                   Expanded(
                                                     child: Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional.fromSTEB(
-                                                            0.0,
-                                                            0.0,
-                                                            16.0,
-                                                            0.0,
-                                                          ),
+                                                      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
                                                       child: Text(
                                                         'รายการบันทึก',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                        overflow: TextOverflow.ellipsis,
                                                         maxLines: 1,
-                                                        style:
-                                                            FlutterFlowThemeNew.of(
-                                                                  context,
-                                                                ).bodyLarge
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Sarabun',
-                                                                  lineHeight:
-                                                                      2.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                ),
+                                                        style: FlutterFlowThemeNew.of(
+                                                          context,
+                                                        ).bodyLarge.override(fontFamily: 'Sarabun', lineHeight: 2.0, fontWeight: FontWeight.w500),
                                                       ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                               Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.fromSTEB(
-                                                      0.0,
-                                                      0.0,
-                                                      16.0,
-                                                      0.0,
-                                                    ),
-                                                child: Text(
-                                                  '3k',
-                                                  style: FlutterFlowThemeNew.of(
-                                                    context,
-                                                  ).bodySmall,
-                                                ),
+                                                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                                                child: Text('3k', style: FlutterFlowThemeNew.of(context).bodySmall),
                                               ),
                                               Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.fromSTEB(
-                                                      0.0,
-                                                      0.0,
-                                                      16.0,
-                                                      0.0,
-                                                    ),
+                                                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Text(
-                                                      '08/01/2569 14:54',
-                                                      style:
-                                                          FlutterFlowThemeNew.of(
-                                                            context,
-                                                          ).bodySmall,
-                                                    ),
-                                                  ],
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [Text('08/01/2569 14:54', style: FlutterFlowThemeNew.of(context).bodySmall)],
                                                 ),
                                               ),
                                             ],
@@ -610,42 +400,20 @@ class CameraView extends GetView<CameraController> {
                           itemCount: 15,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0,
-                                8.0,
-                                16.0,
-                                8.0,
-                              ),
+                              padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 16.0, 8.0),
                               child: badges.Badge(
                                 showBadge: false,
                                 shape: badges.BadgeShape.circle,
-                                badgeColor: FlutterFlowThemeNew.of(
-                                  context,
-                                ).primary,
+                                badgeColor: FlutterFlowThemeNew.of(context).primary,
                                 elevation: 4.0,
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                  6.0,
-                                  6.0,
-                                  6.0,
-                                  6.0,
-                                ),
-                                position: badges.BadgePosition.topEnd(
-                                  end: -5,
-                                  top: -3,
-                                ),
+                                padding: EdgeInsetsDirectional.fromSTEB(6.0, 6.0, 6.0, 6.0),
+                                position: badges.BadgePosition.topEnd(end: -5, top: -3),
                                 animationType: badges.BadgeAnimationType.scale,
                                 toAnimate: true,
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 1.0,
+                                  width: MediaQuery.of(context).size.width * 1.0,
                                   decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 3.0,
-                                        color: Color(0x33000000),
-                                        offset: Offset(0.0, 1.0),
-                                      ),
-                                    ],
+                                    boxShadow: [BoxShadow(blurRadius: 3.0, color: Color(0x33000000), offset: Offset(0.0, 1.0))],
                                     color: Colors.white,
 
                                     borderRadius: BorderRadius.circular(10.0),
@@ -654,112 +422,48 @@ class CameraView extends GetView<CameraController> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                          16.0,
-                                          0.0,
-                                          0.0,
-                                          0.0,
-                                        ),
+                                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8.0,
-                                          ),
-                                          child: Image.asset(
-                                            'assets/images/car.png',
-                                            width: 50.0,
-                                            height: 50.0,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8.0),
+                                          child: Image.asset('assets/images/car.png', width: 50.0, height: 50.0, fit: BoxFit.cover),
                                         ),
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                16.0,
-                                                8.0,
-                                                0.0,
-                                                16.0,
-                                              ),
+                                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 8.0, 0.0, 16.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
                                                   Expanded(
                                                     child: Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional.fromSTEB(
-                                                            0.0,
-                                                            0.0,
-                                                            16.0,
-                                                            0.0,
-                                                          ),
+                                                      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
                                                       child: Text(
                                                         'รายการวิดิโอ',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                        overflow: TextOverflow.ellipsis,
                                                         maxLines: 1,
-                                                        style:
-                                                            FlutterFlowThemeNew.of(
-                                                                  context,
-                                                                ).bodyLarge
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Sarabun',
-                                                                  lineHeight:
-                                                                      2.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                ),
+                                                        style: FlutterFlowThemeNew.of(
+                                                          context,
+                                                        ).bodyLarge.override(fontFamily: 'Sarabun', lineHeight: 2.0, fontWeight: FontWeight.w500),
                                                       ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                               Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.fromSTEB(
-                                                      0.0,
-                                                      0.0,
-                                                      16.0,
-                                                      0.0,
-                                                    ),
-                                                child: Text(
-                                                  '3k',
-                                                  style: FlutterFlowThemeNew.of(
-                                                    context,
-                                                  ).bodySmall,
-                                                ),
+                                                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                                                child: Text('3k', style: FlutterFlowThemeNew.of(context).bodySmall),
                                               ),
                                               Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.fromSTEB(
-                                                      0.0,
-                                                      0.0,
-                                                      16.0,
-                                                      0.0,
-                                                    ),
+                                                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Text(
-                                                      '08/01/2569 14:54',
-                                                      style:
-                                                          FlutterFlowThemeNew.of(
-                                                            context,
-                                                          ).bodySmall,
-                                                    ),
-                                                  ],
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [Text('08/01/2569 14:54', style: FlutterFlowThemeNew.of(context).bodySmall)],
                                                 ),
                                               ),
                                             ],
@@ -890,42 +594,87 @@ class _IconAction extends StatelessWidget {
   }
 }
 
-class _CameraVlcFullScreen extends StatefulWidget {
+class _CameraChewieFullScreen extends StatefulWidget {
   final String streamUrl;
-  const _CameraVlcFullScreen({required this.streamUrl});
+  const _CameraChewieFullScreen({required this.streamUrl});
 
   @override
-  State<_CameraVlcFullScreen> createState() => _CameraVlcFullScreenState();
+  State<_CameraChewieFullScreen> createState() => _CameraChewieFullScreenState();
 }
 
-class _CameraVlcFullScreenState extends State<_CameraVlcFullScreen> {
-  late final VlcPlayerController _fullscreenVlc;
+class _CameraChewieFullScreenState extends State<_CameraChewieFullScreen> {
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _isOffline = false;
 
   @override
   void initState() {
     super.initState();
-    _fullscreenVlc = VlcPlayerController.network(
-      widget.streamUrl,
-      autoPlay: true,
-      options: VlcPlayerOptions(),
-    );
-    unawaited(
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]),
-    );
-    unawaited(
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
-    );
+    unawaited(_initializeFullscreenPlayer());
+    unawaited(SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]));
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+  }
+
+  Future<void> _initializeFullscreenPlayer() async {
+    VideoPlayerController? player;
+    ChewieController? chewie;
+    try {
+      player = await CameraController.createStreamPlayer(widget.streamUrl);
+
+      final aspectRatio = player.value.aspectRatio > 0 ? player.value.aspectRatio : 16 / 9;
+      chewie = ChewieController(
+        videoPlayerController: player,
+        aspectRatio: aspectRatio,
+        autoPlay: true,
+        looping: false,
+        showControls: true,
+        allowFullScreen: false,
+        allowMuting: false,
+        allowPlaybackSpeedChanging: false,
+        showOptions: false,
+        isLive: true,
+        materialProgressColors: ChewieProgressColors(
+          playedColor: Colors.white,
+          handleColor: Colors.white,
+          bufferedColor: Colors.white38,
+          backgroundColor: Colors.white24,
+        ),
+      );
+
+      if (!mounted) {
+        chewie.dispose();
+        await player.dispose();
+        return;
+      }
+
+      setState(() {
+        _videoPlayerController = player;
+        _chewieController = chewie;
+        _isOffline = false;
+      });
+    } catch (_) {
+      chewie?.dispose();
+      if (player != null) {
+        await player.dispose();
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _isOffline = true;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _fullscreenVlc.dispose();
-    unawaited(
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
-    );
+    _chewieController?.dispose();
+    final player = _videoPlayerController;
+    _videoPlayerController = null;
+    if (player != null) {
+      unawaited(player.dispose());
+    }
+    unawaited(SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]));
     unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
     super.dispose();
   }
@@ -937,29 +686,43 @@ class _CameraVlcFullScreenState extends State<_CameraVlcFullScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: VlcPlayer(
-                  controller: _fullscreenVlc,
-                  aspectRatio: 16 / 9,
-                  placeholder: const SizedBox.shrink(),
+          if (_isOffline)
+            const Positioned.fill(
+              child: ColoredBox(
+                color: Colors.black,
+                child: Center(
+                  child: Text(
+                    'OFFLINE',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 1.0),
+                  ),
+                ),
+              ),
+            )
+          else if (_chewieController == null || _videoPlayerController == null)
+            const Positioned.fill(
+              child: ColoredBox(
+                color: Colors.black,
+                child: Center(
+                  child: SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.8, color: Colors.white)),
+                ),
+              ),
+            )
+          else ...[
+            Positioned.fill(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: _videoPlayerController!.value.aspectRatio > 0 ? _videoPlayerController!.value.aspectRatio : 16 / 9,
+                  child: Chewie(controller: _chewieController!),
                 ),
               ),
             ),
-          ),
-          Positioned.fill(
-            child: _VlcLoadingOverlay(controller: _fullscreenVlc),
-          ),
+            Positioned.fill(child: _VideoLoadingOverlay(controller: _videoPlayerController!)),
+          ],
           Positioned(
             top: MediaQuery.paddingOf(context).top + 8,
             left: MediaQuery.paddingOf(context).left + 8,
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(999),
-              ),
+              decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(999)),
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
                 tooltip: 'ปิด',
@@ -973,20 +736,17 @@ class _CameraVlcFullScreenState extends State<_CameraVlcFullScreen> {
   }
 }
 
-class _VlcLoadingOverlay extends StatelessWidget {
-  final VlcPlayerController controller;
-  const _VlcLoadingOverlay({required this.controller});
+class _VideoLoadingOverlay extends StatelessWidget {
+  final VideoPlayerController controller;
+  const _VideoLoadingOverlay({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<VlcPlayerValue>(
+    return ValueListenableBuilder<VideoPlayerValue>(
       valueListenable: controller,
       builder: (context, value, _) {
         final hasError = value.hasError;
-        final isLoading =
-            !hasError &&
-            value.playingState != PlayingState.playing &&
-            value.playingState != PlayingState.recording;
+        final isLoading = !hasError && (!value.isInitialized || value.isBuffering);
 
         if (!hasError && !isLoading) {
           return const SizedBox.shrink();
@@ -999,25 +759,12 @@ class _VlcLoadingOverlay extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!hasError)
-                    const SizedBox(
-                      width: 26,
-                      height: 26,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.8,
-                        color: Colors.white,
-                      ),
-                    ),
+                  if (!hasError) const SizedBox(width: 26, height: 26, child: CircularProgressIndicator(strokeWidth: 2.8, color: Colors.white)),
                   if (!hasError) const SizedBox(height: 8),
                   if (hasError)
                     const Text(
                       'OFFLINE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.0,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 1.0),
                     ),
                 ],
               ),

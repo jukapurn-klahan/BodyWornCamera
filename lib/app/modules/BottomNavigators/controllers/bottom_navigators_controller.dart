@@ -13,9 +13,7 @@ class BottomNavigatorsController extends GetxController {
   void onInit() {
     super.onInit();
 
-
-
-   // DosaveData();
+    // DosaveData();
   }
 
   @override
@@ -23,8 +21,6 @@ class BottomNavigatorsController extends GetxController {
     super.onReady();
     //await AtlasAIGetxcontroller().sendLoginSuccessEvent();
   }
-
-
 
   @override
   void onClose() {

@@ -1,74 +1,19 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:body_camera/app/data/models/activity_report_model.dart';
 
-import '../../../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../flutter_flow/flutter_flow_util.dart';
 import '../../../../widgets/global_widget.dart';
 import '../../../../widgets/calendar_widget/b_t_date_widget.dart';
-import '../../../../widgets/not_found/not_found_widget.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/activity_controller.dart';
 
 class ActivityView extends GetView<ActivityController> {
   const ActivityView({super.key});
 
-  static final List<_ActivityTaskItem> _activityTasks = [
-    _ActivityTaskItem(
-      taskCode: 'SC-001',
-      title: 'ออกตรวจพื้นที่ NWL 1',
-      date: '01 เม.ย. 2569',
-      activityDate: DateTime(2026, 4, 1),
-      time: '09:30 น.',
-      location: 'พื้นที่ NWL 1',
-      description: 'ลงตรวจตามแผนประจำวันและบันทึกผลการปฏิบัติงานเรียบร้อย',
-      badgeLabel: 'สำคัญมาก',
-      badgeColor: Color(0xFFEF4444),
-      badgeBackgroundColor: Color(0xFFFEE2E2),
-      badgeIcon: Icons.warning_amber_rounded,
-      routeName: Routes.ACTIVITY_TASK_DETAILS_WIDGET,
-    ),
-    _ActivityTaskItem(
-      taskCode: 'SC-002',
-      title: 'ออกตรวจพื้นที่ NWL 2',
-      date: '01 เม.ย. 2569',
-      activityDate: DateTime(2026, 4, 1),
-      time: '11:00 น.',
-      location: 'พื้นที่ NWL 2',
-      description: 'รออนุมัติแผนปรับเส้นทางก่อนเริ่มดำเนินการในรอบถัดไป',
-      badgeLabel: 'เร่งด่วน',
-      badgeColor: Color(0xFFF59E0B),
-      badgeBackgroundColor: Color(0xFFFFEDD5),
-      badgeIcon: Icons.priority_high_rounded,
-    ),
-    _ActivityTaskItem(
-      taskCode: 'SC-003',
-      title: 'ออกตรวจพื้นที่ NWL 3',
-      date: '02 เม.ย. 2569',
-      activityDate: DateTime(2026, 4, 2),
-      time: '13:45 น.',
-      location: 'พื้นที่ NWL 3',
-      description: 'ติดตามผลการตรวจซ้ำและอัปเดตสถานะงานให้ศูนย์ควบคุมทราบ',
-      badgeLabel: 'ปกติ',
-      badgeColor: Color(0xFF2563EB),
-      badgeBackgroundColor: Color(0xFFDBEAFE),
-      badgeIcon: Icons.info_outline_rounded,
-    ),
-    _ActivityTaskItem(
-      taskCode: 'SC-004',
-      title: 'ตรวจติดตามจุดรายงานทั่วไป',
-      date: '02 เม.ย. 2569',
-      activityDate: DateTime(2026, 4, 2),
-      time: '16:00 น.',
-      location: 'พื้นที่ NWL 4',
-      description: 'ติดตามสถานการณ์ทั่วไปและบันทึกข้อมูลประกอบการสรุปงานประจำวัน',
-      badgeLabel: 'ต่ำ',
-      badgeColor: Color(0xFF6B7280),
-      badgeBackgroundColor: Color(0xFFE5E7EB),
-      badgeIcon: Icons.low_priority_rounded,
-    ),
-  ];
+  List<_ActivityTaskItem> get _activityTasks => controller.reports.map(_mapReportToTaskItem).toList(growable: false);
 
   List<_ActivityTaskItem> _getFilteredTasks() {
     final query = controller.searchQuery.value.toLowerCase();
@@ -102,6 +47,107 @@ class ActivityView extends GetView<ActivityController> {
     const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 
     return '${date.day.toString().padLeft(2, '0')} ${thaiMonths[date.month - 1]} ${date.year + 543}';
+  }
+
+  String _formatTime(DateTime date) {
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$hour:$minute น.';
+  }
+
+  String _formatTimeRange(DateTime? startTime, DateTime? endTime, {required int durationInMinutes}) {
+    if (startTime != null && endTime != null) {
+      return '${_formatTime(startTime)} - ${_formatTime(endTime)}';
+    }
+    if (startTime != null) {
+      return _formatTime(startTime);
+    }
+    if (endTime != null) {
+      return _formatTime(endTime);
+    }
+    if (durationInMinutes > 0) {
+      return '$durationInMinutes นาที';
+    }
+    return '-';
+  }
+
+  String _firstNonEmpty(Iterable<String?> values, {String fallback = '-'}) {
+    for (final value in values) {
+      final resolved = value?.trim() ?? '';
+      if (resolved.isNotEmpty) {
+        return resolved;
+      }
+    }
+    return fallback;
+  }
+
+  _ActivityTaskStatusStyle _resolveTaskStatusStyle(ActivityReportModel report) {
+    final priority = report.priority.trim().toLowerCase();
+    final missionStatus = report.missionStatus.trim();
+
+    if (priority == 'สำคัญมาก' || priority == 'high' || missionStatus == '4') {
+      return const _ActivityTaskStatusStyle(
+        label: 'สำคัญมาก',
+        color: Color(0xFFEF4444),
+        backgroundColor: Color(0xFFFEE2E2),
+        icon: Icons.warning_amber_rounded,
+      );
+    }
+
+    if (priority == 'เร่งด่วน' || priority == 'urgent' || missionStatus == '3') {
+      return const _ActivityTaskStatusStyle(
+        label: 'เร่งด่วน',
+        color: Color(0xFFF59E0B),
+        backgroundColor: Color(0xFFFFEDD5),
+        icon: Icons.priority_high_rounded,
+      );
+    }
+
+    if (priority == 'ต่ำ' || priority == 'low' || missionStatus == '1') {
+      return const _ActivityTaskStatusStyle(
+        label: 'ต่ำ',
+        color: Color(0xFF6B7280),
+        backgroundColor: Color(0xFFE5E7EB),
+        icon: Icons.low_priority_rounded,
+      );
+    }
+
+    return const _ActivityTaskStatusStyle(
+      label: 'ปกติ',
+      color: Color(0xFF2563EB),
+      backgroundColor: Color(0xFFDBEAFE),
+      icon: Icons.info_outline_rounded,
+    );
+  }
+
+  _ActivityTaskItem _mapReportToTaskItem(ActivityReportModel report) {
+    final activityDate = report.startTime ?? report.endTime ?? DateTime.now();
+    final statusStyle = _resolveTaskStatusStyle(report);
+
+    return _ActivityTaskItem(
+      taskCode: _firstNonEmpty([report.reportId, report.missionId > 0 ? 'MISSION-${report.missionId}' : null]),
+      title: _firstNonEmpty([report.missionName, report.description, report.note, report.deviceName], fallback: 'กิจกรรม'),
+      date: _formatThaiShortDate(activityDate),
+      activityDate: DateTime(activityDate.year, activityDate.month, activityDate.day),
+      time: _formatTimeRange(report.startTime, report.endTime, durationInMinutes: report.duration),
+      location: _firstNonEmpty([report.locationName, report.deviceName, report.deviceCode]),
+      description: _firstNonEmpty([report.description, report.note, report.officerName], fallback: 'ไม่ระบุรายละเอียด'),
+      badgeLabel: statusStyle.label,
+      badgeColor: statusStyle.color,
+      badgeBackgroundColor: statusStyle.backgroundColor,
+      badgeIcon: statusStyle.icon,
+      detailArguments: report,
+      routeName: Routes.ACTIVITY_TASK_DETAILS_WIDGET,
+    );
+  }
+
+  Future<void> _openActivityTaskDetails(_ActivityTaskItem item) async {
+    final routeName = item.routeName;
+    if (routeName == null || routeName.isEmpty) {
+      return;
+    }
+
+    await Get.toNamed(routeName, arguments: item.detailArguments);
   }
 
   Future<void> _pickFilterDate(BuildContext context) async {
@@ -159,14 +205,7 @@ class ActivityView extends GetView<ActivityController> {
       appBar: AppBar(
         backgroundColor: theme.primary,
         automaticallyImplyLeading: false,
-        leading: FlutterFlowIconButton(
-          borderColor: Colors.transparent,
-          borderRadius: 30.0,
-          borderWidth: 1.0,
-          buttonSize: 54.0,
-          icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white, size: 24.0),
-          onPressed: () async {},
-        ),
+
         title: Text(
           'รายการกิจกรรม',
           textAlign: TextAlign.center,
@@ -297,16 +336,23 @@ class ActivityView extends GetView<ActivityController> {
             const Divider(height: 1.0, thickness: 1.0, color: Color(0xFFD7D8D9)),
             Expanded(
               child: Obx(() {
+                if (controller.isLoadingReports.value) {
+                  return Center(child: CircularProgressIndicator(color: theme.primary));
+                }
+
                 final filteredTasks = _getFilteredTasks();
                 final hasActiveFilters =
                     controller.searchQuery.value.isNotEmpty ||
                     controller.selectedPriority.value != controller.allPriorityFilter ||
                     controller.selectedDate.value != null;
+                final hasLoadError = controller.loadErrorMessage.value.isNotEmpty && controller.reports.isEmpty;
 
                 return Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                  child: filteredTasks.isEmpty
-                      ? const Center(child: NotFoundWidget())
+                  child: hasLoadError
+                      ? _ActivityLoadErrorState(message: controller.loadErrorMessage.value, onRetry: controller.fetchReports)
+                      : filteredTasks.isEmpty
+                      ? _ActivityEmptyState(hasActiveFilters: hasActiveFilters)
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 24.0),
                           physics: const BouncingScrollPhysics(),
@@ -314,7 +360,7 @@ class ActivityView extends GetView<ActivityController> {
                           separatorBuilder: (_, __) => const SizedBox(height: 12.0),
                           itemBuilder: (context, index) {
                             final item = filteredTasks[index];
-                            return _ActivityTaskCard(item: item, onTap: item.routeName == null ? null : () => Get.toNamed(item.routeName!));
+                            return _ActivityTaskCard(item: item, onTap: item.routeName == null ? null : () => _openActivityTaskDetails(item));
                           },
                         ),
                 );
@@ -335,6 +381,8 @@ class _ActivityTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -344,108 +392,84 @@ class _ActivityTaskCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(28.0),
-            boxShadow: const [BoxShadow(blurRadius: 18.0, color: Color(0x14000000), offset: Offset(0.0, 6.0))],
+            border: Border.all(color: const Color(0xFFE7ECF3), width: 1.0),
+            boxShadow: const [BoxShadow(blurRadius: 16.0, color: Color(0x12000000), offset: Offset(0.0, 6.0))],
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 16.0, 16.0, 18.0),
+            padding: const EdgeInsets.fromLTRB(18.0, 16.0, 18.0, 18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// รหัสงาน + สถานะ
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _ActivityTaskCodePill(code: item.taskCode),
-                    const SizedBox(width: 12.0),
                     Expanded(
-                      child: Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: FlutterFlowThemeNew.of(context).titleMedium.override(
-                          fontFamily: FlutterFlowThemeNew.of(context).titleMediumFamily,
-                          color: const Color(0xFF101828),
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.0,
-                          useGoogleFonts: !FlutterFlowThemeNew.of(context).titleMediumIsCustom,
-                        ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: _ActivityTaskCodePill(code: item.taskCode),
                       ),
                     ),
+                    const SizedBox(width: 12.0),
+                    _ActivityTaskStatusPill(label: item.badgeLabel, color: item.badgeColor, icon: item.badgeIcon),
                   ],
                 ),
+
                 const SizedBox(height: 14.0),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                /// หัวข้อ
+                Text(
+                  item.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.titleMedium.override(
+                    fontFamily: theme.titleMediumFamily,
+                    color: const Color(0xFF101828),
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.0,
+                    useGoogleFonts: !theme.titleMediumIsCustom,
+                  ),
+                ),
+
+                const SizedBox(height: 14.0),
+
+                /// วัน + เวลา
+                Wrap(
+                  spacing: 12.0,
+                  runSpacing: 10.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final dateTimeRow = Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _ActivityTaskMetaInfo(icon: Icons.calendar_today_rounded, iconColor: const Color(0xFF6B7280), text: item.date),
-                                  const SizedBox(width: 14.0),
-                                  Container(width: 1.0, height: 20.0, color: const Color(0xFFD5D9E4)),
-                                  const SizedBox(width: 14.0),
-                                  _ActivityTaskMetaInfo(icon: Icons.access_time_rounded, iconColor: const Color(0xFF1F76D2), text: item.time),
-                                ],
-                              );
-
-                              final statusPill = _ActivityTaskStatusPill(label: item.badgeLabel, color: item.badgeColor, icon: item.badgeIcon);
-
-                              if (constraints.maxWidth >= 360.0) {
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(child: dateTimeRow),
-                                    const SizedBox(width: 12.0),
-                                    statusPill,
-                                  ],
-                                );
-                              }
-
-                              return Wrap(
-                                spacing: 12.0,
-                                runSpacing: 10.0,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [dateTimeRow, statusPill],
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 12.0),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _ActivityTaskMetaInfo(
-                                  icon: Icons.location_on_rounded,
-                                  iconColor: const Color(0xFFF25555),
-                                  text: item.location,
-                                  expandText: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 14.0),
-                          Text(
-                            item.description,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: FlutterFlowThemeNew.of(context).bodyLarge.override(
-                              fontFamily: FlutterFlowThemeNew.of(context).bodyLargeFamily,
-                              color: const Color(0xFF6B7280),
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.0,
-                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyLargeIsCustom,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    _ActivityTaskMetaInfo(icon: Icons.calendar_today_rounded, iconColor: const Color(0xFF6B7280), text: item.date),
+                    Container(width: 1.0, height: 18.0, color: const Color(0xFFD5D9E4)),
+                    _ActivityTaskMetaInfo(icon: Icons.access_time_rounded, iconColor: const Color(0xFF1F76D2), text: item.time),
                   ],
+                ),
+
+                const SizedBox(height: 12.0),
+
+                /// สถานที่
+                _ActivityTaskMetaInfo(icon: Icons.location_on_rounded, iconColor: const Color(0xFFF25555), text: item.location, expandText: true),
+
+                const SizedBox(height: 14.0),
+
+                Container(width: double.infinity, height: 1.0, color: const Color(0xFFF1F4F8)),
+
+                const SizedBox(height: 12.0),
+
+                /// รายละเอียด
+                Text(
+                  item.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.bodyLarge.override(
+                    fontFamily: theme.bodyLargeFamily,
+                    color: const Color(0xFF667085),
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.0,
+                    useGoogleFonts: !theme.bodyLargeIsCustom,
+                  ),
                 ),
               ],
             ),
@@ -456,6 +480,7 @@ class _ActivityTaskCard extends StatelessWidget {
   }
 }
 
+
 class _ActivityTaskCodePill extends StatelessWidget {
   const _ActivityTaskCodePill({required this.code});
 
@@ -464,22 +489,22 @@ class _ActivityTaskCodePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 7.0),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFFF4FAFF), Color(0xFFDCEBFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        color: const Color(0xFFF2F6FC),
         borderRadius: BorderRadius.circular(999.0),
-        border: Border.all(color: const Color(0xFFB9D6FF)),
+        border: Border.all(color: const Color(0xFFD7E3F4), width: 1.0),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.sell_outlined, size: 16.0, color: Color(0xFF1D5EC8)),
-          const SizedBox(width: 6.0),
-          Text(
-            code,
-            style: const TextStyle(color: Color(0xFF184FA9), fontSize: 14.0, fontWeight: FontWeight.w800, letterSpacing: 0.2),
-          ),
-        ],
+      child: Text(
+        code,
+        style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+          color: const Color(0xFF2457A5),
+          fontSize: 12.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+          useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
+        ),
       ),
     );
   }
@@ -552,44 +577,96 @@ class _ActivityTaskMetaInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowThemeNew.of(context);
+    final textWidget = Text(
+      text,
+      maxLines: expandText ? 2 : 1,
+      overflow: TextOverflow.ellipsis,
+      style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+        fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+        color: const Color(0xFF475467),
+        fontSize: 13.5,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.0,
+        useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
+      ),
+    );
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: expandText ? MainAxisSize.max : MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: iconColor, size: 22.0),
+        Padding(
+          padding: const EdgeInsets.only(top: 1.0),
+          child: Icon(icon, size: 16.0, color: iconColor),
+        ),
         const SizedBox(width: 8.0),
-        if (expandText)
-          Expanded(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.bodyLarge.override(
-                fontFamily: theme.bodyLargeFamily,
-                color: const Color(0xFF4B5563),
-                fontSize: 15.0,
-                fontWeight: FontWeight.w600,
+        if (expandText) Expanded(child: textWidget) else textWidget,
+      ],
+    );
+  }
+}
+
+class _ActivityLoadErrorState extends StatelessWidget {
+  const _ActivityLoadErrorState({required this.message, required this.onRetry});
+
+  final String message;
+  final Future<void> Function({bool showLoading}) onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowThemeNew.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72.0,
+              height: 72.0,
+              decoration: BoxDecoration(color: const Color(0xFFFFF3F2), borderRadius: BorderRadius.circular(24.0)),
+              child: const Icon(Icons.cloud_off_rounded, color: Color(0xFFD92D20), size: 34.0),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              'โหลดรายการกิจกรรมไม่สำเร็จ',
+              textAlign: TextAlign.center,
+              style: theme.titleMedium.override(
+                fontFamily: theme.titleMediumFamily,
+                color: const Color(0xFF101828),
+                fontWeight: FontWeight.w700,
                 letterSpacing: 0.0,
-                useGoogleFonts: !theme.bodyLargeIsCustom,
+                useGoogleFonts: !theme.titleMediumIsCustom,
               ),
             ),
-          )
-        else
-          Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.bodyLarge.override(
-              fontFamily: theme.bodyLargeFamily,
-              color: const Color(0xFF4B5563),
-              fontSize: 15.0,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.0,
-              useGoogleFonts: !theme.bodyLargeIsCustom,
+            const SizedBox(height: 8.0),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.bodyMedium.override(
+                fontFamily: theme.bodyMediumFamily,
+                color: const Color(0xFF667085),
+                letterSpacing: 0.0,
+                useGoogleFonts: !theme.bodyMediumIsCustom,
+              ),
             ),
-          ),
-      ],
+            const SizedBox(height: 18.0),
+            ElevatedButton.icon(
+              onPressed: () => onRetry(),
+              icon: const Icon(Icons.refresh_rounded, size: 18.0),
+              label: const Text('ลองอีกครั้ง'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primary,
+                foregroundColor: theme.secondaryBackground,
+                padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                elevation: 0.0,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -645,6 +722,15 @@ class _ActivityEmptyState extends StatelessWidget {
   }
 }
 
+class _ActivityTaskStatusStyle {
+  const _ActivityTaskStatusStyle({required this.label, required this.color, required this.backgroundColor, required this.icon});
+
+  final String label;
+  final Color color;
+  final Color backgroundColor;
+  final IconData icon;
+}
+
 class _ActivityTaskItem {
   const _ActivityTaskItem({
     required this.taskCode,
@@ -658,6 +744,7 @@ class _ActivityTaskItem {
     required this.badgeColor,
     required this.badgeBackgroundColor,
     required this.badgeIcon,
+    this.detailArguments,
     this.routeName,
   });
 
@@ -672,195 +759,6 @@ class _ActivityTaskItem {
   final Color badgeColor;
   final Color badgeBackgroundColor;
   final IconData badgeIcon;
+  final Object? detailArguments;
   final String? routeName;
-}
-
-class PinCodePage extends StatefulWidget {
-  const PinCodePage({super.key});
-
-  @override
-  State<PinCodePage> createState() => _PinCodePageState();
-}
-
-class _PinCodePageState extends State<PinCodePage> {
-  final int pinLength = 6;
-  String pin = '';
-  String errorText = '';
-
-  void onNumberTap(String value) {
-    if (pin.length >= pinLength) return;
-
-    setState(() {
-      pin += value;
-      errorText = '';
-    });
-
-    if (pin.length == pinLength) {
-      verifyPin();
-    }
-  }
-
-  void onBackspace() {
-    if (pin.isEmpty) return;
-
-    setState(() {
-      pin = pin.substring(0, pin.length - 1);
-      errorText = '';
-    });
-  }
-
-  void verifyPin() {
-    // ตัวอย่างตรวจสอบ PIN
-    const correctPin = '123456';
-
-    Future.delayed(const Duration(milliseconds: 150), () {
-      if (!mounted) return;
-
-      if (pin == correctPin) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('เข้าสู่ระบบสำเร็จ')));
-      } else {
-        setState(() {
-          pin = '';
-          errorText = 'รหัส PIN ไม่ถูกต้อง';
-        });
-      }
-    });
-  }
-
-  Widget buildPinIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(pinLength, (index) {
-        final isFilled = index < pin.length;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          width: 16,
-          height: 16,
-          decoration: BoxDecoration(
-            color: isFilled ? const Color(0xFF2563EB) : Colors.transparent,
-            border: Border.all(color: isFilled ? const Color(0xFF2563EB) : Colors.grey.shade400, width: 1.8),
-            shape: BoxShape.circle,
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget buildKey(String text, {VoidCallback? onTap, Widget? child}) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(100),
-      onTap: onTap,
-      child: Container(
-        width: 78,
-        height: 78,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [BoxShadow(blurRadius: 12, offset: const Offset(0, 4), color: Colors.black.withValues(alpha: 0.08))],
-        ),
-        child: Center(
-          child: child ?? Text(text, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
-        ),
-      ),
-    );
-  }
-
-  Widget buildNumberPad() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildKey('1', onTap: () => onNumberTap('1')),
-            buildKey('2', onTap: () => onNumberTap('2')),
-            buildKey('3', onTap: () => onNumberTap('3')),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildKey('4', onTap: () => onNumberTap('4')),
-            buildKey('5', onTap: () => onNumberTap('5')),
-            buildKey('6', onTap: () => onNumberTap('6')),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildKey('7', onTap: () => onNumberTap('7')),
-            buildKey('8', onTap: () => onNumberTap('8')),
-            buildKey('9', onTap: () => onNumberTap('9')),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildKey(
-              '',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('เรียกใช้งานสแกนนิ้วมือ')));
-              },
-              child: const Icon(Icons.fingerprint, size: 30),
-            ),
-            buildKey('0', onTap: () => onNumberTap('0')),
-            buildKey('', onTap: onBackspace, child: const Icon(Icons.backspace_outlined, size: 28)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFE8F0FF),
-                  boxShadow: [BoxShadow(blurRadius: 14, color: Colors.black.withValues(alpha: 0.06), offset: const Offset(0, 4))],
-                ),
-                child: const Icon(Icons.lock_outline_rounded, size: 42, color: Color(0xFF2563EB)),
-              ),
-              const SizedBox(height: 24),
-              const Text('กรอกรหัส PIN', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text('เพื่อเข้าสู่ระบบอย่างปลอดภัย', style: TextStyle(fontSize: 15, color: Colors.grey.shade600)),
-              const SizedBox(height: 30),
-              buildPinIndicator(),
-              const SizedBox(height: 18),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Text(
-                  errorText,
-                  key: ValueKey(errorText),
-                  style: const TextStyle(color: Colors.red, fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ),
-              const Spacer(),
-              buildNumberPad(),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () {},
-                child: const Text('ลืมรหัส PIN?', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

@@ -15,6 +15,7 @@ abstract class Routes {
   static const ACTIVITY = _Paths.ACTIVITY;
   static const ACTIVITY_TASK_DETAILS_WIDGET =
       _Paths.ACTIVITY_TASK_DETAILS_WIDGET;
+  static const EDITPASSWORD = _Paths.EDITPASSWORD;
 }
 
 abstract class _Paths {
@@ -30,4 +31,5 @@ abstract class _Paths {
   static const NOTI_LIST = '/noti-list';
   static const ACTIVITY = '/activity';
   static const ACTIVITY_TASK_DETAILS_WIDGET = '/activity-task-details-widget';
+  static const EDITPASSWORD = '/editpassword';
 }

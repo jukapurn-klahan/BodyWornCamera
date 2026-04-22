@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:vibration/vibration.dart';
 
 import 'package:body_camera/utils/storage_utils.dart';
+import 'package:body_camera/utils/config.dart';
 import '../../../../flutter_flow/flutter_flow_animations_pin.dart';
 
 import 'package:get/get.dart';
@@ -17,10 +19,12 @@ class PinCodeController extends GetxController {
   Worker? _biometricAvailabilityWorker;
   bool _hasAutoTriggeredBiometric = false;
   bool _hasExplicitAllowBiometricArgument = false;
+  int _wrongPinFeedbackToken = 0;
   String? _savedPinCode;
   Rx<String> createPin = ''.obs;
   Rx<bool> pinMatch = true.obs;
   Rx<int> wrongInputCount = 0.obs;
+  RxDouble pinShakeOffset = 0.0.obs;
   RxBool isBiometricAvailable = false.obs;
   RxBool isFaceIdAvailable = false.obs;
   RxBool isAuthenticatingBiometric = false.obs;
@@ -56,6 +60,44 @@ class PinCodeController extends GetxController {
 
   bool get isConfirmingCurrentPinBeforeReset =>
       requireCurrentPinBeforeReset.value && !isNewPassword.value;
+
+  Future<void> _vibrateDeviceOnWrongPin() async {
+    try {
+      if (await Vibration.hasCustomVibrationsSupport()) {
+        await Vibration.vibrate(pattern: const [0, 80, 40, 80]);
+        return;
+      }
+      await Vibration.vibrate(duration: 160);
+    } catch (_) {
+      // Keep the screen shake and haptic feedback working even if vibration fails.
+    }
+  }
+
+  Future<void> _triggerWrongPinFeedback() async {
+    final token = ++_wrongPinFeedbackToken;
+    await Future.wait<void>([
+      HapticFeedback.heavyImpact(),
+      _vibrateDeviceOnWrongPin(),
+    ]);
+    const offsets = <double>[
+      -18.0,
+      18.0,
+      -12.0,
+      12.0,
+      -8.0,
+      8.0,
+      -4.0,
+      4.0,
+      0.0,
+    ];
+    for (final offset in offsets) {
+      if (token != _wrongPinFeedbackToken) {
+        return;
+      }
+      pinShakeOffset.value = offset;
+      await Future<void>.delayed(const Duration(milliseconds: 28));
+    }
+  }
 
   @override
   void onInit() {
@@ -133,6 +175,9 @@ class PinCodeController extends GetxController {
 
   Future<void> savePinCode(String pin) async {
     await StorageUtils.setPinCode(pin);
+    await StorageUtils.setPinCodeOwnerUsername(
+      await GetData.getUsernameValue(),
+    );
     _savedPinCode = pin;
     hasSavedPinCode.value = true;
   }
@@ -191,6 +236,15 @@ class PinCodeController extends GetxController {
     _savedPinCode = await StorageUtils.getPinCode();
     hasSavedPinCode.value = _savedPinCode != null && _savedPinCode!.isNotEmpty;
 
+    if (hasSavedPinCode.value) {
+      final pinCodeOwnerUsername = await StorageUtils.getPinCodeOwnerUsername();
+      if (pinCodeOwnerUsername == null || pinCodeOwnerUsername.isEmpty) {
+        await StorageUtils.setPinCodeOwnerUsername(
+          await GetData.getUsernameValue(),
+        );
+      }
+    }
+
     if (!hasSavedPinCode.value) {
       requireCurrentPinBeforeReset.value = false;
       isNewPassword.value = true;
@@ -244,6 +298,7 @@ class PinCodeController extends GetxController {
       createPin.value = '';
       pinMatch.value = false;
       pinCodeController.value.clear();
+      await _triggerWrongPinFeedback();
       Get.snackbar(
         'ยืนยัน PIN ไม่สำเร็จ',
         'รหัส PIN ไม่ตรงกัน กรุณากำหนดใหม่อีกครั้ง',
@@ -288,6 +343,7 @@ class PinCodeController extends GetxController {
     wrongInputCount.value++;
     pinMatch.value = false;
     pinCodeController.value.clear();
+    await _triggerWrongPinFeedback();
     Get.snackbar(
       'PIN ไม่ถูกต้อง',
       'กรุณาลองใหม่อีกครั้ง',

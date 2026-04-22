@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart' as map2;
@@ -8,7 +7,6 @@ import '../../../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../flutter_flow/flutter_flow_util.dart';
 import '../controllers/activity_task_details_widget_controller.dart';
-import '../reson_cancel/reson_cancel_widget.dart';
 
 class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetController> {
   const ActivityTaskDetailsWidgetView({super.key});
@@ -111,7 +109,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  'ตรวจตราพื้นที่เสี่ยงภัยบริเวณตลาดสด',
+                                                  controller.title,
                                                   style: FlutterFlowThemeNew.of(context).titleSmall.override(
                                                     fontFamily: FlutterFlowThemeNew.of(context).titleSmallFamily,
                                                     color: FlutterFlowThemeNew.of(context).secondaryBackground,
@@ -120,7 +118,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                                   ),
                                                 ),
                                               ),
-                                              if (responsiveVisibility(context: context, phone: false))
+                                              if (controller.reportCode.isNotEmpty)
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     gradient: LinearGradient(
@@ -147,7 +145,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                                         Align(
                                                           alignment: AlignmentDirectional(0.0, 0.0),
                                                           child: Text(
-                                                            'เยี่ยมต่อเนื่อง',
+                                                            controller.reportCode,
                                                             style: FlutterFlowThemeNew.of(context).labelSmall.override(
                                                               fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
                                                               color: FlutterFlowThemeNew.of(context).secondaryBackground,
@@ -167,13 +165,13 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                           Row(
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
-                                              if (responsiveVisibility(context: context, tablet: false, tabletLandscape: false, desktop: false))
+                                              if (controller.priorityLabel.isNotEmpty)
                                                 Padding(
                                                   padding: EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
                                                   child: Container(
                                                     decoration: BoxDecoration(
                                                       gradient: LinearGradient(
-                                                        colors: [Color(0xFFD32F2F), Color(0xFFFF6B6B)],
+                                                        colors: controller.priorityGradientColors,
                                                         stops: [0.0, 1.0],
                                                         begin: AlignmentDirectional(1.0, 0.87),
                                                         end: AlignmentDirectional(-1.0, -0.87),
@@ -188,7 +186,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                                           Align(
                                                             alignment: AlignmentDirectional(0.0, 0.0),
                                                             child: Icon(
-                                                              Icons.info,
+                                                              controller.priorityIcon,
                                                               color: FlutterFlowThemeNew.of(context).secondaryBackground,
                                                               size: 16.0,
                                                             ),
@@ -196,7 +194,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                                           Align(
                                                             alignment: AlignmentDirectional(0.0, 0.0),
                                                             child: Text(
-                                                              'สำคัญมาก',
+                                                              controller.priorityLabel,
                                                               style: FlutterFlowThemeNew.of(context).labelSmall.override(
                                                                 fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
                                                                 color: FlutterFlowThemeNew.of(context).secondaryBackground,
@@ -339,7 +337,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                     child: Padding(
                                       padding: EdgeInsets.all(12.0),
                                       child: Text(
-                                        'นายทศพล กาลเวลาดีศรีนคร',
+                                        controller.officerName,
                                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                                           letterSpacing: 0.0,
@@ -462,7 +460,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                         child: Padding(
                                           padding: EdgeInsets.all(12.0),
                                           child: Text(
-                                            '001',
+                                            controller.deviceText,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: FlutterFlowThemeNew.of(context).bodyMedium.override(
@@ -485,7 +483,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                         child: Padding(
                                           padding: EdgeInsets.all(12.0),
                                           child: Text(
-                                            '10:00',
+                                            controller.durationText,
                                             textAlign: TextAlign.end,
                                             style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                                               fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
@@ -621,7 +619,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                     child: Padding(
                                       padding: EdgeInsets.all(12.0),
                                       child: Text(
-                                        'หมู่บ้านกฤษดานคร หมู่ 6  บ้านเลขที่ 1 แขวงราษฎร์บูรณะ เขตราษฎร์บูรณะ กรุงเทพมหานคร 10140',
+                                        controller.locationText,
                                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                                           letterSpacing: 0.0,
@@ -643,7 +641,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                         context,
                                         icon: Icons.swap_vert_rounded,
                                         label: 'ละติจูด',
-                                        value: controller.latLng.latitude.toStringAsFixed(4),
+                                        value: controller.latitudeText,
                                       ),
                                     ),
                                     Expanded(
@@ -651,7 +649,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                         context,
                                         icon: Icons.swap_horiz_rounded,
                                         label: 'ลองจิจูด',
-                                        value: controller.latLng.longitude.toStringAsFixed(4),
+                                        value: controller.longitudeText,
                                       ),
                                     ),
                                   ].divide(SizedBox(width: 10.0)),
@@ -728,118 +726,119 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                 ].divide(SizedBox(height: 16.0)),
               ),
             ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x33000000), offset: Offset(0.0, 0.0))],
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(0.0),
-                  bottomRight: Radius.circular(0.0),
-                  topLeft: Radius.circular(24.0),
-                  topRight: Radius.circular(24.0),
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 24.0),
-                child: MasonryGridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  itemCount: 2,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return [
-                      () => InkWell(
-                        splashColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () async {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true, // ✅ ควบคุมเอง
-                            backgroundColor: Colors.transparent,
-                            builder: (context) {
-                              return MediaQuery.removeViewInsets(
-                                // ✅ ตัด effect ของ keyboard
-                                removeBottom: true,
-                                context: context,
-                                child: const ResonCancelWidget(),
-                              );
-                            },
-                          ).then((result) async {
-                            if (result != null && result is Map) {
-                              final text = result["text"] as String?;
-                              final status = result["status"] == true;
 
-                              debugPrint('ข้อความ: $text');
-                              debugPrint('สถานะ: $status');
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     color: FlutterFlowThemeNew.of(context).secondaryBackground,
+            //     boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x33000000), offset: Offset(0.0, 0.0))],
+            //     borderRadius: BorderRadius.only(
+            //       bottomLeft: Radius.circular(0.0),
+            //       bottomRight: Radius.circular(0.0),
+            //       topLeft: Radius.circular(24.0),
+            //       topRight: Radius.circular(24.0),
+            //     ),
+            //   ),
+            //   child: Padding(
+            //     padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 24.0),
+            //     child: MasonryGridView.builder(
+            //       physics: const NeverScrollableScrollPhysics(),
+            //       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            //       crossAxisSpacing: 8.0,
+            //       mainAxisSpacing: 8.0,
+            //       itemCount: 2,
+            //       shrinkWrap: true,
+            //       itemBuilder: (context, index) {
+            //         return [
+            //           () => InkWell(
+            //             splashColor: Colors.transparent,
+            //             focusColor: Colors.transparent,
+            //             hoverColor: Colors.transparent,
+            //             highlightColor: Colors.transparent,
+            //             onTap: () async {
+            //               showModalBottomSheet(
+            //                 context: context,
+            //                 isScrollControlled: true, // ✅ ควบคุมเอง
+            //                 backgroundColor: Colors.transparent,
+            //                 builder: (context) {
+            //                   return MediaQuery.removeViewInsets(
+            //                     // ✅ ตัด effect ของ keyboard
+            //                     removeBottom: true,
+            //                     context: context,
+            //                     child: const ResonCancelWidget(),
+            //                   );
+            //                 },
+            //               ).then((result) async {
+            //                 if (result != null && result is Map) {
+            //                   final text = result["text"] as String?;
+            //                   final status = result["status"] == true;
 
-                              //  await controller.dosaveData(3, reason: text).then((_) => Get.back(result: true));
-                            }
-                          });
-                        },
-                        child: Container(
-                          width: 100.0,
-                          height: 48.0,
-                          decoration: BoxDecoration(
-                            color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                            borderRadius: BorderRadius.circular(100.0),
-                            border: Border.all(color: FlutterFlowThemeNew.of(context).alternate, width: 1.0),
-                          ),
-                          child: Align(
-                            alignment: AlignmentDirectional(0.0, 0.0),
-                            child: Text(
-                              'ปฏิเสธ',
-                              style: FlutterFlowThemeNew.of(context).labelMedium.override(
-                                fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
-                                color: FlutterFlowThemeNew.of(context).error,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      () => InkWell(
-                        splashColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () async {},
-                        child: Container(
-                          width: 100.0,
-                          height: 48.0,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [FlutterFlowThemeNew.of(context).success, Color(0xFF1D8B6B)],
-                              stops: [0.0, 1.0],
-                              begin: AlignmentDirectional(0.0, -1.0),
-                              end: AlignmentDirectional(0, 1.0),
-                            ),
-                            borderRadius: BorderRadius.circular(100.0),
-                          ),
-                          child: Align(
-                            alignment: AlignmentDirectional(0.0, 0.0),
-                            child: Text(
-                              'รับงาน',
-                              style: FlutterFlowThemeNew.of(context).labelMedium.override(
-                                fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
-                                color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ][index]();
-                  },
-                ),
-              ),
-            ),
+            //                   debugPrint('ข้อความ: $text');
+            //                   debugPrint('สถานะ: $status');
+
+            //                   //  await controller.dosaveData(3, reason: text).then((_) => Get.back(result: true));
+            //                 }
+            //               });
+            //             },
+            //             child: Container(
+            //               width: 100.0,
+            //               height: 48.0,
+            //               decoration: BoxDecoration(
+            //                 color: FlutterFlowThemeNew.of(context).secondaryBackground,
+            //                 borderRadius: BorderRadius.circular(100.0),
+            //                 border: Border.all(color: FlutterFlowThemeNew.of(context).alternate, width: 1.0),
+            //               ),
+            //               child: Align(
+            //                 alignment: AlignmentDirectional(0.0, 0.0),
+            //                 child: Text(
+            //                   'ปฏิเสธ',
+            //                   style: FlutterFlowThemeNew.of(context).labelMedium.override(
+            //                     fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
+            //                     color: FlutterFlowThemeNew.of(context).error,
+            //                     letterSpacing: 0.0,
+            //                     useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //           () => InkWell(
+            //             splashColor: Colors.transparent,
+            //             focusColor: Colors.transparent,
+            //             hoverColor: Colors.transparent,
+            //             highlightColor: Colors.transparent,
+            //             onTap: () async {},
+            //             child: Container(
+            //               width: 100.0,
+            //               height: 48.0,
+            //               decoration: BoxDecoration(
+            //                 gradient: LinearGradient(
+            //                   colors: [FlutterFlowThemeNew.of(context).success, Color(0xFF1D8B6B)],
+            //                   stops: [0.0, 1.0],
+            //                   begin: AlignmentDirectional(0.0, -1.0),
+            //                   end: AlignmentDirectional(0, 1.0),
+            //                 ),
+            //                 borderRadius: BorderRadius.circular(100.0),
+            //               ),
+            //               child: Align(
+            //                 alignment: AlignmentDirectional(0.0, 0.0),
+            //                 child: Text(
+            //                   'รับงาน',
+            //                   style: FlutterFlowThemeNew.of(context).labelMedium.override(
+            //                     fontFamily: FlutterFlowThemeNew.of(context).labelMediumFamily,
+            //                     color: FlutterFlowThemeNew.of(context).secondaryBackground,
+            //                     letterSpacing: 0.0,
+            //                     useGoogleFonts: !FlutterFlowThemeNew.of(context).labelMediumIsCustom,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ][index]();
+            //       },
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -962,7 +961,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "20/10/2024",
+                        controller.dateText,
                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                           letterSpacing: 0.0,
@@ -1032,7 +1031,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "10:00",
+                        controller.timeText,
                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                           letterSpacing: 0.0,
@@ -1238,62 +1237,4 @@ class ActivityTaskFullScreenMapView extends StatelessWidget {
       ),
     );
   }
-
-  //   return GestureDetector(
-  //     onTap: () {
-  //       FocusScope.of(context).unfocus();
-  //       FocusManager.instance.primaryFocus?.unfocus();
-  //     },
-  //     child: Scaffold(
-  //       backgroundColor: FlutterFlowThemeNew.of(context).primaryBackground,
-  //       appBar: PreferredSize(
-  //         preferredSize: const Size.fromHeight(0.0),
-  //         child: AppBar(
-  //           backgroundColor: const Color(0x00339FF3),
-  //           automaticallyImplyLeading: false,
-  //           actions: [],
-  //           centerTitle: true,
-  //           toolbarHeight: 0.0,
-  //           elevation: 0.0,
-  //         ),
-  //       ),
-  //       body: Stack(
-  //         children: [
-  //           ClipRRect(
-  //             borderRadius: const BorderRadius.only(
-  //               bottomLeft: Radius.circular(16.0),
-  //               bottomRight: Radius.circular(16.0),
-  //               topLeft: Radius.circular(0.0),
-  //               topRight: Radius.circular(0.0),
-  //             ),
-  //             child: Stack(
-  //               children: [
-  //                 map2.FlutterMap(
-  //                   options: map2.MapOptions(
-  //                     enableScrollWheel: true,
-  //                     minZoom: 10,
-  //                     zoom: 15,
-  //                     maxZoom: 19,
-  //                     center: activityController.latLng,
-  //                     interactiveFlags: map2.InteractiveFlag.pinchZoom | map2.InteractiveFlag.drag | map2.InteractiveFlag.doubleTapZoom,
-  //                   ),
-  //                   children: [
-  //                     map2.TileLayer(
-  //                       urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  //                       userAgentPackageName: "com.nwl.bodyworncamera",
-  //                       subdomains: const ['a', 'b', 'c'],
-  //                       maxZoom: 19,
-  //                       minZoom: 10,
-  //                     ),
-  //                     Obx(() => map2.MarkerLayer(markers: activityController.markersMap.toList())),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
