@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../../../flutter_flow/flutter_flow_icon_button.dart';
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../flutter_flow/flutter_flow_widgets.dart';
 import '../controllers/editpassword_controller.dart';
@@ -27,6 +28,21 @@ class EditpasswordView extends GetView<EditpasswordController> {
           automaticallyImplyLeading: true,
           centerTitle: true,
           elevation: 0.0,
+          leading: FlutterFlowIconButton(
+            borderColor: Colors.transparent,
+            borderRadius: 30.0,
+            borderWidth: 1.0,
+            buttonSize: 60.0,
+            icon: Icon(
+              Icons.keyboard_arrow_left_rounded,
+              color: Colors.white,
+              size: 30.0,
+            ),
+            onPressed: () async {
+              Get.back();
+            },
+          ),
+
           title: Text(
             'ตั้งค่ารหัสผ่าน',
             style: theme.titleSmall.override(
@@ -42,7 +58,11 @@ class EditpasswordView extends GetView<EditpasswordController> {
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [theme.primary, theme.primaryBackground, theme.primaryBackground],
+              colors: [
+                theme.primary,
+                theme.primaryBackground,
+                theme.primaryBackground,
+              ],
               stops: const [0.0, 0.22, 1.0],
               begin: const AlignmentDirectional(0.0, -1.0),
               end: const AlignmentDirectional(0.0, 1.0),
@@ -62,14 +82,18 @@ class EditpasswordView extends GetView<EditpasswordController> {
                           key: controller.formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [_buildFormContainer(theme), const SizedBox(height: 16.0), _buildRuleContainer(theme)],
+                            children: [
+                              _buildFormContainer(theme),
+                              const SizedBox(height: 16.0),
+                              _buildRuleContainer(theme),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                _buildBottomBar(theme),
+                _buildBottomBar(context, theme),
               ],
             ),
           ),
@@ -83,7 +107,13 @@ class EditpasswordView extends GetView<EditpasswordController> {
       decoration: BoxDecoration(
         color: theme.secondaryBackground,
         borderRadius: BorderRadius.circular(24.0),
-        boxShadow: const [BoxShadow(blurRadius: 14.0, color: Color(0x14000000), offset: Offset(0.0, 8.0))],
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 14.0,
+            color: Color(0x14000000),
+            offset: Offset(0.0, 8.0),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -92,7 +122,11 @@ class EditpasswordView extends GetView<EditpasswordController> {
           children: [
             Text(
               'กำหนดรหัสผ่านของคุณ',
-              style: theme.titleSmall.override(font: theme.titleSmall, letterSpacing: 0.0, fontWeight: FontWeight.w700),
+              style: theme.titleSmall.override(
+                font: theme.titleSmall,
+                letterSpacing: 0.0,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 4.0),
 
@@ -112,6 +146,7 @@ class EditpasswordView extends GetView<EditpasswordController> {
       return _PasswordFieldSection(
         label: 'รหัสผ่านปัจจุบัน',
         textField: TextFormField(
+          key: controller.currentPasswordFieldKey,
           controller: controller.currentPasswordController,
           obscureText: controller.obscureCurrentPassword.value,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -123,7 +158,11 @@ class EditpasswordView extends GetView<EditpasswordController> {
             obscureText: controller.obscureCurrentPassword.value,
             onTapVisibility: controller.toggleCurrentPasswordVisibility,
           ),
-          style: theme.bodyMedium.override(font: theme.bodyMedium, color: theme.primaryText, letterSpacing: 0.0),
+          style: theme.bodyMedium.override(
+            font: theme.bodyMedium,
+            color: theme.primaryText,
+            letterSpacing: 0.0,
+          ),
           validator: controller.validateCurrentPassword,
         ),
       );
@@ -146,7 +185,11 @@ class EditpasswordView extends GetView<EditpasswordController> {
             obscureText: controller.obscureNewPassword.value,
             onTapVisibility: controller.toggleNewPasswordVisibility,
           ),
-          style: theme.bodyMedium.override(font: theme.bodyMedium, color: theme.primaryText, letterSpacing: 0.0),
+          style: theme.bodyMedium.override(
+            font: theme.bodyMedium,
+            color: theme.primaryText,
+            letterSpacing: 0.0,
+          ),
           validator: controller.validateNewPassword,
         ),
       ),
@@ -162,7 +205,12 @@ class EditpasswordView extends GetView<EditpasswordController> {
           obscureText: controller.obscureConfirmPassword.value,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           textInputAction: TextInputAction.done,
-          onFieldSubmitted: (_) => controller.submit(),
+          onFieldSubmitted: (_) {
+            final currentContext = Get.context;
+            if (currentContext != null) {
+              controller.submit(currentContext);
+            }
+          },
           decoration: _buildInputDecoration(
             theme: theme,
             hintText: 'กรอกรหัสผ่านใหม่อีกครั้ง',
@@ -170,7 +218,11 @@ class EditpasswordView extends GetView<EditpasswordController> {
             obscureText: controller.obscureConfirmPassword.value,
             onTapVisibility: controller.toggleConfirmPasswordVisibility,
           ),
-          style: theme.bodyMedium.override(font: theme.bodyMedium, color: theme.primaryText, letterSpacing: 0.0),
+          style: theme.bodyMedium.override(
+            font: theme.bodyMedium,
+            color: theme.primaryText,
+            letterSpacing: 0.0,
+          ),
           validator: controller.validateConfirmPassword,
         ),
       ),
@@ -182,7 +234,13 @@ class EditpasswordView extends GetView<EditpasswordController> {
       decoration: BoxDecoration(
         color: theme.secondaryBackground,
         borderRadius: BorderRadius.circular(24.0),
-        boxShadow: const [BoxShadow(blurRadius: 14.0, color: Color(0x14000000), offset: Offset(0.0, 8.0))],
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 14.0,
+            color: Color(0x14000000),
+            offset: Offset(0.0, 8.0),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -192,22 +250,54 @@ class EditpasswordView extends GetView<EditpasswordController> {
             children: [
               Text(
                 'หมายเหตุ',
-                style: theme.bodyMedium.override(font: theme.bodyMedium, letterSpacing: 0.0, fontWeight: FontWeight.w700),
+                style: theme.bodyMedium.override(
+                  font: theme.bodyMedium,
+                  letterSpacing: 0.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 12.0),
-              _RuleRow(theme: theme, label: 'ความยาวอย่างน้อย 6 ตัว', isPassed: controller.hasMinLength),
+              _RuleRow(
+                theme: theme,
+                label: 'ความยาวอย่างน้อย 8 ตัว',
+                isPassed: controller.hasMinLength,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'A-Z อย่างน้อย 1 ตัว', isPassed: controller.hasUppercase),
+              _RuleRow(
+                theme: theme,
+                label: 'A-Z อย่างน้อย 1 ตัว',
+                isPassed: controller.hasUppercase,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'a-z อย่างน้อย 1 ตัว', isPassed: controller.hasLowercase),
+              _RuleRow(
+                theme: theme,
+                label: 'a-z อย่างน้อย 1 ตัว',
+                isPassed: controller.hasLowercase,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'ตัวเลขอย่างน้อย 1 ตัว', isPassed: controller.hasDigit),
+              _RuleRow(
+                theme: theme,
+                label: 'ตัวเลขอย่างน้อย 1 ตัว',
+                isPassed: controller.hasDigit,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'ตัวอักษรพิเศษอย่างน้อย 1 ตัว (!@#\$&*)', isPassed: controller.hasSpecialCharacter),
+              _RuleRow(
+                theme: theme,
+                label: 'ตัวอักษรพิเศษอย่างน้อย 1 ตัว (!@#\$&*)',
+                isPassed: controller.hasSpecialCharacter,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเดิม', isPassed: controller.isNewPasswordDifferentFromCurrent),
+              _RuleRow(
+                theme: theme,
+                label: 'รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเดิม',
+                isPassed: controller.isNewPasswordDifferentFromCurrent,
+              ),
               const SizedBox(height: 10.0),
-              _RuleRow(theme: theme, label: 'รหัสผ่านและยืนยันรหัสผ่านต้องตรงกัน', isPassed: controller.passwordsMatch),
+              _RuleRow(
+                theme: theme,
+                label: 'รหัสผ่านและยืนยันรหัสผ่านต้องตรงกัน',
+                isPassed: controller.passwordsMatch,
+              ),
             ],
           ),
         ),
@@ -215,11 +305,17 @@ class EditpasswordView extends GetView<EditpasswordController> {
     );
   }
 
-  Widget _buildBottomBar(FlutterFlowThemeNew theme) {
+  Widget _buildBottomBar(BuildContext context, FlutterFlowThemeNew theme) {
     return Container(
       decoration: BoxDecoration(
         color: theme.secondaryBackground,
-        boxShadow: const [BoxShadow(blurRadius: 8.0, color: Color(0x14000000), offset: Offset(0.0, -3.0))],
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 8.0,
+            color: Color(0x14000000),
+            offset: Offset(0.0, -3.0),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -230,19 +326,35 @@ class EditpasswordView extends GetView<EditpasswordController> {
               constraints: const BoxConstraints(maxWidth: 760.0),
               child: Obx(() {
                 final isEnabled = controller.canSubmit;
+                final isSubmitting =
+                    controller.isSubmittingChangePassword.value;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     FFButtonWidget(
-                      onPressed: isEnabled ? controller.submit : null,
-                      text: 'ยืนยัน',
+                      onPressed: isEnabled
+                          ? () => controller.submit(context)
+                          : null,
+                      text: isSubmitting ? 'กำลังบันทึก...' : 'บันทึก',
                       options: FFButtonOptions(
                         width: double.infinity,
-                        height: 52.0,
-                        padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        iconPadding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color: isEnabled ? const Color(0xFF1B78E4) : const Color(0xFFB0BEC5),
+                        height: 48.0,
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          0.0,
+                          0.0,
+                          0.0,
+                          0.0,
+                        ),
+                        iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                          0.0,
+                          0.0,
+                          0.0,
+                          0.0,
+                        ),
+                        color: isEnabled
+                            ? const Color(0xFF1B78E4)
+                            : const Color(0xFFB0BEC5),
                         disabledColor: const Color(0xFFB0BEC5),
                         textStyle: theme.bodyMedium.override(
                           font: theme.bodyMedium,
@@ -250,8 +362,12 @@ class EditpasswordView extends GetView<EditpasswordController> {
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.0,
                         ),
+
                         elevation: isEnabled ? 4.0 : 0.0,
-                        borderSide: const BorderSide(color: Colors.transparent, width: 1.0),
+                        borderSide: const BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
                         borderRadius: BorderRadius.circular(40.0),
                       ),
                     ),
@@ -274,12 +390,30 @@ class EditpasswordView extends GetView<EditpasswordController> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: theme.bodySmall.override(font: theme.bodySmall, color: const Color(0xFF57636C), letterSpacing: 0.0),
+      hintStyle: theme.bodySmall.override(
+        font: theme.bodySmall,
+        color: const Color(0xFF57636C),
+        letterSpacing: 0.0,
+      ),
       prefixIcon: prefixIcon,
-      suffixIcon: InkWell(
-        onTap: onTapVisibility,
-        focusNode: FocusNode(skipTraversal: true),
-        child: Icon(obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: const Color(0xFF757575), size: 18.0),
+      suffixIcon: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: onTapVisibility,
+            focusNode: FocusNode(skipTraversal: true),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 12.0),
+              child: Icon(
+                obscureText
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: const Color(0xFF757575),
+                size: 18.0,
+              ),
+            ),
+          ),
+        ],
       ),
       filled: true,
       fillColor: const Color(0xFFF7FAFC),
@@ -299,7 +433,12 @@ class EditpasswordView extends GetView<EditpasswordController> {
         borderSide: BorderSide(color: theme.error, width: 1.2),
         borderRadius: BorderRadius.circular(16.0),
       ),
-      contentPadding: const EdgeInsetsDirectional.fromSTEB(16.0, 14.0, 0.0, 14.0),
+      contentPadding: const EdgeInsetsDirectional.fromSTEB(
+        16.0,
+        14.0,
+        0.0,
+        14.0,
+      ),
     );
   }
 }
@@ -319,7 +458,12 @@ class _PasswordFieldSection extends StatelessWidget {
       children: [
         Text(
           label,
-          style: theme.bodyMedium.override(font: theme.bodyMedium, color: theme.accent1, letterSpacing: 0.0, fontWeight: FontWeight.w600),
+          style: theme.bodyMedium.override(
+            font: theme.bodyMedium,
+            color: const Color(0xFF0B3D91),
+            letterSpacing: 0.0,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8.0),
         textField,
@@ -329,7 +473,11 @@ class _PasswordFieldSection extends StatelessWidget {
 }
 
 class _RuleRow extends StatelessWidget {
-  const _RuleRow({required this.theme, required this.label, required this.isPassed});
+  const _RuleRow({
+    required this.theme,
+    required this.label,
+    required this.isPassed,
+  });
 
   final FlutterFlowThemeNew theme;
   final String label;

@@ -9,24 +9,14 @@ import 'package:body_camera/app/data/models/user_model.dart';
 import 'package:body_camera/utils/cv_function.dart';
 
 class UserApiService {
-  UserApiService({Duration? requestTimeout})
-    : _requestTimeout = requestTimeout ?? const Duration(seconds: 10);
+  UserApiService({Duration? requestTimeout}) : _requestTimeout = requestTimeout ?? const Duration(seconds: 10);
 
   final Duration _requestTimeout;
 
-  Future<LoginModel> login({
-    required String username,
-    required String password,
-    String deviceId = '',
-  }) async {
+  Future<LoginModel> login({required String username, required String password, String deviceId = ''}) async {
     final decoded = await _postApiData(
       ApiConfig.loginUrl,
-      body: {
-        'username': username,
-        'password': password,
-        'deviceId': deviceId,
-        'isMobile': true,
-      },
+      body: {'username': username, 'password': password, 'deviceId': deviceId, 'isMobile': true},
       includeAccessToken: false,
     );
     if (decoded == null) {
@@ -35,9 +25,7 @@ class UserApiService {
 
     final loginJson = _extractLoginResponseMap(decoded);
     if (loginJson == null) {
-      throw UserApiException(
-        'รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}',
-      );
+      throw UserApiException('รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}');
     }
 
     late final LoginModel loginResponse;
@@ -46,132 +34,93 @@ class UserApiService {
     } on FormatException catch (error) {
       throw UserApiException('รูปแบบ accessToken ไม่ถูกต้อง: ${error.message}');
     }
-    if (loginResponse.accessToken.isEmpty ||
-        loginResponse.refreshToken.isEmpty) {
-      throw UserApiException(
-        'ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}',
-      );
+    if (loginResponse.accessToken.isEmpty || loginResponse.refreshToken.isEmpty) {
+      throw UserApiException('ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}');
     }
 
     return loginResponse;
   }
 
-  Future<LoginModel> refresh({
-    required String refreshToken,
-    UserModel? fallbackUser,
-  }) async {
+  Future<LoginModel> refresh({required String refreshToken, UserModel? fallbackUser}) async {
     log('refreshToken : $refreshToken');
-    final decoded = await _postApiData(
-      ApiConfig.refreshUrl,
-      body: {'isMobile': true, 'refreshToken': refreshToken},
-      includeAccessToken: false,
-    );
+    final decoded = await _postApiData(ApiConfig.refreshUrl, body: {'isMobile': true, 'refreshToken': refreshToken}, includeAccessToken: false);
     if (decoded == null) {
       throw const UserApiException('รูปแบบข้อมูลจากระบบไม่ถูกต้อง: <empty>');
     }
 
     final refreshJson = _extractLoginResponseMap(decoded);
     if (refreshJson == null) {
-      throw UserApiException(
-        'รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}',
-      );
+      throw UserApiException('รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}');
     }
 
     late final LoginModel refreshResponse;
     try {
-      refreshResponse = LoginModel.fromJson(
-        refreshJson,
-        fallbackUser: fallbackUser,
-        fallbackRefreshToken: refreshToken,
-      );
+      refreshResponse = LoginModel.fromJson(refreshJson, fallbackUser: fallbackUser, fallbackRefreshToken: refreshToken);
     } on FormatException catch (error) {
       throw UserApiException('รูปแบบ accessToken ไม่ถูกต้อง: ${error.message}');
     }
     if (refreshResponse.accessToken.isEmpty) {
-      throw UserApiException(
-        'ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}',
-      );
+      throw UserApiException('ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}');
     }
 
     return refreshResponse;
   }
 
   Future<void> logout({required String refreshToken}) async {
-    final decoded = await _postApiData(
-      ApiConfig.logoutUrl,
-      body: {'isMobile': true, 'refreshToken': refreshToken},
-      includeAccessToken: false,
-    );
+    final decoded = await _postApiData(ApiConfig.logoutUrl, body: {'isMobile': true, 'refreshToken': refreshToken}, includeAccessToken: false);
     log('logout response : $decoded');
+  }
+
+  Future<void> changePassword({required String oldPassword, required String newPassword}) async {
+    await _postApiData(ApiConfig.changePasswordUrl, body: {'oldPassword': oldPassword, 'newPassword': newPassword}, includeAccessToken: true);
   }
 
   Future<List<UserModel>> getAllUsers() async {
     final decoded = await _getApiData(ApiConfig.getAllUsersUrl);
     if (decoded is! List) {
-      throw const UserApiException(
-        'Invalid response format. Expected a JSON array.',
-      );
+      throw const UserApiException('Invalid response format. Expected a JSON array.');
     }
 
-    return decoded
-        .map(
-          (item) => UserModel.fromJson(Map<String, dynamic>.from(item as Map)),
-        )
-        .toList();
+    return decoded.map((item) => UserModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
 
   Future<List<RoleModel>> getRoles() async {
     final decoded = await _getApiData(ApiConfig.getRolesUrl);
     final rolesJson = _extractDataList(decoded);
     if (rolesJson == null) {
-      throw UserApiException(
-        'รูปแบบข้อมูล role master data ไม่ถูกต้อง: ${_compactBody(jsonEncode(decoded))}',
-      );
+      throw UserApiException('รูปแบบข้อมูล role master data ไม่ถูกต้อง: ${_compactBody(jsonEncode(decoded))}');
     }
 
     return rolesJson.map(RoleModel.fromJson).toList(growable: false);
   }
 
   Future<List<ActivityReportModel>> getReports() async {
-    final decoded = await _getApiData(ApiConfig.getReportUrl);
+    final decoded = await _getApiData(ApiConfig.getReportUrl, includeAccessToken: false);
     final reportsJson = _extractDataList(decoded);
     if (reportsJson == null) {
-      throw UserApiException(
-        'รูปแบบข้อมูลรายการกิจกรรมไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}',
-      );
+      throw UserApiException('รูปแบบข้อมูลรายการกิจกรรมไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}');
     }
 
-    return reportsJson
-        .map(ActivityReportModel.fromJson)
-        .toList(growable: false);
+    return reportsJson.map(ActivityReportModel.fromJson).toList(growable: false);
   }
 
   void dispose() {
-    // No-op. Network calls go through cv_func helpers.
+   
   }
 
-  Future<dynamic> _getApiData(String url) async {
+  Future<dynamic> _getApiData(String url, {bool includeAccessToken = true}) async {
     try {
-      return await cv_func.getApiData(url, timeout: _requestTimeout);
+      return await cv_func.getApiData(url, timeout: _requestTimeout, includeAccessToken: includeAccessToken);
     } on CvFunctionException catch (error) {
-      throw UserApiException(error.message);
+      throw UserApiException(error.message, statusCode: error.statusCode);
     }
   }
 
-  Future<dynamic> _postApiData(
-    String url, {
-    dynamic body,
-    bool includeAccessToken = false,
-  }) async {
+  Future<dynamic> _postApiData(String url, {dynamic body, bool includeAccessToken = false}) async {
     try {
-      return await cv_func.postApiData(
-        url,
-        body: body,
-        timeout: _requestTimeout,
-        includeAccessToken: includeAccessToken,
-      );
+      return await cv_func.postApiData(url, body: body, timeout: _requestTimeout, includeAccessToken: includeAccessToken);
     } on CvFunctionException catch (error) {
-      throw UserApiException(error.message);
+      throw UserApiException(error.message, statusCode: error.statusCode);
     }
   }
 
@@ -206,10 +155,7 @@ class UserApiService {
 
   List<Map<String, dynamic>>? _extractDataList(dynamic decoded) {
     if (decoded is List) {
-      return decoded
-          .whereType<Map>()
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList(growable: false);
+      return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
     }
 
     if (decoded is! Map) {
@@ -217,16 +163,12 @@ class UserApiService {
     }
 
     final json = Map<String, dynamic>.from(decoded);
-    final data =
-        json['data'] ?? json['Data'] ?? json['result'] ?? json['Result'];
+    final data = json['data'] ?? json['Data'] ?? json['result'] ?? json['Result'];
     if (data is! List) {
       return null;
     }
 
-    return data
-        .whereType<Map>()
-        .map((item) => Map<String, dynamic>.from(item))
-        .toList(growable: false);
+    return data.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
   }
 
   bool _looksLikeLoginResponseJson(Map<String, dynamic> json) {
@@ -258,10 +200,14 @@ class UserApiService {
 }
 
 class UserApiException implements Exception {
-  const UserApiException(this.message);
+  const UserApiException(this.message, {this.statusCode});
 
   final String message;
+  final int? statusCode;
 
   @override
-  String toString() => 'UserApiException: $message';
+  String toString() {
+    final status = statusCode == null ? '' : ' (HTTP $statusCode)';
+    return 'UserApiException$status: $message';
+  }
 }

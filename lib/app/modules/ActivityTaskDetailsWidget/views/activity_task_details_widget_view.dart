@@ -118,48 +118,6 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                                   ),
                                                 ),
                                               ),
-                                              if (controller.reportCode.isNotEmpty)
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      colors: [Color(0xFFFF7600), Color(0xFFFFB85C)],
-                                                      stops: [0.0, 1.0],
-                                                      begin: AlignmentDirectional(1.0, 0.87),
-                                                      end: AlignmentDirectional(-1.0, -0.87),
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(100.0),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 8.0, 4.0),
-                                                    child: Row(
-                                                      mainAxisSize: MainAxisSize.max,
-                                                      children: [
-                                                        Align(
-                                                          alignment: AlignmentDirectional(0.0, 0.0),
-                                                          child: Icon(
-                                                            Icons.info,
-                                                            color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                                            size: 16.0,
-                                                          ),
-                                                        ),
-                                                        Align(
-                                                          alignment: AlignmentDirectional(0.0, 0.0),
-                                                          child: Text(
-                                                            controller.reportCode,
-                                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                              color: FlutterFlowThemeNew.of(context).secondaryBackground,
-                                                              fontSize: 12.0,
-                                                              letterSpacing: 0.0,
-                                                              shadows: [Shadow(color: Color(0x0F6C6C6C), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
-                                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ].divide(SizedBox(width: 4.0)),
-                                                    ),
-                                                  ),
-                                                ),
                                             ],
                                           ),
                                           Row(
@@ -261,14 +219,38 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if (controller.reportCode.isNotEmpty)
+                                  Row(
+                                    children: [
+                                      Expanded(child: _buildReportCodeField(context)),
+                                      Expanded(child: _buildDateField(context)),
+                                    ].divide(const SizedBox(width: 12.0)),
+                                  )
+                                else
+                                  _buildDateField(context),
                                 Row(
                                   children: [
-                                    Expanded(child: _buildDateField(context)),
+                                    Expanded(
+                                      child: _buildTimeField(
+                                        context,
+                                        label: 'เวลาเริ่มต้น',
+                                        value: controller.startTimeText,
+                                        icon: Icons.play_circle_fill_rounded,
+                                      ),
+                                    ),
                                     const SizedBox(width: 12.0),
-                                    Expanded(child: _buildTimeField(context)),
+                                    Expanded(
+                                      child: _buildTimeField(
+                                        context,
+                                        label: 'ระยะเวลา',
+                                        value: controller.durationText,
+                                        icon: Icons.timelapse_rounded,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ],
+                                _buildTimeField(context, label: 'เวลาสิ้นสุด', value: controller.endTimeText, icon: Icons.stop_circle_rounded),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
 
                             Column(
@@ -303,7 +285,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                       }(),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
-                                          colors: [FlutterFlowThemeNew.of(context).primary, Color(0xFF216DAA)],
+                                          colors: [const Color(0xFF14B8A6), const Color(0xFF0F766E)],
                                           stops: [0.0, 1.0],
                                           begin: AlignmentDirectional(0.0, -1.0),
                                           end: AlignmentDirectional(0, 1.0),
@@ -312,7 +294,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                       ),
                                       child: Align(
                                         alignment: AlignmentDirectional(0.0, 0.0),
-                                        child: Icon(Icons.person_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
+                                        child: Icon(Icons.badge_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
                                       ),
                                     ),
                                     Text(
@@ -359,144 +341,75 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                 Row(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Container(
-                                            width: () {
-                                              if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                return 24.0;
-                                              } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                return 24.0;
-                                              } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                return 32.0;
-                                              } else {
-                                                return 32.0;
-                                              }
-                                            }(),
-                                            height: () {
-                                              if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                                return 24.0;
-                                              } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                                return 24.0;
-                                              } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                                return 32.0;
-                                              } else {
-                                                return 32.0;
-                                              }
-                                            }(),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [FlutterFlowThemeNew.of(context).primary, Color(0xFF216DAA)],
-                                                stops: [0.0, 1.0],
-                                                begin: AlignmentDirectional(0.0, -1.0),
-                                                end: AlignmentDirectional(0, 1.0),
-                                              ),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Align(
-                                              alignment: AlignmentDirectional(0.0, 0.0),
-                                              child: Icon(Icons.camera_alt, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'กล้อง',
-                                              style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                                fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
-                                                useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                              ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 8.0)),
+                                    Container(
+                                      width: () {
+                                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+                                          return 24.0;
+                                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+                                          return 24.0;
+                                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+                                          return 32.0;
+                                        } else {
+                                          return 32.0;
+                                        }
+                                      }(),
+                                      height: () {
+                                        if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
+                                          return 24.0;
+                                        } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
+                                          return 24.0;
+                                        } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
+                                          return 32.0;
+                                        } else {
+                                          return 32.0;
+                                        }
+                                      }(),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [const Color(0xFF6366F1), const Color(0xFF1D4ED8)],
+                                          stops: [0.0, 1.0],
+                                          begin: AlignmentDirectional(0.0, -1.0),
+                                          end: AlignmentDirectional(0, 1.0),
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Align(
+                                        alignment: AlignmentDirectional(0.0, 0.0),
+                                        child: Icon(Icons.videocam_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 24.0,
-                                            height: 24.0,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [FlutterFlowThemeNew.of(context).customColor2, FlutterFlowThemeNew.of(context).customColor1],
-                                                stops: [0.0, 1.0],
-                                                begin: AlignmentDirectional(0.0, -1.0),
-                                                end: AlignmentDirectional(0, 1.0),
-                                              ),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Align(
-                                              alignment: AlignmentDirectional(0.0, 0.0),
-                                              child: Icon(Icons.access_time, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
-                                            ),
-                                          ),
-                                          Text(
-                                            'ระยะเวลา',
-                                            style: FlutterFlowThemeNew.of(context).labelSmall.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 8.0)),
+                                    Text(
+                                      'กล้อง',
+                                      style: FlutterFlowThemeNew.of(context).labelSmall.override(
+                                        fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.w500,
+                                        useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
                                       ),
                                     ),
-                                  ].divide(SizedBox(width: 12.0)),
+                                  ].divide(SizedBox(width: 8.0)),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: Text(
-                                            controller.deviceText,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                              lineHeight: 1.5,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                            ),
-                                          ),
-                                        ),
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowThemeNew.of(context).primaryBackground,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12.0),
+                                    child: Text(
+                                      controller.deviceText,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                                        fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.w500,
+                                        lineHeight: 1.5,
+                                        useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowThemeNew.of(context).primaryBackground,
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: Text(
-                                            controller.durationText,
-                                            textAlign: TextAlign.end,
-                                            style: FlutterFlowThemeNew.of(context).bodyMedium.override(
-                                              fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w500,
-                                              lineHeight: 1.5,
-                                              useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ].divide(SizedBox(width: 12.0)),
+                                  ),
                                 ),
                               ].divide(const SizedBox(height: 8.0)),
                             ),
@@ -579,7 +492,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                                       child: Align(
                                         alignment: AlignmentDirectional(0.0, 0.0),
                                         child: Icon(
-                                          Icons.calendar_month_rounded,
+                                          Icons.location_on_rounded,
                                           color: FlutterFlowThemeNew.of(context).secondaryBackground,
                                           size: () {
                                             if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
@@ -847,64 +760,80 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
 
   Widget _buildCoordinateCard(BuildContext context, {required IconData icon, required String label, required String value}) {
     final theme = FlutterFlowThemeNew.of(context);
+    final accentColors = label == 'ละติจูด' ? const [Color(0xFF14B8A6), Color(0xFF0F766E)] : const [Color(0xFF3B82F6), Color(0xFF1D4ED8)];
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.secondaryBackground,
-        borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: theme.alternate),
-        boxShadow: const [BoxShadow(blurRadius: 14.0, color: Color(0x0F000000), offset: Offset(0.0, 6.0))],
+        gradient: LinearGradient(
+          colors: [theme.secondaryBackground, const Color(0xFFF7FAFF)],
+          stops: const [0.0, 1.0],
+          begin: const AlignmentDirectional(0.0, -1.0),
+          end: const AlignmentDirectional(0.0, 1.0),
+        ),
+        borderRadius: BorderRadius.circular(18.0),
+        border: Border.all(color: const Color(0xFFD8E3F2)),
+        boxShadow: const [
+          BoxShadow(blurRadius: 16.0, color: Color(0x12000000), offset: Offset(0.0, 8.0)),
+          BoxShadow(blurRadius: 4.0, color: Color(0x0A000000), offset: Offset(0.0, 2.0)),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 34.0,
-              height: 34.0,
-              decoration: BoxDecoration(color: const Color(0x1A46D8AD), shape: BoxShape.circle),
-              child: Icon(icon, color: theme.customColor1, size: 18.0),
-            ),
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '$label : ',
-                          style: theme.bodySmall.override(
-                            fontFamily: theme.bodySmallFamily,
-                            color: theme.secondaryText,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.w500,
-                            useGoogleFonts: !theme.bodySmallIsCustom,
-                          ),
-                        ),
-                        TextSpan(
-                          text: value,
-                          style: theme.bodyMedium.override(
-                            fontFamily: theme.bodyMediumFamily,
-                            color: theme.primaryText,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.w700,
-                            useGoogleFonts: !theme.bodyMediumIsCustom,
-                          ),
-                        ),
-                      ],
+            Row(
+              children: [
+                Container(
+                  width: 24.0,
+                  height: 24.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: accentColors,
+                      stops: const [0.0, 1.0],
+                      begin: const AlignmentDirectional(0.0, -1.0),
+                      end: const AlignmentDirectional(0.0, 1.0),
                     ),
-                    softWrap: false,
-                    maxLines: 1,
+                    shape: BoxShape.circle,
                   ),
+                  child: Icon(icon, color: theme.secondaryBackground, size: 12.0),
+                ),
+                const SizedBox(width: 5.0),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.labelSmall.override(
+                      fontFamily: theme.labelSmallFamily,
+                      color: theme.secondaryText,
+                      letterSpacing: 0.0,
+                      fontWeight: FontWeight.w600,
+                      useGoogleFonts: !theme.labelSmallIsCustom,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+              decoration: BoxDecoration(color: theme.primaryBackground, borderRadius: BorderRadius.circular(12.0)),
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.bodyMedium.override(
+                  fontFamily: theme.bodyMediumFamily,
+                  color: theme.primaryText,
+                  letterSpacing: 0.0,
+                  fontWeight: FontWeight.w700,
+                  useGoogleFonts: !theme.bodyMediumIsCustom,
                 ),
               ),
             ),
-          ],
+          ].divide(const SizedBox(height: 6.0)),
         ),
       ),
     );
@@ -980,7 +909,7 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
     );
   }
 
-  Widget _buildTimeField(BuildContext context) {
+  Widget _buildReportCodeField(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -993,20 +922,20 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
               height: _getIconSize(context),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFF78C7FF), FlutterFlowThemeNew.of(context).primary],
+                  colors: const [Color(0xFFF59E0B), Color(0xFFD97706)],
                   stops: const [0.0, 1.0],
-                  begin: const AlignmentDirectional(0.56, -1.0),
-                  end: const AlignmentDirectional(-0.56, 1.0),
+                  begin: const AlignmentDirectional(0.0, -1.0),
+                  end: const AlignmentDirectional(0, 1.0),
                 ),
                 shape: BoxShape.circle,
               ),
               child: Align(
                 alignment: const AlignmentDirectional(0.0, 0.0),
-                child: Icon(Icons.access_time_filled_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
+                child: Icon(Icons.receipt_long_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
               ),
             ),
             Text(
-              'เวลา',
+              'รหัสรายงาน',
               style: FlutterFlowThemeNew.of(context).labelSmall.override(
                 fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
                 letterSpacing: 0.0,
@@ -1031,7 +960,83 @@ class ActivityTaskDetailsWidgetView extends GetView<ActivityTaskDetailsWidgetCon
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        controller.timeText,
+                        controller.reportCode,
+                        style: FlutterFlowThemeNew.of(context).bodyMedium.override(
+                          fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
+                          letterSpacing: 0.0,
+                          fontWeight: FontWeight.w500,
+                          useGoogleFonts: !FlutterFlowThemeNew.of(context).bodyMediumIsCustom,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ].divide(const SizedBox(height: 8.0)),
+    );
+  }
+
+  Widget _buildTimeField(BuildContext context, {required String label, required String value, required IconData icon}) {
+    final accentColors = label == 'เวลาเริ่มต้น'
+        ? const [Color(0xFF22C55E), Color(0xFF0F766E)]
+        : label == 'ระยะเวลา'
+        ? const [Color(0xFFF59E0B), Color(0xFFD97706)]
+        : const [Color(0xFFFB7185), Color(0xFFEA580C)];
+
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              width: _getIconSize(context),
+              height: _getIconSize(context),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: accentColors,
+                  stops: const [0.0, 1.0],
+                  begin: const AlignmentDirectional(0.56, -1.0),
+                  end: const AlignmentDirectional(-0.56, 1.0),
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Align(
+                alignment: const AlignmentDirectional(0.0, 0.0),
+                child: Icon(icon, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 14.0),
+              ),
+            ),
+            Text(
+              label,
+              style: FlutterFlowThemeNew.of(context).labelSmall.override(
+                fontFamily: FlutterFlowThemeNew.of(context).labelSmallFamily,
+                letterSpacing: 0.0,
+                fontWeight: FontWeight.w500,
+                useGoogleFonts: !FlutterFlowThemeNew.of(context).labelSmallIsCustom,
+              ),
+            ),
+          ].divide(const SizedBox(width: 8.0)),
+        ),
+        Container(
+          width: double.infinity,
+          height: 46.0,
+          decoration: BoxDecoration(color: FlutterFlowThemeNew.of(context).primaryBackground, borderRadius: BorderRadius.circular(8.0)),
+          child: Stack(
+            children: [
+              Align(
+                alignment: const AlignmentDirectional(-1.0, 0.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        value,
                         style: FlutterFlowThemeNew.of(context).bodyMedium.override(
                           fontFamily: FlutterFlowThemeNew.of(context).bodyMediumFamily,
                           letterSpacing: 0.0,

@@ -67,7 +67,10 @@ class cv_func {
 
   static Future<String> getDeviceId() async {
     final prefs = await SharedPreferences.getInstance();
-    final storedDeviceId = prefs.getString(GetData.device_id)?.trim() ?? prefs.getString(GetData.macaddress)?.trim() ?? '';
+    final storedDeviceId =
+        prefs.getString(GetData.device_id)?.trim() ??
+        prefs.getString(GetData.macaddress)?.trim() ??
+        '';
 
     if (storedDeviceId.isNotEmpty) {
       return storedDeviceId;
@@ -78,7 +81,9 @@ class cv_func {
       return deviceId;
     }
 
-    return prefs.getString(GetData.device_id)?.trim() ?? prefs.getString(GetData.macaddress)?.trim() ?? '';
+    return prefs.getString(GetData.device_id)?.trim() ??
+        prefs.getString(GetData.macaddress)?.trim() ??
+        '';
   }
 
   static Future<String> getValidAccessToken({
@@ -86,7 +91,11 @@ class cv_func {
     bool swallowRefreshErrors = false,
     Duration refreshTimeout = _defaultRequestTimeout,
   }) async {
-    await refreshAccessTokenIfNeeded(threshold: threshold, swallowErrors: swallowRefreshErrors, timeout: refreshTimeout);
+    await refreshAccessTokenIfNeeded(
+      threshold: threshold,
+      swallowErrors: swallowRefreshErrors,
+      timeout: refreshTimeout,
+    );
     return GetData.getAccessTokenValue();
   }
 
@@ -97,18 +106,25 @@ class cv_func {
   }) async {
     try {
       await _refreshAccessTokenIfNeeded(threshold: threshold, timeout: timeout);
-    } on CvFunctionException catch (error, stackTrace) {
+    } on CvFunctionException {
       if (!swallowErrors) {
         rethrow;
       }
 
-      log('Failed to refresh access token.', name: 'cv_func.refreshAccessTokenIfNeeded', error: error, stackTrace: stackTrace);
+
+      return;
     }
   }
 
-  static Future<void> _refreshAccessTokenIfNeeded({required Duration threshold, required Duration timeout}) async {
+  static Future<void> _refreshAccessTokenIfNeeded({
+    required Duration threshold,
+    required Duration timeout,
+  }) async {
     final accessToken = await GetData.getAccessTokenValue();
-    if (!_shouldRefreshAccessToken(accessToken: accessToken, threshold: threshold)) {
+    if (!_shouldRefreshAccessToken(
+      accessToken: accessToken,
+      threshold: threshold,
+    )) {
       return;
     }
 
@@ -148,10 +164,15 @@ class cv_func {
     }
   }
 
-  static Future<void> refreshAccessToken({required String refreshToken, Duration timeout = _defaultRequestTimeout}) async {
+  static Future<void> refreshAccessToken({
+    required String refreshToken,
+    Duration timeout = _defaultRequestTimeout,
+  }) async {
     final trimmedRefreshToken = refreshToken.trim();
     if (trimmedRefreshToken.isEmpty) {
-      throw const CvFunctionException('ไม่พบ refresh token สำหรับการรีเฟรช access token');
+      throw const CvFunctionException(
+        'ไม่พบ refresh token สำหรับการรีเฟรช access token',
+      );
     }
 
     dynamic decoded;
@@ -177,20 +198,30 @@ class cv_func {
 
     final refreshJson = _extractLoginResponseMap(decoded);
     if (refreshJson == null) {
-      throw CvFunctionException('รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}');
+      throw CvFunctionException(
+        'รูปแบบข้อมูลจากระบบไม่ถูกต้อง: ${_compactBody(_stringifyDecoded(decoded))}',
+      );
     }
 
     final currentUser = await StorageUtils.getCurrentUser();
 
     late final LoginModel refreshResponse;
     try {
-      refreshResponse = LoginModel.fromJson(refreshJson, fallbackUser: currentUser, fallbackRefreshToken: trimmedRefreshToken);
+      refreshResponse = LoginModel.fromJson(
+        refreshJson,
+        fallbackUser: currentUser,
+        fallbackRefreshToken: trimmedRefreshToken,
+      );
     } on FormatException catch (error) {
-      throw CvFunctionException('รูปแบบ accessToken ไม่ถูกต้อง: ${error.message}');
+      throw CvFunctionException(
+        'รูปแบบ accessToken ไม่ถูกต้อง: ${error.message}',
+      );
     }
 
     if (refreshResponse.accessToken.isEmpty) {
-      throw CvFunctionException('ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}');
+      throw CvFunctionException(
+        'ข้อมูลตอบกลับจากระบบไม่ครบถ้วน: ${_compactBody(_stringifyDecoded(decoded))}',
+      );
     }
 
     await GetData.saveAuthenticatedSession(
@@ -199,10 +230,18 @@ class cv_func {
       user: refreshResponse.userInfo,
     );
 
-    log('Access token refreshed: iat=${refreshResponse.iat}, exp=${refreshResponse.exp}', name: 'cv_func.refreshAccessTokenIfNeeded');
+    log(
+      'Access token refreshed: iat=${refreshResponse.iat}, exp=${refreshResponse.exp}',
+      name: 'cv_func.refreshAccessTokenIfNeeded',
+    );
   }
 
-  static Future<dynamic> getApiData(String url, {Duration timeout = _defaultRequestTimeout, Map<String, String> extraHeaders = const {}}) async {
+  static Future<dynamic> getApiData(
+    String url, {
+    Duration timeout = _defaultRequestTimeout,
+    Map<String, String> extraHeaders = const {},
+    bool includeAccessToken = true,
+  }) async {
     final trimmedUrl = url.trim();
     if (trimmedUrl.isEmpty) {
       throw const CvFunctionException('กรุณาระบุ URL สำหรับเรียก API');
@@ -213,17 +252,27 @@ class cv_func {
       throw CvFunctionException('URL ไม่ถูกต้อง: $trimmedUrl');
     }
 
-    final accessToken = await getValidAccessToken(refreshTimeout: timeout);
-    final headers = <String, String>{'Accept': 'application/json', if (accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken'};
+    final accessToken = includeAccessToken
+        ? await getValidAccessToken(refreshTimeout: timeout)
+        : '';
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      if (includeAccessToken && accessToken.isNotEmpty)
+        'Authorization': 'Bearer $accessToken',
+    };
     headers.addAll(extraHeaders);
 
     http.Response response;
     try {
       response = await http.get(uri, headers: headers).timeout(timeout);
     } on TimeoutException {
-      throw CvFunctionException('เซิร์ฟเวอร์ไม่ตอบกลับภายใน ${timeout.inSeconds} วินาที');
+      throw CvFunctionException(
+        'เซิร์ฟเวอร์ไม่ตอบกลับภายใน ${timeout.inSeconds} วินาที',
+      );
     } on SocketException {
-      throw const CvFunctionException('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่ายหรือ API URL');
+      throw const CvFunctionException(
+        'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่ายหรือ API URL',
+      );
     } on http.ClientException catch (error) {
       throw CvFunctionException(error.message);
     }
@@ -231,12 +280,16 @@ class cv_func {
     final decoded = _decodeJson(response.body);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw CvFunctionException(
-        _extractErrorMessage(decoded) ?? 'โหลดข้อมูลไม่สำเร็จ (HTTP ${response.statusCode})',
+        _extractErrorMessage(decoded) ??
+            'โหลดข้อมูลไม่สำเร็จ (HTTP ${response.statusCode})',
         statusCode: response.statusCode,
       );
     }
 
-    log('GET $trimmedUrl -> ${response.statusCode}', name: 'cv_func.getApiData');
+    log(
+      'GET $trimmedUrl -> ${response.statusCode}',
+      name: 'cv_func.getApiData',
+    );
 
     if (decoded != null) {
       return decoded;
@@ -263,31 +316,47 @@ class cv_func {
       throw CvFunctionException('URL ไม่ถูกต้อง: $trimmedUrl');
     }
 
-    final accessToken = includeAccessToken ? await getValidAccessToken(refreshTimeout: timeout) : '';
+    final accessToken = includeAccessToken
+        ? await getValidAccessToken(refreshTimeout: timeout)
+        : '';
     final headers = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      if (includeAccessToken && accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken',
+      if (includeAccessToken && accessToken.isNotEmpty)
+        'Authorization': 'Bearer $accessToken',
     };
     headers.addAll(extraHeaders);
 
     http.Response response;
     try {
-      response = await http.post(uri, headers: headers, body: _encodeRequestBody(body)).timeout(timeout);
+      response = await http
+          .post(uri, headers: headers, body: _encodeRequestBody(body))
+          .timeout(timeout);
     } on TimeoutException {
-      throw CvFunctionException('เซิร์ฟเวอร์ไม่ตอบกลับภายใน ${timeout.inSeconds} วินาที');
+      throw CvFunctionException(
+        'เซิร์ฟเวอร์ไม่ตอบกลับภายใน ${timeout.inSeconds} วินาที',
+      );
     } on SocketException {
-      throw const CvFunctionException('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่ายหรือ API URL');
+      throw const CvFunctionException(
+        'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่ายหรือ API URL',
+      );
     } on http.ClientException catch (error) {
       throw CvFunctionException(error.message);
     }
 
     final decoded = _decodeJson(response.body);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw CvFunctionException(_extractErrorMessage(decoded) ?? 'ส่งข้อมูลไม่สำเร็จ (HTTP ${response.statusCode})', statusCode: response.statusCode);
+      throw CvFunctionException(
+        _extractErrorMessage(decoded) ??
+            'ส่งข้อมูลไม่สำเร็จ (HTTP ${response.statusCode})',
+        statusCode: response.statusCode,
+      );
     }
 
-    log('POST $trimmedUrl -> ${response.statusCode}', name: 'cv_func.postApiData');
+    log(
+      'POST $trimmedUrl -> ${response.statusCode}',
+      name: 'cv_func.postApiData',
+    );
 
     if (decoded != null) {
       return decoded;
@@ -297,7 +366,10 @@ class cv_func {
     return responseBody.isEmpty ? null : responseBody;
   }
 
-  static bool _shouldRefreshAccessToken({required String accessToken, required Duration threshold}) {
+  static bool _shouldRefreshAccessToken({
+    required String accessToken,
+    required Duration threshold,
+  }) {
     if (accessToken.isEmpty) {
       return true;
     }
@@ -414,7 +486,12 @@ class cv_func {
     }
 
     final json = Map<String, dynamic>.from(decoded);
-    final message = json['message'] ?? json['Message'] ?? json['msg'] ?? json['error'] ?? json['detail'];
+    final message =
+        json['message'] ??
+        json['Message'] ??
+        json['msg'] ??
+        json['error'] ??
+        json['detail'];
     return message is String && message.trim().isNotEmpty ? message : null;
   }
 

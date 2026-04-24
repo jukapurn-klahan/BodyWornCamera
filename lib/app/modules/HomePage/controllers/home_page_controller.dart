@@ -31,7 +31,7 @@ class HomePageController extends GetxController {
       name: 'Camera 1',
       location: 'จุดติดตั้ง 1',
       isOnline: true,
-      deviceCode: '1000093',
+      deviceCode: '1000067',
     ),
     // CameraItem(index: 1, name: 'Camera 2', location: 'จุดติดตั้ง 2', isOnline: true, deviceCode: '1000094'),
     // CameraItem(index: 2, name: 'Camera 3', location: 'จุดติดตั้ง 3', isOnline: true, deviceCode: '1000095'),
@@ -53,7 +53,7 @@ class HomePageController extends GetxController {
       await _loadMainPageTokens();
       await _loadProfileData();
     } finally {
-     isLoadingCameras.value = false;
+      isLoadingCameras.value = false;
     }
   }
 
@@ -106,9 +106,9 @@ class HomePageController extends GetxController {
       return;
     }
 
-    cameraPreviewByIndex[cameraIndex] = previewBytes is Uint8List
-        ? previewBytes
-        : null;
+    if (previewBytes is Uint8List && previewBytes.isNotEmpty) {
+      cameraPreviewByIndex[cameraIndex] = previewBytes;
+    }
   }
 
   Future<void> _loadMainPageTokens() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:body_camera/app/data/models/activity_report_model.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../flutter_flow/flutter_flow_theme_new.dart';
 import '../../../../flutter_flow/flutter_flow_util.dart';
@@ -333,11 +334,12 @@ class ActivityView extends GetView<ActivityController> {
                 ].divide(const SizedBox(height: 12.0)),
               ),
             ),
+
             const Divider(height: 1.0, thickness: 1.0, color: Color(0xFFD7D8D9)),
             Expanded(
               child: Obx(() {
                 if (controller.isLoadingReports.value) {
-                  return Center(child: CircularProgressIndicator(color: theme.primary));
+                  return const _ActivitySkeletonList();
                 }
 
                 final filteredTasks = _getFilteredTasks();
@@ -373,6 +375,46 @@ class ActivityView extends GetView<ActivityController> {
   }
 }
 
+class _ActivitySkeletonList extends StatelessWidget {
+  const _ActivitySkeletonList();
+
+  static _ActivityTaskItem _buildSkeletonTask(int index) {
+    return _ActivityTaskItem(
+      taskCode: 'ACT-2026-${(index + 1).toString().padLeft(3, '0')}',
+      title: 'กำลังโหลดรายการกิจกรรมจากระบบ',
+      date: '23 เม.ย. 2569',
+      activityDate: DateTime(2026, 4, 23),
+      time: '08:30 น. - 10:00 น.',
+      location: 'กำลังโหลดสถานที่ปฏิบัติงาน',
+      description: 'กำลังโหลดรายละเอียดกิจกรรมและข้อมูลเจ้าหน้าที่',
+      badgeLabel: 'ปกติ',
+      badgeColor: const Color(0xFF2563EB),
+      badgeBackgroundColor: const Color(0xFFDBEAFE),
+      badgeIcon: Icons.info_outline_rounded,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final skeletonTasks = List<_ActivityTaskItem>.generate(5, _buildSkeletonTask);
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+      child: Skeletonizer(
+        enabled: true,
+        containersColor: const Color(0xFFE9EEF5),
+        child: ListView.separated(
+          padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 24.0),
+          physics: const BouncingScrollPhysics(),
+          itemCount: skeletonTasks.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12.0),
+          itemBuilder: (context, index) => _ActivityTaskCard(item: skeletonTasks[index]),
+        ),
+      ),
+    );
+  }
+}
+
 class _ActivityTaskCard extends StatelessWidget {
   const _ActivityTaskCard({required this.item, this.onTap});
 
@@ -393,7 +435,7 @@ class _ActivityTaskCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(28.0),
             border: Border.all(color: const Color(0xFFE7ECF3), width: 1.0),
-            boxShadow: const [BoxShadow(blurRadius: 16.0, color: Color(0x12000000), offset: Offset(0.0, 6.0))],
+            // boxShadow: const [BoxShadow(blurRadius: 16.0, color: Color(0x12000000), offset: Offset(0.0, 6.0))],
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(18.0, 16.0, 18.0, 18.0),
@@ -425,7 +467,7 @@ class _ActivityTaskCard extends StatelessWidget {
                   style: theme.titleMedium.override(
                     fontFamily: theme.titleMediumFamily,
                     color: const Color(0xFF101828),
-                    fontSize: 18.0,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.0,
                     useGoogleFonts: !theme.titleMediumIsCustom,
@@ -479,7 +521,6 @@ class _ActivityTaskCard extends StatelessWidget {
     );
   }
 }
-
 
 class _ActivityTaskCodePill extends StatelessWidget {
   const _ActivityTaskCodePill({required this.code});

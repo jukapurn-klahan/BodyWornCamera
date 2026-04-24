@@ -150,7 +150,7 @@ class SettingView extends GetView<SettingController> {
                                           child: Container(
                                             margin: const EdgeInsets.all(3.0),
                                             decoration: const BoxDecoration(color: Color(0xFFFFC107), shape: BoxShape.circle),
-                                            child: const Icon(Icons.verified_rounded, color: Color(0xFF08306B), size: 16.0),
+                                            child: const Icon(Icons.verified_rounded, color: Color(0xFF0F766E), size: 16.0),
                                           ),
                                         ),
                                       ),
@@ -188,7 +188,7 @@ class SettingView extends GetView<SettingController> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(Icons.badge_outlined, color: Color(0xFFFFD54F), size: 16.0),
+                                                const Icon(Icons.badge_outlined, color: Color(0xFF7DD3FC), size: 16.0),
                                                 const SizedBox(width: 8.0),
                                                 Flexible(
                                                   child: Text(
@@ -280,7 +280,7 @@ class SettingView extends GetView<SettingController> {
                                             }(),
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                colors: [FlutterFlowThemeNew.of(context).customColor2, FlutterFlowThemeNew.of(context).customColor1],
+                                                colors: const [Color(0xFFFFD166), Color(0xFFFF7A45)],
                                                 stops: const [0.0, 1.0],
                                                 begin: const AlignmentDirectional(0.56, -1.0),
                                                 end: const AlignmentDirectional(-0.56, 1.0),
@@ -319,6 +319,8 @@ class SettingView extends GetView<SettingController> {
                                     ],
                                   ),
                                 ),
+
+                                Divider(height: 1.0, thickness: 1.0, color: FlutterFlowThemeNew.of(context).primaryBackground),
                                 Container(
                                   width: double.infinity,
                                   height: 48.0,
@@ -355,7 +357,7 @@ class SettingView extends GetView<SettingController> {
                                             }(),
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                colors: [const Color(0xFF90D4FA), FlutterFlowThemeNew.of(context).primaryBlue],
+                                                colors: const [Color(0xFF89F7FE), Color(0xFF1D9BF0)],
                                                 stops: const [0.0, 1.0],
                                                 begin: const AlignmentDirectional(0.56, -1.0),
                                                 end: const AlignmentDirectional(-0.56, 1.0),
@@ -442,7 +444,7 @@ class SettingView extends GetView<SettingController> {
                                               }(),
                                               decoration: BoxDecoration(
                                                 gradient: LinearGradient(
-                                                  colors: [const Color(0xFFF8EDAB), FlutterFlowThemeNew.of(context).warning],
+                                                  colors: const [Color(0xFFFFE680), Color(0xFFFFB000)],
                                                   stops: const [0.0, 1.0],
                                                   begin: const AlignmentDirectional(0.56, -1.0),
                                                   end: const AlignmentDirectional(-0.56, 1.0),
@@ -511,17 +513,21 @@ class SettingView extends GetView<SettingController> {
                                                 }
                                               }(),
                                               decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [const Color(0xFFF8EDAB), FlutterFlowThemeNew.of(context).warning],
-                                                  stops: const [0.0, 1.0],
-                                                  begin: const AlignmentDirectional(0.56, -1.0),
-                                                  end: const AlignmentDirectional(-0.56, 1.0),
+                                                gradient: const LinearGradient(
+                                                  colors: [Color(0xFFFF9FBC), Color(0xFFE83E8C)],
+                                                  stops: [0.0, 1.0],
+                                                  begin: AlignmentDirectional(0.56, -1.0),
+                                                  end: AlignmentDirectional(-0.56, 1.0),
                                                 ),
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Align(
                                                 alignment: const AlignmentDirectional(0.0, 0.0),
-                                                child: Icon(Icons.password_rounded, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 16.0),
+                                                child: Icon(
+                                                  Icons.password_rounded,
+                                                  color: FlutterFlowThemeNew.of(context).secondaryBackground,
+                                                  size: 16.0,
+                                                ),
                                               ),
                                             ),
                                             Text(
@@ -553,7 +559,7 @@ class SettingView extends GetView<SettingController> {
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Divider(height: 1.0, thickness: 1.0, color: FlutterFlowThemeNew.of(context).primaryBackground),
+                                //Divider(height: 1.0, thickness: 1.0, color: FlutterFlowThemeNew.of(context).primaryBackground),
                                 Container(
                                   width: double.infinity,
                                   height: 48.0,
@@ -596,7 +602,7 @@ class SettingView extends GetView<SettingController> {
                                                 }(),
                                                 decoration: const BoxDecoration(
                                                   gradient: LinearGradient(
-                                                    colors: [Color(0xFFB8ADF9), Color(0xFF6F57F4)],
+                                                    colors: [Color(0xFFC4B5FD), Color(0xFF7C3AED)],
                                                     stops: [0.0, 1.0],
                                                     begin: AlignmentDirectional(0.56, -1.0),
                                                     end: AlignmentDirectional(-0.56, 1.0),
@@ -628,77 +634,7 @@ class SettingView extends GetView<SettingController> {
                                   ),
                                 ),
 
-                                // Divider(height: 1.0, thickness: 1.0, color: FlutterFlowThemeNew.of(context).primaryBackground),
-                                // Container(
-                                //   width: double.infinity,
-                                //   height: 48.0,
-                                //   decoration: const BoxDecoration(shape: BoxShape.rectangle),
-                                //   child: Row(
-                                //     mainAxisSize: MainAxisSize.max,
-                                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                //     children: [
-                                //       Row(
-                                //         mainAxisSize: MainAxisSize.min,
-                                //         children: [
-                                //           Container(
-                                //             width: () {
-                                //               if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                //                 return 24.0;
-                                //               } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                //                 return 24.0;
-                                //               } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                //                 return 32.0;
-                                //               } else {
-                                //                 return 32.0;
-                                //               }
-                                //             }(),
-                                //             height: () {
-                                //               if (MediaQuery.sizeOf(context).width < kBreakpointSmall) {
-                                //                 return 24.0;
-                                //               } else if (MediaQuery.sizeOf(context).width < kBreakpointMedium) {
-                                //                 return 24.0;
-                                //               } else if (MediaQuery.sizeOf(context).width < kBreakpointLarge) {
-                                //                 return 32.0;
-                                //               } else {
-                                //                 return 32.0;
-                                //               }
-                                //             }(),
-                                //             decoration: BoxDecoration(
-                                //               gradient: LinearGradient(
-                                //                 colors: [const Color(0xFF90D4FA), FlutterFlowThemeNew.of(context).info],
-                                //                 stops: const [0.0, 1.0],
-                                //                 begin: const AlignmentDirectional(0.56, -1.0),
-                                //                 end: const AlignmentDirectional(-0.56, 1.0),
-                                //               ),
-                                //               shape: BoxShape.circle,
-                                //             ),
-                                //             child: Align(
-                                //               alignment: const AlignmentDirectional(0.0, 0.0),
-                                //               child: Icon(Icons.info, color: FlutterFlowThemeNew.of(context).secondaryBackground, size: 16.0),
-                                //             ),
-                                //           ),
-                                //           Text(
-                                //             'เกี่ยวกับแอปพลิเคชั่น',
-                                //             textAlign: TextAlign.start,
-                                //             style: FlutterFlowThemeNew.of(
-                                //               context,
-                                //             ).labelMedium.override(font: FlutterFlowThemeNew.of(context).labelMedium, letterSpacing: 0.0),
-                                //           ),
-                                //         ].divide(const SizedBox(width: 12.0)),
-                                //       ),
-                                //       Text(
-                                //         '25.10.10.001',
-                                //         textAlign: TextAlign.start,
-                                //         style: FlutterFlowThemeNew.of(context).labelLarge.override(
-                                //           font: FlutterFlowThemeNew.of(context).labelLarge,
-                                //           letterSpacing: 0.0,
-                                //           fontWeight: FontWeight.w300,
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
-                              ].divide(const SizedBox(height: 8.0)),
+                                                      ].divide(const SizedBox(height: 8.0)),
                             ),
                           ),
                         ),
@@ -783,7 +719,7 @@ class SettingView extends GetView<SettingController> {
                                                 }(),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
-                                                    colors: [const Color(0xFFFFA7A7), FlutterFlowThemeNew.of(context).error],
+                                                    colors: const [Color(0xFFFF9A9E), Color(0xFFE11D48)],
                                                     stops: const [0.0, 1.0],
                                                     begin: const AlignmentDirectional(0.56, -1.0),
                                                     end: const AlignmentDirectional(-0.56, 1.0),

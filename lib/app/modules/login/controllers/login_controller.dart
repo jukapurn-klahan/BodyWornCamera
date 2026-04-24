@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
+import '../../../../widgets/popup_showdialog.dart';
+
 class LoginController extends GetxController {
-  LoginController({UserApiService? userApiService})
-    : _userApiService = userApiService ?? UserApiService();
+  LoginController({UserApiService? userApiService}) : _userApiService = userApiService ?? UserApiService();
 
   final UserApiService _userApiService;
   final animationsMap = <String, AnimationInfo>{};
@@ -37,79 +38,25 @@ class LoginController extends GetxController {
       'imageOnPageLoadAnimation': AnimationInfo(
         trigger: AnimationTrigger.onPageLoad,
         effects: [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 1000.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 1000.ms,
-            begin: Offset(0.0, 0.0),
-            end: Offset(0.0, 0.0),
-          ),
-          TiltEffect(
-            curve: Curves.easeInOut,
-            delay: 100.ms,
-            duration: 1000.ms,
-            begin: Offset(-0.000, 0),
-            end: Offset(0, 0),
-          ),
+          FadeEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 1000.ms, begin: 0.0, end: 1.0),
+          MoveEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 1000.ms, begin: Offset(0.0, 0.0), end: Offset(0.0, 0.0)),
+          TiltEffect(curve: Curves.easeInOut, delay: 100.ms, duration: 1000.ms, begin: Offset(-0.000, 0), end: Offset(0, 0)),
         ],
       ),
       'columnOnPageLoadAnimation1': AnimationInfo(
         trigger: AnimationTrigger.onPageLoad,
         effects: [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: Offset(60.0, 0.0),
-            end: Offset(0.0, 0.0),
-          ),
-          TiltEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: Offset(-0.349, 0),
-            end: Offset(0, 0),
-          ),
+          FadeEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: 0.0, end: 1.0),
+          MoveEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: Offset(60.0, 0.0), end: Offset(0.0, 0.0)),
+          TiltEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: Offset(-0.349, 0), end: Offset(0, 0)),
         ],
       ),
       'columnOnPageLoadAnimation2': AnimationInfo(
         trigger: AnimationTrigger.onPageLoad,
         effects: [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: Offset(60.0, 0.0),
-            end: Offset(0.0, 0.0),
-          ),
-          TiltEffect(
-            curve: Curves.easeInOut,
-            delay: 200.ms,
-            duration: 400.ms,
-            begin: Offset(-0.349, 0),
-            end: Offset(0, 0),
-          ),
+          FadeEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: 0.0, end: 1.0),
+          MoveEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: Offset(60.0, 0.0), end: Offset(0.0, 0.0)),
+          TiltEffect(curve: Curves.easeInOut, delay: 200.ms, duration: 400.ms, begin: Offset(-0.349, 0), end: Offset(0, 0)),
         ],
       ),
     });
@@ -133,12 +80,10 @@ class LoginController extends GetxController {
   }
 
   void _updateCanSubmitLogin() {
-    canSubmitLogin.value =
-        usernameController.text.trim().isNotEmpty &&
-        passwordController.text.isNotEmpty;
+    canSubmitLogin.value = usernameController.text.trim().isNotEmpty && passwordController.text.isNotEmpty;
   }
 
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     if (isSubmittingLogin.value) {
       return;
     }
@@ -149,38 +94,22 @@ class LoginController extends GetxController {
     final password = passwordController.text;
 
     if (username.isEmpty || password.isEmpty) {
-      Get.snackbar(
-        'แจ้งเตือน',
-        'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (!context.mounted) {
+        return;
+      }
+      PopupDialogShow.showErrorDialog(context, 'Error', 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน');
       return;
     }
 
     try {
       isSubmittingLogin.value = true;
       final deviceId = await _resolveDeviceId();
-      final loginResponse = await _userApiService.login(
-        username: username,
-        password: password,
-        deviceId: deviceId,
-      );
-      final shouldForceNewPin = await _shouldForceNewPinSetup(
-        loginResponse.userInfo.username,
-      );
-      debugPrint(
-        'Login success: ${loginResponse.userInfo.username} (${loginResponse.userInfo.userId})',
-      );
-      debugPrint(
-        'Decoded accessToken timing: iat=${loginResponse.iat}, exp=${loginResponse.exp}',
-      );
+      final loginResponse = await _userApiService.login(username: username, password: password, deviceId: deviceId);
+      final shouldForceNewPin = await _shouldForceNewPinSetup(loginResponse.userInfo.username);
+      debugPrint('Login success: ${loginResponse.userInfo.username} (${loginResponse.userInfo.userId})');
+      debugPrint('Decoded accessToken timing: iat=${loginResponse.iat}, exp=${loginResponse.exp}');
       if (rememberPassword.value) {
-        await StorageUtils.saveRememberedLogin(
-          username: username,
-          password: password,
-        );
+        await StorageUtils.saveRememberedLogin(username: username, password: password);
       } else {
         await StorageUtils.clearRememberedLogin();
       }
@@ -192,34 +121,17 @@ class LoginController extends GetxController {
       if (shouldForceNewPin) {
         await StorageUtils.clearPinCode();
       } else {
-        await StorageUtils.setPinCodeOwnerUsername(
-          loginResponse.userInfo.username,
-        );
+        await StorageUtils.setPinCodeOwnerUsername(loginResponse.userInfo.username);
       }
       await _loadRoleMasterData();
-      Get.offAllNamed(
-        Routes.PINCODE,
-        arguments: {
-          'allowBiometric': false,
-          if (shouldForceNewPin) 'isNewPassword': true,
-        },
-      );
+      Get.offAllNamed(Routes.PINCODE, arguments: {'allowBiometric': false, if (shouldForceNewPin) 'isNewPassword': true});
     } on UserApiException catch (error) {
-      Get.snackbar(
-        'เข้าสู่ระบบไม่สำเร็จ',
-        error.message,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      PopupDialogShow.showErrorDialog(context, 'Error', 'เข้าสู่ระบบไม่สำเร็จ');
     } catch (_) {
-      Get.snackbar(
-        'เชื่อมต่อไม่สำเร็จ',
-        'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (!context.mounted) {
+        return;
+      }
+      PopupDialogShow.showErrorDialog(context, 'Error', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
     } finally {
       isSubmittingLogin.value = false;
     }
@@ -250,9 +162,7 @@ class LoginController extends GetxController {
     final rememberedUsername = await StorageUtils.getRememberedUsername() ?? '';
     final rememberedPassword = await StorageUtils.getRememberedPassword() ?? '';
     final preservedUsername = await GetData.getUsernameValue();
-    final resolvedUsername = rememberedUsername.isNotEmpty
-        ? rememberedUsername
-        : preservedUsername;
+    final resolvedUsername = rememberedUsername.isNotEmpty ? rememberedUsername : preservedUsername;
 
     if (resolvedUsername.isNotEmpty) {
       usernameController.text = resolvedUsername;
@@ -275,9 +185,7 @@ class LoginController extends GetxController {
       return false;
     }
 
-    final pinCodeOwnerUsername =
-        await StorageUtils.getPinCodeOwnerUsername() ??
-        (await GetData.getUsernameValue()).trim();
+    final pinCodeOwnerUsername = await StorageUtils.getPinCodeOwnerUsername() ?? (await GetData.getUsernameValue()).trim();
 
     if (pinCodeOwnerUsername.isEmpty) {
       return false;

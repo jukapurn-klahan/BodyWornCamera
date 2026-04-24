@@ -136,6 +136,10 @@ class ActivityTaskDetailsWidgetController extends GetxController {
   String get dateText =>
       _formatDate(selectedReport?.startTime ?? selectedReport?.endTime);
 
+  String get startTimeText => _formatTimeValue(selectedReport?.startTime);
+
+  String get endTimeText => _formatTimeValue(selectedReport?.endTime);
+
   String get timeText =>
       _formatTimeRange(selectedReport?.startTime, selectedReport?.endTime);
 
@@ -235,6 +239,10 @@ class ActivityTaskDetailsWidgetController extends GetxController {
     final hour = value.hour.toString().padLeft(2, '0');
     final minute = value.minute.toString().padLeft(2, '0');
     return '$hour:$minute น.';
+  }
+
+  String _formatTimeValue(DateTime? value) {
+    return value == null ? '-' : _formatTime(value);
   }
 
   String _formatTimeRange(DateTime? startTime, DateTime? endTime) {

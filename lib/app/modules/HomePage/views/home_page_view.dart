@@ -387,8 +387,7 @@ class CameraGridView extends GetView<HomePageController> {
                                         ),
                                       ),
                                     ),
-                                  if (!isLoading)
-                                    Positioned(top: 10, right: 10, child: _ModernPreviewStatusDot(online: cam.isOnline)),
+                                  if (!isLoading) Positioned(top: 10, right: 10, child: _ModernPreviewStatusDot(online: cam.isOnline)),
                                 ],
                               ),
                             ),

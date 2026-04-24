@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,9 +10,10 @@ import '../../../../flutter_flow/flutter_flow_animations_pin.dart';
 import '../../../../widgets/global_widget.dart';
 
 class ActivityController extends GetxController {
-  ActivityController({UserApiService? userApiService}) : _userApiService = userApiService ?? UserApiService();
+  ActivityController({UserApiService? userApiService})
+    : _userApiService = userApiService ?? UserApiService();
 
-  static const bool useMockReports = true;
+  static const bool useMockReports = false;
 
   final UserApiService _userApiService;
   final count = 0.obs;
@@ -58,7 +61,9 @@ class ActivityController extends GetxController {
   }
 
   void updateDateFilter(DateTime? value) {
-    selectedDate.value = value == null ? null : DateTime(value.year, value.month, value.day);
+    selectedDate.value = value == null
+        ? null
+        : DateTime(value.year, value.month, value.day);
   }
 
   void clearDateFilter() {
@@ -80,11 +85,16 @@ class ActivityController extends GetxController {
 
     try {
       final resolvedReports = await _userApiService.getReports();
+      log(
+        'resolvedReports count: ${resolvedReports.length}',
+        name: 'ActivityController.fetchReports',
+      );
       reports.assignAll(resolvedReports);
     } on UserApiException catch (error) {
       loadErrorMessage.value = error.message;
     } catch (_) {
-      loadErrorMessage.value = 'ไม่สามารถโหลดรายการกิจกรรมได้ กรุณาลองใหม่อีกครั้ง';
+      loadErrorMessage.value =
+          'ไม่สามารถโหลดรายการกิจกรรมได้ กรุณาลองใหม่อีกครั้ง';
     } finally {
       isLoadingReports.value = false;
     }

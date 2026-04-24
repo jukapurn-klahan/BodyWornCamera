@@ -6,7 +6,9 @@ import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_screenshot_plus/flutter_native_screenshot_plus.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
 import 'package:video_player/video_player.dart';
 
 class CameraController extends GetxController with GetTickerProviderStateMixin {
@@ -21,9 +23,18 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
         'application/vnd.apple.mpegurl,application/x-mpegURL,*/*',
     HttpHeaders.userAgentHeader: streamUserAgent,
   };
-  static const String _streamApiUrl = String.fromEnvironment('CAMERA_STREAM_API_URL', defaultValue: 'http://www.centrecities.com:3007/api/v1/stream');
-  static const String _cameraWebUrl = String.fromEnvironment('CAMERA_WEB_URL', defaultValue: 'http://192.168.1.54:5001/video_feed');
-  static const String _cameraStreamUrl = String.fromEnvironment('CAMERA_STREAM_URL', defaultValue: '');
+  static const String _streamApiUrl = String.fromEnvironment(
+    'CAMERA_STREAM_API_URL',
+    defaultValue: 'http://www.centrecities.com:3007/api/v1/stream',
+  );
+  static const String _cameraWebUrl = String.fromEnvironment(
+    'CAMERA_WEB_URL',
+    defaultValue: 'http://192.168.1.54:5001/video_feed',
+  );
+  static const String _cameraStreamUrl = String.fromEnvironment(
+    'CAMERA_STREAM_URL',
+    defaultValue: '',
+  );
   String get cameraWebUrl => _cameraWebUrl;
   String get cameraStreamUrl => _activeCameraStreamUrl;
   String get cameraTitle => _cameraTitle;
@@ -41,7 +52,7 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
   int cameraIndex = 0;
   bool _isClosingWithPreview = false;
   String _cameraTitle = 'กล้อง 1';
-  String _deviceCode = '1000093';
+  String _deviceCode = '1000067';
   String _activeCameraStreamUrl = _cameraStreamUrl;
 
   void toggleMic() => isMicOn.toggle();
@@ -65,7 +76,7 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
 
   static List<VideoViewType> resolveVideoViewTypes() {
     if (GetPlatform.isAndroid) {
-      return const [VideoViewType.platformView, VideoViewType.textureView];
+      return const [VideoViewType.textureView, VideoViewType.platformView];
     }
     return const [VideoViewType.textureView];
   }
@@ -87,9 +98,7 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
       );
 
       try {
-        log(
-          'Trying video player init with viewType=$viewType url=$streamUrl',
-        );
+        log('Trying video player init with viewType=$viewType url=$streamUrl');
         await player.initialize().timeout(playerInitializeTimeout);
         return player;
       } catch (error, stackTrace) {
@@ -164,7 +173,9 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
 
       final player = await createStreamPlayer(resolvedStreamUrl);
 
-      final aspectRatio = player.value.aspectRatio > 0 ? player.value.aspectRatio : 16 / 9;
+      final aspectRatio = player.value.aspectRatio > 0
+          ? player.value.aspectRatio
+          : 16 / 9;
       final chewie = ChewieController(
         videoPlayerController: player,
         aspectRatio: aspectRatio,
@@ -208,12 +219,27 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
   Future<String?> _fetchStreamUrlFromApi() async {
     final httpClient = HttpClient();
     try {
-      final request = await httpClient.postUrl(Uri.parse(_streamApiUrl)).timeout(const Duration(seconds: 8));
+      final request = await httpClient
+          .postUrl(Uri.parse(_streamApiUrl))
+          .timeout(const Duration(seconds: 8));
       request.headers.set(HttpHeaders.acceptHeader, 'application/json');
-      request.headers.set(HttpHeaders.contentTypeHeader, 'application/json;charset=UTF-8');
-      request.write(jsonEncode({'User': 'true', 'deviceCode': _deviceCode, 'channelId': '$_deviceCode\$1\$0\$0'}));
+      request.headers.set(
+        HttpHeaders.contentTypeHeader,
+        'application/json;charset=UTF-8',
+      );
+      //   request.write(jsonEncode({'User': 'true', 'deviceCode': _deviceCode, 'channelId': '$_deviceCode\$1\$0\$0'}));
+      request.write(
+        jsonEncode({
+          'deviceCode': _deviceCode,
+          'channelId': '$_deviceCode\$1\$0\$0',
+        }),
+      );
 
-      final response = await request.close().timeout(const Duration(seconds: 8));
+      log('request: $request');
+
+      final response = await request.close().timeout(
+        const Duration(seconds: 8),
+      );
       if (response.statusCode != HttpStatus.ok) {
         log('Fetch stream api failed: status=${response.statusCode}');
         return null;
@@ -224,7 +250,9 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
       if (decoded is Map<String, dynamic>) {
         final data = decoded['data'];
         final status = data is Map<String, dynamic> ? data['status'] : null;
-        final url = data is Map<String, dynamic> ? data['video_url'] ?? decoded['video_url'] : decoded['video_url'];
+        final url = data is Map<String, dynamic>
+            ? data['video_url'] ?? decoded['video_url']
+            : decoded['video_url'];
         if (url is String && url.trim().isNotEmpty) {
           if (status != null && status != 1) {
             log('Fetch stream api returned non-ready status: $status');
@@ -249,13 +277,107 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
     }
     _isClosingWithPreview = true;
     final previewBytes = await capturePreviewFrame();
-    Get.back(result: {'cameraIndex': cameraIndex, 'previewBytes': previewBytes});
+    Get.back(
+      result: {'cameraIndex': cameraIndex, 'previewBytes': previewBytes},
+    );
   }
 
   Future<Uint8List?> capturePreviewFrame() async {
-    // `chewie`/`video_player` has no snapshot API like VLC, so the home page
-    // falls back to its static preview image until a dedicated thumbnail flow is added.
-    return null;
+    if (!isPlayerReady.value || isOffline.value) {
+      return null;
+    }
+
+    final previewContext = webViewCaptureKey.currentContext;
+    if (previewContext == null) {
+      return null;
+    }
+    final previewBounds = _resolvePreviewCaptureBounds(previewContext);
+    if (previewBounds == null) {
+      return null;
+    }
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 120));
+      final screenshotPath = await FlutterNativeScreenshotPlus()
+          .takeScreenshot()
+          .timeout(const Duration(seconds: 3));
+      if (screenshotPath == null || screenshotPath.isEmpty) {
+        return null;
+      }
+
+      final screenshotFile = File(screenshotPath);
+      if (!await screenshotFile.exists()) {
+        return null;
+      }
+
+      final bytes = await screenshotFile.readAsBytes();
+      unawaited(screenshotFile.delete().catchError((_) => screenshotFile));
+      return _cropScreenshotToPreview(previewBounds, bytes);
+    } catch (error, stackTrace) {
+      log('capturePreviewFrame failed: $error', stackTrace: stackTrace);
+      return null;
+    }
+  }
+
+  _PreviewCaptureBounds? _resolvePreviewCaptureBounds(
+    BuildContext previewContext,
+  ) {
+    final renderObject = previewContext.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.hasSize) {
+      return null;
+    }
+
+    final view = View.of(previewContext);
+    final logicalWidth = view.physicalSize.width / view.devicePixelRatio;
+    final logicalHeight = view.physicalSize.height / view.devicePixelRatio;
+    if (logicalWidth <= 0 || logicalHeight <= 0) {
+      return null;
+    }
+
+    return _PreviewCaptureBounds(
+      topLeft: renderObject.localToGlobal(Offset.zero),
+      size: renderObject.size,
+      logicalScreenSize: Size(logicalWidth, logicalHeight),
+    );
+  }
+
+  Uint8List? _cropScreenshotToPreview(
+    _PreviewCaptureBounds previewBounds,
+    Uint8List screenshotBytes,
+  ) {
+    final source = img.decodeImage(screenshotBytes);
+    if (source == null || source.width <= 0 || source.height <= 0) {
+      return null;
+    }
+
+    final scaleX = source.width / previewBounds.logicalScreenSize.width;
+    final scaleY = source.height / previewBounds.logicalScreenSize.height;
+
+    final x = (previewBounds.topLeft.dx * scaleX).round().clamp(
+      0,
+      source.width - 1,
+    );
+    final y = (previewBounds.topLeft.dy * scaleY).round().clamp(
+      0,
+      source.height - 1,
+    );
+    final width = (previewBounds.size.width * scaleX).round().clamp(
+      1,
+      source.width - x,
+    );
+    final height = (previewBounds.size.height * scaleY).round().clamp(
+      1,
+      source.height - y,
+    );
+
+    final cropped = img.copyCrop(
+      source,
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+    );
+    return Uint8List.fromList(img.encodeJpg(cropped, quality: 84));
   }
 
   Future<void> pausePreview() async {
@@ -304,4 +426,16 @@ class CameraController extends GetxController with GetTickerProviderStateMixin {
     unawaited(_disposePlayerControllers());
     super.onClose();
   }
+}
+
+class _PreviewCaptureBounds {
+  const _PreviewCaptureBounds({
+    required this.topLeft,
+    required this.size,
+    required this.logicalScreenSize,
+  });
+
+  final Offset topLeft;
+  final Size size;
+  final Size logicalScreenSize;
 }

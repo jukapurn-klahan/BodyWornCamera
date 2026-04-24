@@ -11,56 +11,43 @@ import '../controllers/bottom_navigators_controller.dart';
 
 class BottomNavigatorsView extends GetView<BottomNavigatorsController> {
   const BottomNavigatorsView({super.key});
-  @override
+
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       key: controller.scaffoldKey,
-
       backgroundColor: const Color(0xFFF4F7FB),
-
       body: Column(
         children: [
           Expanded(
             child: Obx(
               () => PageView(
                 controller: controller.pageContontroller.value,
-
                 onPageChanged: (index) {
                   controller.navBottomSelectedIndex.value = index;
                 },
-
                 children: const [HomePageView(), HistoryCameraView(), ActivityView(), SettingView()],
               ),
             ),
           ),
         ],
       ),
-
       bottomNavigationBar: Obx(
         () => Container(
-          padding: EdgeInsets.fromLTRB(16, 12, 16, bottomInset > 0 ? bottomInset : 12),
-
-          decoration: BoxDecoration(
-            color: FlutterFlowThemeNew.of(context).customColor5,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
-
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 24, offset: const Offset(0, -6))],
+          padding: EdgeInsets.fromLTRB(14, 10, 14, bottomInset > 0 ? bottomInset : 12),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [Color(0xFF0F223A), Color(0xFF1C2A44)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           ),
-
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
-
             children: [
-              _buildNavItem(index: 0, icon: Icons.home_rounded, label: 'หน้าหลัก'),
-
-              _buildNavItem(index: 1, icon: Icons.history_rounded, label: 'ประวัติ'),
-
-              _buildNavItem(index: 2, icon: Icons.local_activity_rounded, label: 'กิจกรรม'),
-
-              _buildNavItem(index: 3, icon: Icons.settings_rounded, label: 'ตั้งค่า'),
+              _buildNavItem(context: context, index: 0, icon: Icons.home_rounded, label: 'หน้าหลัก'),
+              _buildNavItem(context: context, index: 1, icon: Icons.history_rounded, label: 'ประวัติ'),
+              _buildNavItem(context: context, index: 2, icon: Icons.local_activity_rounded, label: 'กิจกรรม'),
+              _buildNavItem(context: context, index: 3, icon: Icons.settings_rounded, label: 'ตั้งค่า'),
             ],
           ),
         ),
@@ -68,62 +55,42 @@ class BottomNavigatorsView extends GetView<BottomNavigatorsController> {
     );
   }
 
-  Widget _buildNavItem({required int index, required IconData icon, required String label}) {
+  Widget _buildNavItem({required BuildContext context, required int index, required IconData icon, required String label}) {
     final isSelected = controller.navBottomSelectedIndex.value == index;
 
     return Expanded(
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-
+        borderRadius: BorderRadius.circular(22),
         onTap: () => controller.navigationBottomTapped(index),
-
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-
+        child: SizedBox(
+          height: 76,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-
-                curve: Curves.easeOut,
-
-                width: isSelected ? 56 : 46,
-
-                height: isSelected ? 56 : 46,
-
+                duration: const Duration(milliseconds: 260),
+                width: 54,
+                height: 54,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-
-                  color: isSelected ? Colors.white : Colors.white.withOpacity(0.10),
-
-                  border: isSelected
-                      ? Border.all(color: const Color(0xFFFFC107), width: 2)
-                      : Border.all(color: Colors.white.withOpacity(0.08), width: 1),
-
-                  boxShadow: isSelected ? [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 16, offset: const Offset(0, 6))] : [],
+                  borderRadius: BorderRadius.circular(18),
+                  color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.08),
+                  border: Border.all(color: isSelected ? const Color(0xFFFFC107) : Colors.white.withValues(alpha: 0.08)),
                 ),
-
-                child: Icon(icon, size: isSelected ? 27 : 22, color: isSelected ? const Color(0xFF0F223A) : Colors.white70),
+                child: Icon(icon, size: 26, color: isSelected ? const Color(0xFF0F223A) : Colors.white70),
               ),
 
-              const SizedBox(height: 7),
+              const SizedBox(height: 6),
 
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-
-                style: TextStyle(
-                  fontSize: isSelected ? 11.5 : 11,
-
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-
-                  color: isSelected ? Colors.white : Colors.white70,
-
-                  letterSpacing: 0.1,
+              SizedBox(
+                height: 14,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.white70,
+                  ),
                 ),
-
-                child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
               ),
             ],
           ),
